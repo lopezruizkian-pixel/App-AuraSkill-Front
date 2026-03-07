@@ -1,0 +1,77 @@
+/* Animación de levitación */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+.login-box {
+  padding: 40px;
+  background: #140022;
+  border: 2px solid #ff00ff;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 350px;
+  box-shadow: 0 0 20px #ff00ff40;
+  flex-shrink: 0;
+  
+  /* APLICACIÓN DEL MOVIMIENTO */
+  animation: float 4s ease-in-out infinite;
+}
+
+/* El resto de tu código se mantiene igual */
+.login-box h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.login-box input[type="text"],
+.login-box input[type="password"] {
+  padding: 12px 15px;
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  outline: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+
+.login-box input:focus {
+  border: 1px solid #00ffff;
+  box-shadow: 0 0 8px #00ffff80;
+}
+
+.primary-btn {
+  background: transparent;
+  border: 2px solid #00ffff;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.primary-btn:hover {
+  background-color: #00ffff;
+  color: black;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.register-link a {
+  color: #00ffff;
+  text-decoration: none;
+}
+
+/* Asegúrate de que la mascota también use la misma animación */
+.mascota-img {
+  width: 100%;
+  max-width: 400px;
+  animation: float 4s ease-in-out infinite;
+}

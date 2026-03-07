@@ -1,0 +1,126 @@
+/* --- GRID DE HABILIDADES --- */
+.habilidades-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 20px;
+}
+
+/* --- TARJETA DE HABILIDAD --- */
+.habilidad-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  background: #140022;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 20px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+}
+
+/* EFECTO DE RESALTADO DE CARDS (Hover) */
+.habilidad-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: #00ffff;
+  box-shadow: 0 15px 40px rgba(0, 255, 255, 0.3),
+              inset 0 0 15px rgba(0, 255, 255, 0.1);
+}
+
+.habilidad-icon-container {
+  margin-bottom: 20px;
+  color: #00ffff;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+  transition: transform 0.3s ease;
+}
+
+.habilidad-card:hover .habilidad-icon-container {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.habilidad-titulo {
+  color: #00ffff !important;
+  font-size: 22px !important;
+  margin-bottom: 25px !important;
+  font-weight: 500;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+}
+
+.btn-explorar {
+  width: 80%;
+}
+
+/* --- AJUSTES DEL HEADER --- */
+.full-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.search-extended {
+  max-width: 450px;
+  flex: 1;
+}
+
+.header-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+/* --- ICONOS DE NOTIFICACIÓN Y USUARIO --- */
+.icon-action {
+  color: #ffb703;
+  cursor: pointer;
+  position: relative;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-action:hover {
+  filter: drop-shadow(0 0 12px #ffb703);
+  transform: scale(1.1);
+}
+
+.user-icon {
+  background: rgba(255, 183, 3, 0.1);
+  padding: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 183, 3, 0.3);
+}
+
+.notification-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: #ff00ff;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ff00ff;
+}
+
+/* --- RESPONSIVIDAD --- */
+@media (max-width: 1200px) {
+  .habilidades-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .habilidades-grid { grid-template-columns: 1fr; }
+  .full-header {
+    flex-direction: column;
+    gap: 20px;
+  }
+}

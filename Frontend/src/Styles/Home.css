@@ -1,0 +1,169 @@
+.home-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #0a0014;
+}
+
+.home-main-layout {
+  display: flex;
+  flex: 1;
+  height: 100%;
+}
+
+.home-content {
+  flex: 1;
+  padding: 50px;
+  overflow-y: auto;
+}
+
+.dashboard-section {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.welcome-title {
+  font-size: 28px;
+  margin-bottom: 30px;
+  color: white;
+}
+
+.neon-card {
+  background: #140022;
+  border: 1px solid #00ffff;
+  border-radius: 20px;
+  padding: 35px;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.1);
+}
+
+.neon-card h3 {
+  color: #00ffff;
+  margin-bottom: 25px;
+  font-size: 20px;
+}
+
+.form-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mini-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.neon-input-s {
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 12px;
+  color: white;
+  outline: none;
+}
+
+.neon-input-s:focus {
+  border-color: #00ffff;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.primary-btn-s {
+  all: unset;
+  background: transparent;
+  border: 2px solid #ff00ff;
+  color: white;
+  padding: 12px 30px;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: bold;
+  transition: 0.3s;
+  width: fit-content;
+}
+
+
+.primary-btn-s:hover {
+  background: #ff00ff;
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+}
+.boton-estadoDispo {
+  all: unset;
+  background: transparent;
+  border: 2px solid #ff00ff;
+  color: white;
+  padding: 12px 30px;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: bold;
+  transition: 0.3s;
+  width: fit-content;
+}
+
+
+.mentor-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 15px;
+  border: 1px solid rgba(0, 255, 255, 0.1);
+}
+/* --- BUSCADOR NEÓN ALARGADO --- */
+.search-container-neon {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid #00ffff; /* Celeste Neón */
+  border-radius: 50px; /* Redondeado tipo cápsula */
+  padding: 8px 25px;
+  width: 100%;
+  max-width: 500px; /* Más alargado */
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+}
+
+.search-container-neon:focus-within {
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+  background: rgba(0, 255, 255, 0.05);
+}
+
+.search-icon {
+  color: #00ffff;
+  margin-right: 15px;
+  filter: drop-shadow(0 0 5px #00ffff);
+}
+
+.search-input-neon {
+  all: unset; /* Quitamos el estilo por defecto del input */
+  width: 100%;
+  color: white;
+  font-size: 1rem;
+}
+
+.search-input-neon::placeholder {
+  color: rgba(0, 255, 255, 0.4);
+}
+
+.mood-indicator {
+   all: unset;
+  background: transparent;
+  border: 2px solid #ff00ff;
+  color: white;
+  padding: 12px 30px;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: bold;
+  transition: 0.3s;
+  width: fit-content;
+} 
