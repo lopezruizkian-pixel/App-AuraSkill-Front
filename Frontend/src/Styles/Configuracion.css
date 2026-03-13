@@ -1,0 +1,157 @@
+.configuracion-section {
+  width: 100%;
+  max-width: 900px;
+  margin-top: 10px;
+}
+
+/* --- TARJETAS SUPERIORES --- */
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.config-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.config-card-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.config-icon-container {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00ffff;
+}
+
+.config-titulo {
+  font-size: 1.1rem;
+  color: white;
+  margin: 0;
+}
+
+.config-estado {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+/* Botón secundario Magenta */
+.secondary-btn-neon {
+  all: unset;
+  border: 1px solid #ff00ff;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.secondary-btn-neon:hover {
+  background: rgba(255, 0, 255, 0.1);
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+}
+
+/* --- LISTAS DE PERSONALIZACIÓN --- */
+.config-list-section {
+  margin-bottom: 35px;
+}
+
+.section-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #00ffff;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+.config-list-container {
+  padding: 0;
+  overflow: hidden;
+}
+
+.config-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.config-list-item:last-child {
+  border-bottom: none;
+}
+
+.config-select {
+  all: unset;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  appearance: auto;
+  min-width: 180px;
+}
+
+/* --- BOTÓN DE ELIMINAR (ESTILO PELIGRO NEÓN) --- */
+.danger-btn-neon-s {
+  all: unset;
+  background: rgba(255, 0, 85, 0.05);
+  border: 1px solid #ff0055;
+  color: #ff0055;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.danger-btn-neon-s:hover {
+  background: #ff0055;
+  color: white;
+  box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+}
+
+/* Estilo para el botón de actualizar (Cian) */
+.primary-btn-neon-s {
+  all: unset;
+  border: 1px solid #00ffff;
+  color: #00ffff;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primary-btn-neon-s:hover {
+  background: rgba(0, 255, 255, 0.1);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.danger-zone span {
+  color: #ff0055;
+  font-weight: 500;
+}

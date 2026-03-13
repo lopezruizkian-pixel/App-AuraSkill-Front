@@ -1,0 +1,33 @@
+{
+  "name": "auraskill-backend",
+  "version": "1.0.0",
+  "description": "Backend API for AuraSkill Emotional Learning Network",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": [
+    "auraskill",
+    "nodejs",
+    "express",
+    "mongodb",
+    "socketio"
+  ],
+  "author": "AuraSkill Team",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.6",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.23.0",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

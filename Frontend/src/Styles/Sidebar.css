@@ -1,0 +1,77 @@
+.sidebar-neon {
+  width: 280px;
+  background-color: #0d001a;
+  border-right: 1px solid rgba(0, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  padding: 40px 20px;
+  height: 100vh;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-header {
+  margin-bottom: 50px;
+  padding-left: 10px;
+}
+
+.aura-text {
+  font-size: 1.5rem;
+  color: #ff00ff;
+  text-shadow: 0 0 10px #ff00ff;
+  font-weight: bold;
+}
+
+.skill-text {
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.nav-item {
+  all: unset;
+  padding: 14px 18px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  border-radius: 12px;
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.95rem;
+  display: block;
+}
+
+/* EFECTO DE RESALTADO AL PASAR EL MOUSE */
+.nav-item:hover {
+  background: rgba(0, 255, 255, 0.05);
+  color: #00ffff;
+  box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.1);
+  transform: translateX(8px);
+}
+
+/* ESTADO ACTIVO (Cuando estás en la página) */
+.nav-item.active {
+  background: rgba(0, 255, 255, 0.15);
+  color: #00ffff;
+  border-left: 4px solid #00ffff;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.nav-item.logout {
+  margin-top: auto;
+  color: #ff00ff;
+  border: 1px solid rgba(255, 0, 255, 0.2);
+  text-align: center;
+  font-weight: bold;
+}
+
+.nav-item.logout:hover {
+  background: #ff00ff;
+  color: white;
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
+  transform: none;
+}

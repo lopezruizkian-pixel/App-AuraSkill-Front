@@ -1,0 +1,133 @@
+/* --- HEADER ESPECÍFICO DEL MENTOR --- */
+.estado-mentor-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 255, 0, 0.05);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  padding: 10px 20px;
+  border-radius: 50px;
+  color: #00ff00;
+  font-weight: 500;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+}
+
+.status-dot.online {
+  color: #00ff00;
+  filter: drop-shadow(0 0 5px #00ff00);
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- CONTENEDOR DEL FORMULARIO --- */
+.crear-sala-section {
+  max-width: 800px;
+  margin: 0 auto; /* Centrar el formulario */
+}
+
+.form-crear-sala-container {
+  padding: 40px;
+  background: #140022;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.formulario-sala {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* --- GRID DE DOS COLUMNAS --- */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* --- INPUTS NEÓN CON ICONOS --- */
+.input-group-neon {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group-neon label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  margin-left: 5px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  color: #00ffff;
+  pointer-events: none;
+}
+
+.input-wrapper input,
+.input-wrapper select,
+.input-wrapper textarea {
+  all: unset;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 15px 15px 15px 45px; /* Espacio extra a la izquierda para el icono */
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.textarea-wrapper {
+  align-items: flex-start;
+}
+
+.textarea-wrapper .input-icon {
+  top: 15px; /* Mantener el icono arriba en textareas */
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus,
+.input-wrapper textarea:focus {
+  border-color: #ff00ff; /* Cambia a magenta al seleccionar */
+  background: rgba(255, 0, 255, 0.05);
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.2);
+}
+
+/* Opciones del select en navegadores modernos */
+.input-wrapper select option {
+  background-color: #140022;
+  color: white;
+}
+
+/* --- BOTÓN A LA DERECHA --- */
+.form-action-right {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 25px;
+}
+
+.btn-crear-sala {
+  min-width: 200px;
+}
+
+/* --- RESPONSIVIDAD --- */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr; /* Una sola columna en celulares */
+  }
+}

@@ -1,0 +1,133 @@
+/* Animación de levitación compartida */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+.registro-box-extended {
+  padding: 40px;
+  background: #140022;
+  border: 2px solid #ff00ff;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 380px;
+  box-shadow: 0 0 20px #ff00ff40;
+  animation: float 4s ease-in-out infinite;
+}
+
+/* --- ESTILO DE LOS INPUTS (IGUAL AL LOGIN) --- */
+.registro-box-extended input[type="text"],
+.registro-box-extended input[type="password"] {
+  padding: 12px 15px;
+  border-radius: 25px; /* Estilo píldora como el login */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  outline: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+  width: 100%;
+  box-sizing: border-box; /* Evita que el padding ensanche el input */
+}
+
+/* Efecto Focus en Cian igual al Login */
+.registro-box-extended input:focus {
+  border: 1px solid #00ffff;
+  box-shadow: 0 0 8px #00ffff80;
+}
+
+/* --- ETIQUETAS Y GRUPOS --- */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-left: 10px; /* Alineado con el inicio del texto del input */
+}
+
+/* --- ROL SELECTION --- */
+.role-section {
+  margin: 10px 0;
+}
+
+.role-title {
+  font-size: 14px;
+  display: block;
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+
+.role-options {
+  display: flex;
+  gap: 30px;
+  padding: 0 10px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: white;
+  font-size: 14px;
+}
+
+.radio-label input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #00ffff;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition: 0.3s;
+}
+
+.radio-label input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background-color: #00ffff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #00ffff;
+}
+
+/* --- ANIMACIÓN DE HABILIDADES --- */
+.skill-input-animate {
+  animation: fadeInDown 0.4s ease-out;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- BOTÓN REGISTRARSE (IGUAL AL LOGIN) --- */
+.primary-btn {
+  background: transparent;
+  border: 2px solid #00ffff;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.primary-btn:hover {
+  background-color: #00ffff;
+  color: black;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+}

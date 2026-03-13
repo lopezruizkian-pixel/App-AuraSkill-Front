@@ -1,0 +1,71 @@
+.historial-section {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* --- ENCABEZADOS ESTILO BOTÓN --- */
+.historial-table-header {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 1.5fr 1.5fr 1fr;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.header-item-neon {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid #00ffff;
+  color: #fff;
+  padding: 12px;
+  text-align: center;
+  border-radius: 12px;
+  font-weight: 500;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+}
+
+/* --- FILAS DE LA TABLA --- */
+.historial-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.historial-row-neon {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 1.5fr 1.5fr 1fr;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  border-radius: 50px; /* Redondeado cápsula como en la imagen */
+  padding: 10px 5px;
+  transition: all 0.3s ease;
+  min-height: 45px;
+}
+
+.historial-row-neon:hover {
+  background: rgba(0, 255, 255, 0.07);
+  border-color: #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+  transform: scale(1.01);
+}
+
+.historial-cell {
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  border-right: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.historial-cell:last-child {
+  border-right: none;
+}
+
+/* Responsividad */
+@media (max-width: 900px) {
+  .historial-table-header, .historial-row-neon {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .header-item-neon:nth-child(n+4), .historial-cell:nth-child(n+4) {
+    display: none;
+  }
+}

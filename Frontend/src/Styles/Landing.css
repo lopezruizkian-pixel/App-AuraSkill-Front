@@ -1,0 +1,122 @@
+/* Contenedor principal para ocupar toda la pantalla */
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* --- SECCIÓN CENTRAL (LOGO GIGANTE) --- */
+.hero-section {
+  flex: 1; /* Esto hace que ocupe el espacio sobrante y empuje lo demás hacia abajo */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-logo-text {
+  font-size: 5rem; /* Tamaño gigante */
+  font-weight: 900;
+  color: white;
+  margin: 0;
+  letter-spacing: 4px;
+}
+
+.hero-skill-text {
+  color: #00ffff;
+  text-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+}
+
+.hero-subtitle {
+  color: #ff00ff;
+  font-size: 1.5rem;
+  margin-top: 15px;
+  text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+/* --- CONTENEDOR INFERIOR (CARDS + BOTÓN) --- */
+.bottom-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 60px; /* Espacio desde el borde inferior de la pantalla */
+  gap: 40px; /* Distancia entre las cards y el botón */
+}
+
+.cards-section {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  padding: 0 20px;
+}
+
+.info-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(0, 255, 255, 0.25);
+  border-radius: 15px;
+  padding: 25px;
+  width: 260px;
+  backdrop-filter: blur(6px);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+  text-align: center;
+}
+
+.info-card h3 {
+  color: white;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.info-card p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.info-card:hover {
+  transform: translateY(-8px);
+  border: 2px solid #ff00ff;
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+}
+
+/* --- CONTENEDOR DEL BOTÓN --- */
+.landing-button-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.landing-button-container button, 
+.landing-button-container a {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 380px; 
+  height: 65px;
+  background: transparent;
+  border: 2px solid #00ffff;
+  color: white;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.landing-button-container button:hover {
+  background-color: #00ffff;
+  color: #140022; /* Texto oscuro para contrastar con el fondo brillante */
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
+  transform: scale(1.02);
+}
