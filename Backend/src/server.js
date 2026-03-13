@@ -1,13 +1,10 @@
 const app = require("./app")
-const http = require("http")
-const { Server } = require("socket.io")
+const connectDB = require("./config/db")
 
-const server = http.createServer(app)
+const PORT = 3000
 
-const io = new Server(server,{
-    cors:{origin:"*"}
-})
+connectDB()
 
-server.listen(3000,()=>{
-    console.log("Servidor corriendo en puerto 3000")
+app.listen(PORT, () => {
+  console.log(`AuraSkill API corriendo en puerto ${PORT}`)
 })
