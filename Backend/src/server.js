@@ -1,10 +1,27 @@
-const app = require("./app")
-const connectDB = require("./config/db")
+const http = require('http');
+const app = require('./app');
+const connectDB = require('./config/db');
+const { initializeSocket } = require('./config/socket');
 
-const PORT = 3000
+const PORT = process.env.PORT || 3000;
 
-connectDB()
+async function startServer() {
+  try {
+    await connectDB();
 
-app.listen(PORT, () => {
-  console.log(`AuraSkill API corriendo en puerto ${PORT}`)
-})
+    const server = http.createServer(app);
+    const io = initializeSocket(server);
+
+    app.set('io', io);
+
+    server.listen(PORT, () => {
+      console.log(`[Server] AuraSkill API corriendo en puerto ${PORT}`);
+      console.log(`[Server] WebSocket configurado en puerto ${PORT}`);
+    });
+  } catch (error) {
+    console.error('[Server] No se pudo iniciar el backend:', error.message);
+    process.exit(1);
+  }
+}
+
+startServer();

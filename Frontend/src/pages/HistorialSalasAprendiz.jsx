@@ -1,40 +1,125 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import HistorialRow from "../components/HistorialRow";
-import { Search, Bell, User } from "lucide-react"; 
+import { Search, Bell, User } from "lucide-react";
+import { getUserRoomHistory } from "../services/roomService";
 
-import "../Styles/Home.css"; 
-import "../Styles/BuscarHabilidades.css"; 
-import "../Styles/HistorialSalasAprendiz.css"; 
+import "../Styles/Home.css";
+import "../Styles/BuscarHabilidades.css";
+import "../Styles/HistorialSalasAprendiz.css";
+
+const formatDate = (value) => {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toLocaleDateString("es-MX", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
+
+const formatDuration = (seconds = 0) => {
+  const safeSeconds = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(safeSeconds / 3600);
+  const minutes = Math.floor((safeSeconds % 3600) / 60);
+  const remainingSeconds = safeSeconds % 60;
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m ${remainingSeconds}s`;
+  }
+
+  if (minutes > 0) {
+    return `${minutes}m ${remainingSeconds}s`;
+  }
+
+  return `${remainingSeconds}s`;
+};
 
 function HistorialSalasAprendiz() {
-  const [rol] = useState(localStorage.getItem("userRole") || "aprendiz");
+  const [rol] = useState(localStorage.getItem("userRole") || "alumno");
+  const [history, setHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  const historialData = [
-    { id: 1, fecha: "06 / 02 / 2026", habilidad: "Programación", mood: "Concentrado", mentor: "Juan Lopez", duracion: "1h 30m" },
-    ...Array(10).fill({ id: null, fecha: "", habilidad: "", mood: "", mentor: "", duracion: "" })
-  ];
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const data = await getUserRoomHistory();
+        setHistory(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("No se pudo cargar el historial:", error);
+        setHistory([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadHistory();
+  }, []);
+
+  const historialData = useMemo(() => {
+    if (isLoading) {
+      return [
+        {
+          id: "loading-row",
+          fecha: "Cargando...",
+          habilidad: "",
+          mood: "",
+          mentor: "",
+          duracion: "",
+        },
+      ];
+    }
+
+    if (history.length === 0) {
+      return [
+        {
+          id: "empty-row",
+          fecha: "Sin sesiones",
+          habilidad: "",
+          mood: "",
+          mentor: "",
+          duracion: "",
+        },
+      ];
+    }
+
+    return history.map((item) => ({
+      id: item.id,
+      fecha: formatDate(item.startedAt || item.fecha),
+      habilidad: item.habilidad || item.nombreSala || "",
+      mood: item.mood || "",
+      mentor: item.mentor || "",
+      duracion: formatDuration(item.duracionSegundos ?? item.duracion ?? 0),
+    }));
+  }, [history, isLoading]);
 
   return (
     <div className="home-container">
       <div className="home-main-layout">
         <Sidebar rol={rol} />
-        
+
         <main className="home-content">
           <div className="dashboard-header full-header">
             <div className="search-container-neon search-extended">
               <Search className="search-icon" size={20} />
               <input type="text" placeholder="Buscar habilidad..." className="search-input-neon" />
             </div>
-            
+
             <div className="header-actions-right">
               <div className="mood-indicator">Mood: Concentrado</div>
               <div className="icon-action bell-icon">
                 <Bell size={24} /><span className="notification-dot">1</span>
               </div>
-              <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{cursor: 'pointer'}}>
+              <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{ cursor: 'pointer' }}>
                 <User size={24} />
               </div>
             </div>
@@ -50,8 +135,8 @@ function HistorialSalasAprendiz() {
               <div className="header-item-neon">Duracion</div>
             </div>
             <div className="historial-list">
-              {historialData.map((item, index) => (
-                <HistorialRow key={item.id || index} {...item} />
+              {historialData.map((item) => (
+                <HistorialRow key={item.id} {...item} />
               ))}
             </div>
           </section>

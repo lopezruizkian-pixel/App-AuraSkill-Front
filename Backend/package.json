@@ -6,7 +6,12 @@
   "type": "commonjs",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "mock": "node mockServer.js",
+    "db:test": "node src/test-db.js",
+    "db:test:native": "node src/test-native.js",
+    "db:seed": "node src/seeds.js",
+    "db:test-room": "node src/test-room.js"
   },
   "keywords": [
     "auraskill",
@@ -24,6 +29,7 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.1.0",
     "mongoose": "^8.23.0",
     "socket.io": "^4.8.3"
   },
