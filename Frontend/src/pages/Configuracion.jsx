@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Sidebar from "../components/Sidebar";
 import ConfigCard from "../components/ConfigCard";
 import { Search, Bell, User, Headphones, Settings, Shield, Globe, Trash2, RefreshCw } from "lucide-react"; 
+import { ThemeContext } from "../context/ThemeContext";
 
 import "../Styles/Home.css"; 
 import "../Styles/BuscarHabilidades.css"; 
@@ -9,6 +10,7 @@ import "../Styles/Configuracion.css";
 
 function Configuracion() {
   const [rol] = useState(localStorage.getItem("userRole") || "aprendiz");
+  const { theme, setTheme } = useContext(ThemeContext);
 
   return (
     <div className="home-container">
@@ -63,10 +65,9 @@ function Configuracion() {
               <div className="neon-card config-list-container">
                 <div className="config-list-item">
                   <span>Modo de visualización</span>
-                  <select className="config-select">
-                    <option>Modo Oscuro</option>
-                    <option>Automático</option>
-                    <option>Modo Claro (Próximamente)</option>
+                  <select className="config-select" onChange={(e) => setTheme(e.target.value)} value={theme}>
+                    <option value="neon">Neón Cyberspace (Actual)</option>
+                    <option value="classic">Aura Clásico</option>
                   </select>
                 </div>
                 
@@ -74,6 +75,8 @@ function Configuracion() {
                   <span>Tema principal</span>
                   <select className="config-select">
                     <option>Neón Cyberspace (Actual)</option>
+                    <option>Aurora Neon</option>
+                    <option>Ocaso Digital</option>
                     <option>Aura Clásico</option>
                   </select>
                 </div>

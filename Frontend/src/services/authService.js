@@ -1,20 +1,26 @@
-import API_URL from "./api";
+import { httpClient } from './httpClient';
+import { validateEmail, validatePassword } from './validation';
+
+/**
+ * Servicio de Autenticación
+ * Maneja login, registro y gestión de tokens
+ */
 
 export const loginUser = async (correo, password) => {
+  // Validación de entrada
+  if (!validateEmail(correo)) {
+    throw new Error('Email inválido');
+  }
+
+  if (!password || password.length === 0) {
+    throw new Error('La contraseña es requerida');
+  }
+
   try {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ correo, password }),
+    const data = await httpClient.post('/auth/login', {
+      correo,
+      password,
     });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Error al iniciar sesión");
-    }
 
     return data;
   } catch (error) {
@@ -23,23 +29,53 @@ export const loginUser = async (correo, password) => {
 };
 
 export const registerUser = async (userData) => {
+  // Validación de entrada
+  const { nombre, correo, password } = userData;
+
+  if (!nombre || nombre.trim().length === 0) {
+    throw new Error('El nombre es requerido');
+  }
+
+  if (!validateEmail(correo)) {
+    throw new Error('Email inválido');
+  }
+
+  const passwordValidation = validatePassword(password);
+  if (!passwordValidation.valid) {
+    throw new Error(passwordValidation.error);
+  }
+
   try {
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
+    const data = await httpClient.post('/auth/register', {
+      nombre,
+      correo,
+      password,
     });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Error en registro");
-    }
 
     return data;
   } catch (error) {
     throw error;
   }
+};
+
+/**
+ * Valida si el token es válido
+ */
+export const validateToken = async () => {
+  try {
+    const data = await httpClient.get('/auth/validate');
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+/**
+ * Logout del usuario
+ */
+export const logoutUser = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('userId');
+  localStorage.removeItem('userName');
+  localStorage.removeItem('userRole');
 };

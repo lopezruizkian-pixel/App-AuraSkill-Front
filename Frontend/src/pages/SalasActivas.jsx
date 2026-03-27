@@ -11,9 +11,22 @@ import "../Styles/SalasActivas.css";
 function SalasActivas() {
   const [rol] = useState(localStorage.getItem("userRole") || "mentor");
   const navigate = useNavigate();
-  const [salaActiva, setSalaActiva] = useState({
-    id: 1, titulo: "Lógica de Programación en React", habilidad: "Programación", mood: " Concentrado", inscritos: 8, capacidad: 15
-  });
+  const [salaActiva, setSalaActiva] = useState(
+    localStorage.getItem("salaActiva") 
+      ? JSON.parse(localStorage.getItem("salaActiva"))
+      : null
+  );
+
+  const handleEnterRoom = () => {
+    if (salaActiva && salaActiva.id) {
+      navigate(`/sala/${salaActiva.id}`);
+    }
+  };
+
+  const handleCloseRoom = () => {
+    localStorage.removeItem("salaActiva");
+    setSalaActiva(null);
+  };
 
   return (
     <div className="home-container">
@@ -28,10 +41,10 @@ function SalasActivas() {
             </div>
             
             <div className="header-actions-right">
-              <div className="icon-action bell-icon">
+              <div className="icon-action bell-icon" title="Notificaciones">
                 <Bell size={24} /><span className="notification-dot">1</span>
               </div>
-              <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{cursor: 'pointer'}}>
+              <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{cursor: 'pointer'}} title="Perfil">
                 <User size={24} />
               </div>
             </div>
@@ -41,7 +54,7 @@ function SalasActivas() {
             <h2 className="welcome-title">Tu sala actual</h2>
             <div className="single-sala-container">
               {salaActiva ? (
-                <SalaActivaCard {...salaActiva} onClose={() => setSalaActiva(null)} />
+                <SalaActivaCard {...salaActiva} onClose={handleCloseRoom} onEnter={handleEnterRoom} />
               ) : (
                 <div className="neon-card empty-sala-state">
                   <VideoOff size={48} className="empty-icon" />

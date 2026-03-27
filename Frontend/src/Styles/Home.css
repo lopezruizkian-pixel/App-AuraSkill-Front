@@ -89,11 +89,11 @@
   width: fit-content;
 }
 
-
 .primary-btn-s:hover {
   background: #ff00ff;
   box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
 }
+
 .boton-estadoDispo {
   all: unset;
   background: transparent;

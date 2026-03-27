@@ -1,10 +1,11 @@
 const express = require("express")
-const { getRooms, getRoomById, createRoom, joinRoom, deleteRoom } = require("./room.controller")
+const { getRooms, getRoomById, getRoomHistory, createRoom, joinRoom, deleteRoom } = require("./room.controller")
 const { verifyToken } = require("../../middlewares/auth.middleware")
 
 const router = express.Router()
 
 router.get("/", getRooms)
+router.get("/history", verifyToken, getRoomHistory)
 router.get("/:id", getRoomById)
 router.post("/", verifyToken, createRoom)
 router.post("/:id/join", verifyToken, joinRoom)
