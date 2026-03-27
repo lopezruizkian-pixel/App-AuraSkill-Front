@@ -32,6 +32,14 @@ function Sidebar({ rol }) {
         {rol === "mentor" ? (
           <>
             <button 
+              className={`nav-item ${isActive('/buscar-habilidades') ? 'active' : ''}`}
+              onClick={() => navigate("/buscar-habilidades")}
+            >
+              <Search size={18} className="nav-icon" />
+              Skills
+            </button>
+
+            <button 
               className={`nav-item ${isActive('/crear-sala') ? 'active' : ''}`}
               onClick={() => navigate("/crear-sala")}
             >

@@ -11,7 +11,8 @@
     "db:test": "node src/test-db.js",
     "db:test:native": "node src/test-native.js",
     "db:seed": "node src/seeds.js",
-    "db:test-room": "node src/test-room.js"
+    "db:test-room": "node src/test-room.js",
+    "db:seed-skills": "node src/seed-skills.js"
   },
   "keywords": [
     "auraskill",
