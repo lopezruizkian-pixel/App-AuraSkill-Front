@@ -30,10 +30,14 @@ export const loginUser = async (correo, password) => {
 
 export const registerUser = async (userData) => {
   // Validación de entrada
-  const { nombre, correo, password } = userData;
+  const { nombre, usuario, correo, password, rol, habilidades } = userData;
 
   if (!nombre || nombre.trim().length === 0) {
     throw new Error('El nombre es requerido');
+  }
+
+  if (!usuario || usuario.trim().length === 0) {
+    throw new Error('El usuario es requerido');
   }
 
   if (!validateEmail(correo)) {
@@ -47,9 +51,12 @@ export const registerUser = async (userData) => {
 
   try {
     const data = await httpClient.post('/auth/register', {
-      nombre,
+      nombre: nombre.trim(),
+      usuario: usuario.trim(),
       correo,
       password,
+      rol,
+      habilidades,
     });
 
     return data;

@@ -7,6 +7,7 @@ import { registerUser } from "../services/authService";
 function Registro() {
   const [rol, setRol] = useState("alumno");
   const [nombre, setNombre] = useState("");
+  const [usuario, setUsuario] = useState("");
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -23,11 +24,17 @@ function Registro() {
 
       const userData = {
         nombre,
+        usuario,
         correo,
         password,
         confirmPassword,
         rol,
-        habilidades: rol === "mentor" ? habilidades : null
+        habilidades: rol === "mentor"
+          ? habilidades
+              .split(",")
+              .map((habilidad) => habilidad.trim())
+              .filter(Boolean)
+          : []
       };
 
       await registerUser(userData);
@@ -68,6 +75,16 @@ function Registro() {
               placeholder="Ingresa tu correo"
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Usuario</label>
+            <input
+              type="text"
+              placeholder="Elige un nombre de usuario"
+              value={usuario}
+              onChange={(e) => setUsuario(e.target.value)}
             />
           </div>
 

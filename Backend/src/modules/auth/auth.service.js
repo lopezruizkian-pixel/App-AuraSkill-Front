@@ -4,9 +4,10 @@ const { generateToken } = require("../../utils/jwt")
 
 const registerUser = async (data) => {
 
-  const { nombre, usuario, correo, password } = data
+  const { nombre, usuario, correo, password, rol, habilidades } = data
 
   const email = correo.toLowerCase()
+  const normalizedUser = usuario.trim().toLowerCase()
 
   const existingUser = await User.findOne({ correo: email })
 
@@ -14,13 +15,21 @@ const registerUser = async (data) => {
     throw new Error("El usuario ya existe")
   }
 
+  const existingUsername = await User.findOne({ usuario: normalizedUser })
+
+  if (existingUsername) {
+    throw new Error("El nombre de usuario ya existe")
+  }
+
   const hashedPassword = await hashPassword(password)
 
   const newUser = new User({
     nombre,
-    usuario,
+    usuario: normalizedUser,
     correo: email,
-    password: hashedPassword
+    password: hashedPassword,
+    rol: rol || "alumno",
+    habilidades: Array.isArray(habilidades) ? habilidades : [],
   })
 
   await newUser.save()
