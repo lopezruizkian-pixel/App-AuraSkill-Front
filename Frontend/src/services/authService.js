@@ -63,7 +63,7 @@ export const registerUser = async (userData) => {
  */
 export const validateToken = async () => {
   try {
-    const data = await httpClient.get('/auth/validate');
+    const data = await httpClient.get('/auth/profile');
     return data;
   } catch (error) {
     return null;
