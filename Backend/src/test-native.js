@@ -1,40 +1,59 @@
 require('dotenv').config();
 const { MongoClient } = require('mongodb');
+const { buildConnectionTargets } = require('./config/mongo-config');
 
-const uri =
-  process.env.MONGO_URI?.trim() ||
-  process.env.MONGO_URI_LOCAL?.trim() ||
-  'mongodb://localhost:27017/AuraSkill';
+async function testTarget(target) {
+  const client = new MongoClient(target.uri, {
+    serverSelectionTimeoutMS: 10000,
+  });
 
-const targetLabel = uri.startsWith('mongodb+srv://') ? 'Mongo Atlas' : 'MongoDB local';
+  console.log(`[Native Test] Probando conexion con driver nativo hacia ${target.label}...`);
+  console.log('[Native Test] Timeout: 10 segundos\n');
 
-const client = new MongoClient(uri, {
-  serverSelectionTimeoutMS: 10000,
-});
+  const startTime = Date.now();
 
-console.log(`[Native Test] Probando conexion con driver nativo hacia ${targetLabel}...`);
-console.log('[Native Test] Timeout: 10 segundos\n');
-
-const startTime = Date.now();
-
-client.connect()
-  .then(async () => {
+  try {
+    await client.connect();
     const duration = Date.now() - startTime;
     await client.db('admin').command({ ping: 1 });
     console.log(`[Native Test] Conexion exitosa en ${duration}ms`);
     console.log('[Native Test] Base de datos objetivo: AuraSkill');
-    await client.close();
-    process.exit(0);
-  })
-  .catch(async (err) => {
+  } catch (err) {
     const duration = Date.now() - startTime;
     console.error(`[Native Test] Error despues de ${duration}ms`);
     console.error('[Native Test] Codigo:', err.code);
     console.error('[Native Test] Mensaje:', err.message);
+    throw err;
+  } finally {
     try {
       await client.close();
     } catch (closeError) {
       // Ignorar errores secundarios de cierre
     }
-    process.exit(1);
-  });
+  }
+}
+
+async function run() {
+  const targets = buildConnectionTargets();
+
+  if (targets.length === 0) {
+    throw new Error('No se encontro ninguna URI de MongoDB. Configura MONGO_URI o MONGO_URI_LOCAL.');
+  }
+
+  let lastError = null;
+
+  for (const target of targets) {
+    try {
+      await testTarget(target);
+      return;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error('No fue posible conectar a MongoDB.');
+}
+
+run()
+  .then(() => process.exit(0))
+  .catch(() => process.exit(1));
