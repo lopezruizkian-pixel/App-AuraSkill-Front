@@ -1,0 +1,331 @@
+/* ═════════════════════════════════════════════════════════════════════ */
+/* ANIMACIONES */
+/* ═════════════════════════════════════════════════════════════════════ */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 30px rgba(0, 255, 255, 0.6); }
+  50% { text-shadow: 0 0 50px rgba(0, 255, 255, 0.9); }
+}
+
+/* ═════════════════════════════════════════════════════════════════════ */
+/* CONTENEDOR PRINCIPAL */
+/* ═════════════════════════════════════════════════════════════════════ */
+
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a000f 0%, #1a0030 100%);
+  overflow: hidden;
+}
+
+/* ═════════════════════════════════════════════════════════════════════ */
+/* SECCIÓN HERO */
+/* ═════════════════════════════════════════════════════════════════════ */
+
+.hero-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 20px;
+  padding: 40px 20px;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-logo-text {
+  font-size: 5.5rem;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: 3px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-transform: uppercase;
+}
+
+.hero-skill-text {
+  color: #00ffff;
+  display: inline-block;
+  animation: glowPulse 3s ease-in-out infinite;
+  font-weight: 900;
+}
+
+.hero-subtitle {
+  color: #ff00ff;
+  font-size: 1.4rem;
+  margin: 0;
+  text-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+/* ═════════════════════════════════════════════════════════════════════ */
+/* CONTENEDOR INFERIOR */
+/* ═════════════════════════════════════════════════════════════════════ */
+
+.bottom-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px 80px;
+  gap: 50px;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+/* ═════════════════════════════════════════════════════════════════════ */
+/* SECCIÓN DE CARDS */
+/* ═════════════════════════════════════════════════════════════════════ */
+
+.cards-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  max-width: 900px;
+  width: 100%;
+  padding: 0 20px;
+}
+
+.info-card {
+  background: rgba(20, 0, 34, 0.4);
+  border: 1.5px solid rgba(0, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 35px 30px;
+  backdrop-filter: blur(15px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    inset 0 1px 1px rgba(0, 255, 255, 0.05);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+
+.info-card:hover::before {
+  left: 100%;
+}
+
+.info-card h3 {
+  color: #ffffff;
+  margin: 0 0 16px 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease;
+}
+
+.info-card p {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.info-card:hover {
+  border-color: rgba(0, 255, 255, 0.6);
+  background: rgba(20, 0, 34, 0.6);
+  box-shadow: 
+    0 12px 40px rgba(0, 255, 255, 0.15),
+    inset 0 1px 1px rgba(0, 255, 255, 0.1);
+  transform: translateY(-6px);
+}
+
+.info-card:hover h3,
+.info-card:hover p {
+  color: rgba(0, 255, 255, 0.95);
+}
+
+/* ═════════════════════════════════════════════════════════════════════ */
+/* BOTÓN DE ACCIÓN */
+/* ═════════════════════════════════════════════════════════════════════ */
+
+.landing-button-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.landing-button-container button,
+.landing-button-container a {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 48px;
+  border: 1.5px solid rgba(0, 255, 255, 0.5);
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+  color: #00ffff;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  min-height: 50px;
+}
+
+.landing-button-container button:hover,
+.landing-button-container a:hover {
+  border-color: rgba(0, 255, 255, 0.8);
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.35);
+  transform: translateY(-3px);
+}
+
+.landing-button-container button:active,
+.landing-button-container a:active {
+  transform: translateY(-1px);
+}
+
+/* ═════════════════════════════════════════════════════════════════════ */
+/* RESPONSIVE */
+/* ═════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .hero-logo-text {
+    font-size: 4.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.2rem;
+  }
+
+  .cards-section {
+    gap: 24px;
+  }
+
+  .info-card {
+    padding: 28px 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-logo-text {
+    font-size: 3.5rem;
+    letter-spacing: 2px;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .bottom-content {
+    padding: 40px 20px 60px;
+    gap: 35px;
+  }
+
+  .cards-section {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 100%;
+  }
+
+  .info-card {
+    padding: 24px 20px;
+  }
+
+  .info-card h3 {
+    font-size: 1.15rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 30px 15px;
+  }
+
+  .hero-logo-text {
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem;
+    margin-top: 10px;
+  }
+
+  .bottom-content {
+    padding: 30px 15px 50px;
+    gap: 25px;
+  }
+
+  .cards-section {
+    gap: 16px;
+  }
+
+  .info-card {
+    padding: 20px 16px;
+  }
+
+  .info-card h3 {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .info-card p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .landing-button-container button,
+  .landing-button-container a {
+    padding: 14px 40px;
+    font-size: 14px;
+  }
+}
+  justify-content: center;
+  box-sizing: border-box;
+  width: 380px; 
+  height: 65px;
+  background: transparent;
+  border: 2px solid #00ffff;
+  color: white;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.landing-button-container button:hover {
+  background-color: #00ffff;
+  color: #140022; /* Texto oscuro para contrastar con el fondo brillante */
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
+  transform: scale(1.02);
+}
