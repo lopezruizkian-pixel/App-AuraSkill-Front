@@ -1,45 +1,42 @@
-import API_URL from "./api";
+import API_URL from "./api"
 
 export const loginUser = async (correo, password) => {
-  try {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ correo, password }),
-    });
 
-    const data = await response.json();
+  const response = await fetch(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      correo,
+      password
+    })
+  })
 
-    if (!response.ok) {
-      throw new Error(data.message || "Error al iniciar sesión");
-    }
+  const data = await response.json()
 
-    return data;
-  } catch (error) {
-    throw error;
+  if (!response.ok) {
+    throw new Error(data.error || "Error al iniciar sesión")
   }
-};
+
+  return data
+}
 
 export const registerUser = async (userData) => {
-  try {
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    });
 
-    const data = await response.json();
+  const response = await fetch(`${API_URL}/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(userData)
+  })
 
-    if (!response.ok) {
-      throw new Error(data.message || "Error en registro");
-    }
+  const data = await response.json()
 
-    return data;
-  } catch (error) {
-    throw error;
+  if (!response.ok) {
+    throw new Error(data.error || "Error en registro")
   }
-};
+
+  return data
+}

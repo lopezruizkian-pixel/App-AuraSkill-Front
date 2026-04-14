@@ -18,11 +18,12 @@
   animation: float 4s ease-in-out infinite;
 }
 
-/* --- ESTILO DE LOS INPUTS (IGUAL AL LOGIN) --- */
+/* --- ESTILO DE LOS INPUTS UNIFICADO --- */
 .registro-box-extended input[type="text"],
-.registro-box-extended input[type="password"] {
+.registro-box-extended input[type="password"],
+.registro-box-extended input[type="email"] { /* CAMBIO AQUÍ: Añadido email */
   padding: 12px 15px;
-  border-radius: 25px; /* Estilo píldora como el login */
+  border-radius: 25px; 
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.08);
   color: white;
@@ -30,10 +31,10 @@
   transition: all 0.3s ease;
   backdrop-filter: blur(4px);
   width: 100%;
-  box-sizing: border-box; /* Evita que el padding ensanche el input */
+  box-sizing: border-box;
 }
 
-/* Efecto Focus en Cian igual al Login */
+/* Efecto Focus en Cian */
 .registro-box-extended input:focus {
   border: 1px solid #00ffff;
   box-shadow: 0 0 8px #00ffff80;
@@ -49,7 +50,7 @@
 .input-group label {
   font-size: 14px;
   color: rgba(255, 255, 255, 0.9);
-  margin-left: 10px; /* Alineado con el inicio del texto del input */
+  margin-left: 10px;
 }
 
 /* --- ROL SELECTION --- */
@@ -62,6 +63,7 @@
   display: block;
   margin-bottom: 10px;
   margin-left: 10px;
+  color: white;
 }
 
 .role-options {
@@ -113,7 +115,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- BOTÓN REGISTRARSE (IGUAL AL LOGIN) --- */
+/* --- BOTÓN REGISTRARSE --- */
 .primary-btn {
   background: transparent;
   border: 2px solid #00ffff;

@@ -6,7 +6,7 @@ const register = async (req, res) => {
 
     const user = await registerUser(req.body)
 
-    res.json({
+    res.status(201).json({
       message: "Usuario registrado",
       user
     })

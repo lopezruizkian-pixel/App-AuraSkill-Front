@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Type, Wrench, Smile, Users, AlignLeft } from "lucide-react";
 
 function FormCrearSala() {
@@ -6,14 +6,26 @@ function FormCrearSala() {
     e.preventDefault();
     alert("¡Sala creada con éxito!");
   };
+  const [habilidad, setHabilidad] = useState("");
+  const [mood, setMood] = useState("");
+
+  const handleHabilidadChange = (e) => {
+    setHabilidad(e.target.value);
+  };
+
+  const handleMoodChange = (e) => {
+    setMood(e.target.value);
+  };
 
   return (
     <div className="neon-card form-crear-sala-container">
       <form onSubmit={handleSubmit} className="formulario-sala">
         
         <div className="input-group-neon full-width">
-          <label>Nombre de la sala</label>
+          <label htmlFor="nombreSala">Nombre de la sala</label>
           <div className="input-wrapper">
+
+
             <Type className="input-icon" size={18} />
             <input type="text" placeholder="Ej. Lógica de Programación en React" required />
           </div>
@@ -21,20 +33,18 @@ function FormCrearSala() {
 
         <div className="form-row">
           <div className="input-group-neon">
-            <label>Habilidad a enseñar</label>
+            <label htmlFor="habilidad">Habilidad a enseñar</label>
             <div className="input-wrapper">
               <Wrench className="input-icon" size={18} />
-              <select required>
+              <select id="habilidad" value={habilidad} onChange={handleHabilidadChange} required>
                 <option value="" disabled selected>Selecciona una habilidad</option>
                 <option value="programacion">Programación</option>
                 <option value="diseno">Diseño UI/UX</option>
                 <option value="idiomas">Idiomas</option>
                 <option value="matematicas">Matemáticas</option>
               </select>
-            </div>
           </div>
 
-          <div className="input-group-neon">
             <label>Mood de la sesión</label>
             <div className="input-wrapper">
               <Smile className="input-icon" size={18} />
@@ -46,12 +56,13 @@ function FormCrearSala() {
                 <option value="relajado">☕ Relajado</option>
               </select>
             </div>
+
           </div>
         </div>
 
         <div className="form-row">
           <div className="input-group-neon">
-            <label>Límite de estudiantes</label>
+            <label htmlFor="limiteEstudiantes">Límite de estudiantes</label>
             <div className="input-wrapper">
               <Users className="input-icon" size={18} />
               <input type="number" min="1" max="50" placeholder="Ej. 10" required />
@@ -76,5 +87,6 @@ function FormCrearSala() {
     </div>
   );
 }
+
 
 export default FormCrearSala;

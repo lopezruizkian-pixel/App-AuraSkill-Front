@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import SalaActivaCard from "../components/SalaActivaCard";
@@ -6,14 +6,31 @@ import { Bell, User, Circle, VideoOff } from "lucide-react";
 
 import "../Styles/Home.css"; 
 import "../Styles/BuscarHabilidades.css"; 
-import "../Styles/SalasActivas.css";
+import "../Styles/SalasActivas.css"; 
 
 function SalasActivas() {
   const [rol] = useState(localStorage.getItem("userRole") || "mentor");
-  const navigate = useNavigate();
-  const [salaActiva, setSalaActiva] = useState({
-    id: 1, titulo: "Lógica de Programación en React", habilidad: "Programación", mood: " Concentrado", inscritos: 8, capacidad: 15
-  });
+    const navigate = useNavigate();
+    const [salaActiva, setSalaActiva] = useState(null); 
+
+  useEffect(() => {
+    // Fetch active room data from API
+    const fetchActiveRoom = async () => {
+      try {
+        const response = await fetch("/api/active-room"); // Replace with your actual API endpoint
+        const data = await response.json();
+        setSalaActiva(data);
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      } catch (error) {
+        setSalaActiva(null)
+        console.error("Error fetching active room:", error);
+      }
+    };
+
+    fetchActiveRoom();
+  }, []);
 
   return (
     <div className="home-container">
@@ -44,7 +61,7 @@ function SalasActivas() {
                 <SalaActivaCard {...salaActiva} onClose={() => setSalaActiva(null)} />
               ) : (
                 <div className="neon-card empty-sala-state">
-                  <VideoOff size={48} className="empty-icon" />
+                    <VideoOff size={48} className="empty-icon" />
                   <h3>No tienes ninguna sala activa</h3>
                 </div>
               )}
@@ -55,5 +72,6 @@ function SalasActivas() {
     </div>
   );
 }
+
 
 export default SalasActivas;
