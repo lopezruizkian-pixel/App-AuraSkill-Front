@@ -22,7 +22,7 @@ function Landing() {
           </div>
 
           <div className="info-card">
-            <h3>¿Qué es AuraSkill?</h3>
+            <h3>¿Qué es AURA SKILL?</h3>
             <p>
               Es una app web donde se crean salas interactivas
               para compartir conocimiento dinámicamente.

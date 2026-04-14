@@ -1,83 +1,188 @@
-.configuracion-section {
-  width: 100%;
-  max-width: 900px;
-  margin-top: 10px;
+/* ═════════════════════════════════════════════════════════════════════ */
+/* ANIMACIONES */
+/* ═════════════════════════════════════════════════════════════════════ */
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-/* --- TARJETAS SUPERIORES --- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ═════════════════════════════════════════════════════════════════════ */
+/* SECCIÓN PRINCIPAL */
+/* ═════════════════════════════════════════════════════════════════════ */
+
+.configuracion-section {
+  width: 100%;
+  max-width: 1000px;
+  margin-top: 20px;
+  animation: slideInLeft 0.6s ease-out;
+}
+
+/* ═════════════════════════════════════════════════════════════════════ */
+/* GRID DE TARJETAS SUPERIORES */
+/* ═════════════════════════════════════════════════════════════════════ */
+
 .config-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 50px;
 }
 
 .config-card {
-  padding: 20px;
+  padding: 32px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 18px;
+  height: 100%;
+  justify-content: space-between;
+  background: rgba(20, 0, 34, 0.4);
+  border: 1.5px solid rgba(0, 255, 255, 0.2);
+  border-radius: 16px;
+  backdrop-filter: blur(15px);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    inset 0 1px 1px rgba(0, 255, 255, 0.05);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.config-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+
+.config-card:hover::before {
+  left: 100%;
+}
+
+.config-card:hover {
+  border-color: rgba(0, 255, 255, 0.6);
+  background: rgba(20, 0, 34, 0.6);
+  box-shadow: 
+    0 12px 40px rgba(0, 255, 255, 0.15),
+    inset 0 1px 1px rgba(0, 255, 255, 0.1);
+  transform: translateY(-6px);
 }
 
 .config-card-header {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 16px;
 }
 
 .config-icon-container {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 10px;
-  border-radius: 50%;
+  background: rgba(0, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #00ffff;
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.config-card:hover .config-icon-container {
+  background: rgba(0, 255, 255, 0.2);
+  border-color: rgba(0, 255, 255, 0.4);
+  box-shadow: 0 0 16px rgba(0, 255, 255, 0.2);
 }
 
 .config-titulo {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: white;
   margin: 0;
+  font-weight: 700;
 }
 
 .config-estado {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
   margin: 0;
 }
 
-/* Botón secundario Magenta */
+/* ═════════════════════════════════════════════════════════════════════ */
+/* BOTONES */
+/* ═════════════════════════════════════════════════════════════════════ */
+
 .secondary-btn-neon {
   all: unset;
-  border: 1px solid #ff00ff;
-  color: white;
-  padding: 8px 20px;
-  border-radius: 8px;
+  border: 1.5px solid rgba(255, 0, 255, 0.5);
+  color: #ff00ff;
+  padding: 12px 24px;
+  border-radius: 10px;
   font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
   text-align: center;
+  margin-top: auto;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .secondary-btn-neon:hover {
-  background: rgba(255, 0, 255, 0.1);
-  box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+  background: rgba(255, 0, 255, 0.15);
+  border-color: rgba(255, 0, 255, 0.8);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+  transform: translateY(-2px);
 }
 
-/* --- LISTAS DE PERSONALIZACIÓN --- */
+/* ═════════════════════════════════════════════════════════════════════ */
+/* SECCIONES DE LISTA */
+/* ═════════════════════════════════════════════════════════════════════ */
+
 .config-list-section {
-  margin-bottom: 35px;
+  margin-bottom: 40px;
+  animation: fadeIn 0.6s ease-out;
 }
 
 .section-subtitle {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: #00ffff;
   font-size: 1.2rem;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.section-icon {
+  color: #ff00ff;
+}
+
+.neon-card {
+  background: rgba(20, 0, 34, 0.4);
+  border: 1.5px solid rgba(0, 255, 255, 0.2);
+  border-radius: 16px;
+  backdrop-filter: blur(15px);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    inset 0 1px 1px rgba(0, 255, 255, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .config-list-container {
@@ -89,69 +194,215 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 25px;
+  padding: 22px 28px;
   border-bottom: 1px solid rgba(0, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.config-list-item:hover {
+  background: rgba(0, 255, 255, 0.05);
 }
 
 .config-list-item:last-child {
   border-bottom: none;
 }
 
-.config-select {
-  all: unset;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  color: white;
-  padding: 8px 15px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  appearance: auto;
-  min-width: 180px;
+.inline-icon {
+  margin-right: 6px;
+  color: #00ffff;
 }
 
-/* --- BOTÓN DE ELIMINAR (ESTILO PELIGRO NEÓN) --- */
-.danger-btn-neon-s {
+/* ═════════════════════════════════════════════════════════════════════ */
+/* SELECT DROPDOWN */
+/* ═════════════════════════════════════════════════════════════════════ */
+
+.config-select {
   all: unset;
-  background: rgba(255, 0, 85, 0.05);
-  border: 1px solid #ff0055;
-  color: #ff0055;
-  padding: 8px 20px;
-  border-radius: 8px;
+  background: rgba(0, 255, 255, 0.08);
+  border: 1.5px solid rgba(0, 255, 255, 0.3);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  cursor: pointer;
+  appearance: auto;
+  min-width: 200px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+}
+
+.config-select:hover {
+  border-color: rgba(0, 255, 255, 0.6);
+  background: rgba(0, 255, 255, 0.12);
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.1);
+}
+
+.config-select:focus {
+  outline: none;
+  border-color: rgba(0, 255, 255, 0.8);
+  box-shadow: 0 0 16px rgba(0, 255, 255, 0.15);
+}
+
+.config-select option {
+  background: #1a0030;
+  color: white;
+  padding: 8px;
+}
+
+/* ═════════════════════════════════════════════════════════════════════ */
+/* BOTONES DE ACCIÓN */
+/* ═════════════════════════════════════════════════════════════════════ */
+
+.primary-btn-neon-s {
+  all: unset;
+  border: 1.5px solid rgba(0, 255, 255, 0.5);
+  color: #00ffff;
+  padding: 10px 24px;
+  border-radius: 10px;
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.primary-btn-neon-s:hover {
+  border-color: rgba(0, 255, 255, 0.8);
+  background: rgba(0, 255, 255, 0.15);
+  box-shadow: 0 0 18px rgba(0, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.primary-btn-neon-s:active {
+  transform: translateY(0px);
+}
+
+.danger-btn-neon-s {
+  all: unset;
+  background: rgba(255, 0, 85, 0.08);
+  border: 1.5px solid #ff0055;
+  color: #ff0055;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 .danger-btn-neon-s:hover {
   background: #ff0055;
   color: white;
-  box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+  border-color: #ff0055;
+  box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+  transform: translateY(-2px);
 }
 
-/* Estilo para el botón de actualizar (Cian) */
-.primary-btn-neon-s {
-  all: unset;
-  border: 1px solid #00ffff;
-  color: #00ffff;
-  padding: 8px 20px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.danger-btn-neon-s:active {
+  transform: translateY(0px);
 }
 
-.primary-btn-neon-s:hover {
-  background: rgba(0, 255, 255, 0.1);
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+.danger-zone {
+  background: rgba(255, 0, 85, 0.05);
 }
 
 .danger-zone span {
   color: #ff0055;
-  font-weight: 500;
+  font-weight: 600;
+}
+
+/* ═════════════════════════════════════════════════════════════════════ */
+/* RESPONSIVE */
+/* ═════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .config-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .config-card {
+    padding: 28px;
+  }
+
+  .config-select {
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+  .configuracion-section {
+    max-width: 100%;
+    padding: 0 15px;
+  }
+
+  .config-grid {
+    gap: 18px;
+    margin-bottom: 35px;
+  }
+
+  .config-card {
+    padding: 24px;
+  }
+
+  .config-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 18px 20px;
+  }
+
+  .config-select {
+    min-width: 100%;
+  }
+
+  .section-subtitle {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .config-card {
+    padding: 20px;
+  }
+
+  .config-titulo {
+    font-size: 1.05rem;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+  }
+
+  .config-list-item {
+    padding: 16px 18px;
+  }
+
+  .config-select {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+
+  .primary-btn-neon-s,
+  .danger-btn-neon-s {
+    font-size: 0.8rem;
+    padding: 8px 16px;
+  }
+
+  .secondary-btn-neon {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
 }

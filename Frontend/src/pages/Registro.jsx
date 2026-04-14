@@ -11,6 +11,7 @@ function Registro() {
   const [usuario, setUsuario] = useState("");
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [habilidades, setHabilidades] = useState("");
 
   const navigate = useNavigate();
@@ -23,14 +24,24 @@ function Registro() {
     }
 
     try {
+      if (password !== confirmPassword) {
+        alert("Las contraseñas no coinciden");
+        return;
+      }
 
       const userData = {
         nombre,
         usuario,
         correo,
         password,
+        confirmPassword,
         rol,
-        habilidades: rol === "mentor" ? habilidades.split(",") : []
+        habilidades: rol === "mentor"
+          ? habilidades
+              .split(",")
+              .map((habilidad) => habilidad.trim())
+              .filter(Boolean)
+          : []
       };
 
       await registerUser(userData);
@@ -88,12 +99,32 @@ function Registro() {
           </div>
 
           <div className="input-group">
+            <label>Usuario</label>
+            <input
+              type="text"
+              placeholder="Elige un nombre de usuario"
+              value={usuario}
+              onChange={(e) => setUsuario(e.target.value)}
+            />
+          </div>
+
+          <div className="input-group">
             <label>Contraseña</label>
             <input
               type="password"
               placeholder="Crea una contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Confirmar Contraseña</label>
+            <input
+              type="password"
+              placeholder="Confirma tu contraseña"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
 

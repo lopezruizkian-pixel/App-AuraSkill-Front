@@ -6,11 +6,8 @@ const registerUser = async (data) => {
 
   const { nombre, usuario, correo, password, rol, habilidades } = data
 
-  if (!nombre || !usuario || !correo || !password) {
-    throw new Error("Todos los campos son obligatorios")
-  }
-
   const email = correo.toLowerCase()
+  const normalizedUser = usuario.trim().toLowerCase()
 
   const existingUser = await User.findOne({
     $or: [
@@ -23,17 +20,21 @@ const registerUser = async (data) => {
     throw new Error("El usuario o correo ya está registrado")
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10)
+  const existingUsername = await User.findOne({ usuario: normalizedUser })
+
+  if (existingUsername) {
+    throw new Error("El nombre de usuario ya existe")
+  }
+
+  const hashedPassword = await hashPassword(password)
 
   const newUser = new User({
     nombre,
-    usuario,
+    usuario: normalizedUser,
     correo: email,
     password: hashedPassword,
     rol: rol || "alumno",
-    habilidades: habilidades || [],
-    intereses: [],
-    mood_actual: "neutral"
+    habilidades: Array.isArray(habilidades) ? habilidades : [],
   })
 
   await newUser.save()
