@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import SalaActivaCard from "../components/SalaActivaCard";
@@ -6,7 +6,7 @@ import { Bell, User, Circle, VideoOff } from "lucide-react";
 
 import "../Styles/Home.css"; 
 import "../Styles/BuscarHabilidades.css"; 
-import "../Styles/SalasActivas.css";
+import "../Styles/SalasActivas.css"; 
 
 function SalasActivas() {
   const [rol] = useState(localStorage.getItem("userRole") || "mentor");
@@ -57,7 +57,7 @@ function SalasActivas() {
                 <SalaActivaCard {...salaActiva} onClose={handleCloseRoom} onEnter={handleEnterRoom} />
               ) : (
                 <div className="neon-card empty-sala-state">
-                  <VideoOff size={48} className="empty-icon" />
+                    <VideoOff size={48} className="empty-icon" />
                   <h3>No tienes ninguna sala activa</h3>
                 </div>
               )}

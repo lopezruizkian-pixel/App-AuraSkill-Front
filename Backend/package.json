@@ -11,7 +11,8 @@
     "db:test": "node src/test-db.js",
     "db:test:native": "node src/test-native.js",
     "db:seed": "node src/seeds.js",
-    "db:test-room": "node src/test-room.js"
+    "db:test-room": "node src/test-room.js",
+    "db:seed-skills": "node src/seed-skills.js"
   },
   "keywords": [
     "auraskill",
@@ -25,6 +26,7 @@
   "dependencies": {
     "axios": "^1.13.6",
     "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",

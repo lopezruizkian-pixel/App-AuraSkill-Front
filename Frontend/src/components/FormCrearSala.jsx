@@ -1,9 +1,13 @@
 import React, { useState } from "react";
+<<<<<<< HEAD
+import { Type, Wrench, Smile, Users, AlignLeft } from "lucide-react";
+=======
 import { useNavigate } from "react-router-dom";
 import { Type, Wrench, Smile, Users, AlignLeft, Loader } from "lucide-react";
 import { createRoom } from "../services/roomService";
 import { useToast } from "../hooks/useToast";
 import { validateForm, validators } from "../services/validation";
+>>>>>>> origin/laura-mongodb
 
 function FormCrearSala() {
   const navigate = useNavigate();
@@ -31,6 +35,16 @@ function FormCrearSala() {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
+  };
+  const [habilidad, setHabilidad] = useState("");
+  const [mood, setMood] = useState("");
+
+  const handleHabilidadChange = (e) => {
+    setHabilidad(e.target.value);
+  };
+
+  const handleMoodChange = (e) => {
+    setMood(e.target.value);
   };
 
   const handleSubmit = async (e) => {
@@ -102,8 +116,10 @@ function FormCrearSala() {
       <form onSubmit={handleSubmit} className="formulario-sala">
         
         <div className="input-group-neon full-width">
-          <label>Nombre de la sala</label>
+          <label htmlFor="nombreSala">Nombre de la sala</label>
           <div className="input-wrapper">
+
+
             <Type className="input-icon" size={18} />
             <input 
               type="text" 
@@ -120,9 +136,18 @@ function FormCrearSala() {
 
         <div className="form-row">
           <div className="input-group-neon">
-            <label>Habilidad a enseñar</label>
+            <label htmlFor="habilidad">Habilidad a enseñar</label>
             <div className="input-wrapper">
               <Wrench className="input-icon" size={18} />
+<<<<<<< HEAD
+              <select id="habilidad" value={habilidad} onChange={handleHabilidadChange} required>
+                <option value="" disabled selected>Selecciona una habilidad</option>
+                <option value="programacion">Programación</option>
+                <option value="diseno">Diseño UI/UX</option>
+                <option value="idiomas">Idiomas</option>
+                <option value="matematicas">Matemáticas</option>
+              </select>
+=======
               <select 
                 name="habilidad"
                 value={formData.habilidad}
@@ -139,9 +164,9 @@ function FormCrearSala() {
               </select>
             </div>
             {errors.habilidad && <span className="error-text">{errors.habilidad}</span>}
+>>>>>>> origin/laura-mongodb
           </div>
 
-          <div className="input-group-neon">
             <label>Mood de la sesión</label>
             <div className="input-wrapper">
               <Smile className="input-icon" size={18} />
@@ -160,13 +185,17 @@ function FormCrearSala() {
                 ))}
               </select>
             </div>
+<<<<<<< HEAD
+
+=======
             {errors.mood && <span className="error-text">{errors.mood}</span>}
+>>>>>>> origin/laura-mongodb
           </div>
         </div>
 
         <div className="form-row">
           <div className="input-group-neon">
-            <label>Límite de estudiantes</label>
+            <label htmlFor="limiteEstudiantes">Límite de estudiantes</label>
             <div className="input-wrapper">
               <Users className="input-icon" size={18} />
               <input 
@@ -227,4 +256,9 @@ function FormCrearSala() {
   );
 }
 
+<<<<<<< HEAD
+
 export default FormCrearSala;
+=======
+export default FormCrearSala;
+>>>>>>> origin/laura-mongodb
