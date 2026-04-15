@@ -37,7 +37,7 @@ export const fetchRoom = async (roomId) => {
  */
 export const fetchActiveRooms = async () => {
   try {
-    const response = await httpClient.get('/rooms/active');
+    const response = await httpClient.get('/rooms');
     return Array.isArray(response) ? response.map(normalizeRoom) : [];
   } catch (error) {
     console.error('Error al obtener salas activas:', error);
