@@ -1,19 +1,17 @@
-const { getHistorialUsuario, getSesionDeSala } = require('./session.service');
+const { getHistorialUsuario, getSesionActiva } = require('./session.service');
 
-const getHistorial = (req, res) => {
+const getHistorial = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const historial = getHistorialUsuario(userId);
+    const historial = await getHistorialUsuario(req.user.id);
     res.json(historial);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-const getSesion = (req, res) => {
+const getSesion = async (req, res) => {
   try {
-    const { roomId } = req.params;
-    const sesion = getSesionDeSala(roomId);
+    const sesion = await getSesionActiva(req.params.roomId);
     if (!sesion) return res.status(404).json({ error: 'Sesión no encontrada' });
     res.json(sesion);
   } catch (error) {
