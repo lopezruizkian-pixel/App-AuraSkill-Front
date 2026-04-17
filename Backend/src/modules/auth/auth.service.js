@@ -1,77 +1,41 @@
-const User = require("./auth.model")
-const { hashPassword, comparePassword } = require("../../utils/helpers")
-const { generateToken } = require("../../utils/jwt")
+const { pool } = require('../../config/db');
+const { hashPassword, comparePassword } = require('../../utils/helpers');
+const { generateToken } = require('../../utils/jwt');
 
 const registerUser = async (data) => {
+  const { nombre, usuario, correo, password, rol, habilidades } = data;
+  const email = correo.toLowerCase();
+  const normalizedUser = usuario.trim().toLowerCase();
 
-  const { nombre, usuario, correo, password, rol, habilidades } = data
+  const existing = await pool.query('SELECT id FROM users WHERE correo = $1 OR usuario = $2', [email, normalizedUser]);
+  if (existing.rows.length > 0) throw new Error('El usuario o correo ya existe');
 
-  const email = correo.toLowerCase()
-  const normalizedUser = usuario.trim().toLowerCase()
+  const hashedPassword = await hashPassword(password);
 
-  const existingUser = await User.findOne({ correo: email })
+  const result = await pool.query(
+    `INSERT INTO users (nombre, usuario, correo, password, rol, habilidades)
+     VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, nombre, usuario, correo, rol, habilidades, mood_actual, created_at`,
+    [nombre, normalizedUser, email, hashedPassword, rol || 'alumno', habilidades || []]
+  );
 
-  if (existingUser) {
-    throw new Error("El usuario ya existe")
-  }
-
-  const existingUsername = await User.findOne({ usuario: normalizedUser })
-
-  if (existingUsername) {
-    throw new Error("El nombre de usuario ya existe")
-  }
-
-  const hashedPassword = await hashPassword(password)
-
-  const newUser = new User({
-    nombre,
-    usuario: normalizedUser,
-    correo: email,
-    password: hashedPassword,
-    rol: rol || "alumno",
-    habilidades: Array.isArray(habilidades) ? habilidades : [],
-  })
-
-  await newUser.save()
-
-  const userObject = newUser.toObject()
-
-  delete userObject.password
-
-  return userObject
-}
+  return result.rows[0];
+};
 
 const loginUser = async (data) => {
+  const { correo, password } = data;
+  const email = correo.toLowerCase();
 
-  const { correo, password } = data
+  const result = await pool.query('SELECT * FROM users WHERE correo = $1', [email]);
+  if (result.rows.length === 0) throw new Error('Usuario no encontrado');
 
-  const email = correo.toLowerCase()
+  const user = result.rows[0];
+  const validPassword = await comparePassword(password, user.password);
+  if (!validPassword) throw new Error('Contraseña incorrecta');
 
-  const user = await User.findOne({ correo: email })
+  const token = generateToken(user);
+  const { password: _, ...userWithoutPassword } = user;
 
-  if (!user) {
-    throw new Error("Usuario no encontrado")
-  }
+  return { token, user: userWithoutPassword };
+};
 
-  const validPassword = await comparePassword(password, user.password)
-
-  if (!validPassword) {
-    throw new Error("Contraseña incorrecta")
-  }
-
-  const token = generateToken(user)
-
-  const userObject = user.toObject()
-
-  delete userObject.password
-
-  return {
-    token,
-    user: userObject
-  }
-}
-
-module.exports = {
-  registerUser,
-  loginUser
-}
+module.exports = { registerUser, loginUser };
