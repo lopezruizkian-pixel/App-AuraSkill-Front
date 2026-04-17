@@ -5,6 +5,7 @@ import "../Styles/Registro.css";
 import { registerUser } from "../services/authService";
 
 function Registro() {
+
   const [rol, setRol] = useState("alumno");
   const [nombre, setNombre] = useState("");
   const [usuario, setUsuario] = useState("");
@@ -16,6 +17,12 @@ function Registro() {
   const navigate = useNavigate();
 
   const handleRegistro = async () => {
+
+    if (!nombre || !usuario || !correo || !password) {
+      alert("Todos los campos son obligatorios");
+      return;
+    }
+
     try {
       if (password !== confirmPassword) {
         alert("Las contraseñas no coinciden");
@@ -44,8 +51,11 @@ function Registro() {
       navigate("/login");
 
     } catch (error) {
+
       alert(error.message);
+
     }
+
   };
 
   return (
@@ -65,6 +75,16 @@ function Registro() {
               placeholder="Ingresa tu nombre"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Usuario</label>
+            <input
+              type="text"
+              placeholder="Ingresa tu usuario"
+              value={usuario}
+              onChange={(e) => setUsuario(e.target.value)}
             />
           </div>
 

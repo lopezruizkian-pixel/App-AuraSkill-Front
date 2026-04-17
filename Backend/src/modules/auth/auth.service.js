@@ -1,41 +1,93 @@
-const { pool } = require('../../config/db');
-const { hashPassword, comparePassword } = require('../../utils/helpers');
-const { generateToken } = require('../../utils/jwt');
+const User = require("../users/user.model")
+const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
 
 const registerUser = async (data) => {
-  const { nombre, usuario, correo, password, rol, habilidades } = data;
-  const email = correo.toLowerCase();
-  const normalizedUser = usuario.trim().toLowerCase();
 
-  const existing = await pool.query('SELECT id FROM users WHERE correo = $1 OR usuario = $2', [email, normalizedUser]);
-  if (existing.rows.length > 0) throw new Error('El usuario o correo ya existe');
+  const { nombre, usuario, correo, password, rol, habilidades } = data
 
-  const hashedPassword = await hashPassword(password);
+  const email = correo.toLowerCase()
+  const normalizedUser = usuario.trim().toLowerCase()
 
-  const result = await pool.query(
-    `INSERT INTO users (nombre, usuario, correo, password, rol, habilidades)
-     VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, nombre, usuario, correo, rol, habilidades, mood_actual, created_at`,
-    [nombre, normalizedUser, email, hashedPassword, rol || 'alumno', habilidades || []]
-  );
+  const existingUser = await User.findOne({
+    $or: [
+      { correo: email },
+      { usuario: usuario }
+    ]
+  })
 
-  return result.rows[0];
-};
+  if (existingUser) {
+    throw new Error("El usuario o correo ya está registrado")
+  }
+
+  const existingUsername = await User.findOne({ usuario: normalizedUser })
+
+  if (existingUsername) {
+    throw new Error("El nombre de usuario ya existe")
+  }
+
+  const hashedPassword = await hashPassword(password)
+
+  const newUser = new User({
+    nombre,
+    usuario: normalizedUser,
+    correo: email,
+    password: hashedPassword,
+    rol: rol || "alumno",
+    habilidades: Array.isArray(habilidades) ? habilidades : [],
+  })
+
+  await newUser.save()
+
+  const userObject = newUser.toObject()
+  delete userObject.password
+
+  return userObject
+}
 
 const loginUser = async (data) => {
-  const { correo, password } = data;
-  const email = correo.toLowerCase();
 
-  const result = await pool.query('SELECT * FROM users WHERE correo = $1', [email]);
-  if (result.rows.length === 0) throw new Error('Usuario no encontrado');
+  const { correo, password } = data
 
-  const user = result.rows[0];
-  const validPassword = await comparePassword(password, user.password);
-  if (!validPassword) throw new Error('Contraseña incorrecta');
+  if (!correo || !password) {
+    throw new Error("Correo y contraseña son obligatorios")
+  }
 
-  const token = generateToken(user);
-  const { password: _, ...userWithoutPassword } = user;
+  const email = correo.toLowerCase()
 
-  return { token, user: userWithoutPassword };
-};
+  const user = await User.findOne({ correo: email })
 
-module.exports = { registerUser, loginUser };
+  if (!user) {
+    throw new Error("Usuario no encontrado")
+  }
+
+  const validPassword = await bcrypt.compare(password, user.password)
+
+  if (!validPassword) {
+    throw new Error("Contraseña incorrecta")
+  }
+
+  const token = jwt.sign(
+    {
+      id: user._id,
+      rol: user.rol
+    },
+    process.env.JWT_SECRET || "auraskill_secret",
+    {
+      expiresIn: "7d"
+    }
+  )
+
+  const userObject = user.toObject()
+  delete userObject.password
+
+  return {
+    token,
+    user: userObject
+  }
+}
+
+module.exports = {
+  registerUser,
+  loginUser
+}

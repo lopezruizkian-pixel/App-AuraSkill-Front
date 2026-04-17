@@ -26,7 +26,9 @@ export const loginUser = async (correo, password) => {
   } catch (error) {
     throw error;
   }
-};
+
+  return data 
+}
 
 export const registerUser = async (userData) => {
   // Validación de entrada
