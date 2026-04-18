@@ -1,31 +1,82 @@
-const Room = require("./room.model")
+const { pool } = require('../../config/db');
 
 const crearRoom = async (data) => {
-  const room = new Room(data)
-  await room.save()
-  return room
-}
+  const { nombre, descripcion, mentor_id, habilidad, capacidad_maxima, mood } = data;
+
+  const result = await pool.query(
+    `INSERT INTO rooms (nombre, descripcion, mentor_id, habilidad, capacidad_maxima, mood)
+     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+    [nombre, descripcion || '', mentor_id, habilidad, capacidad_maxima || 10, mood || '']
+  );
+
+  return result.rows[0];
+};
 
 const obtenerRooms = async () => {
-  return await Room.find().populate("mentor", "nombre usuario")
-}
+  const result = await pool.query(
+    `SELECT r.*, u.nombre AS mentor_nombre, u.usuario AS mentor_usuario
+     FROM rooms r
+     JOIN users u ON r.mentor_id = u.id
+     WHERE r.estado = 'activa'`
+  );
+  return result.rows;
+};
 
 const obtenerRoomPorId = async (id) => {
-  return await Room.findById(id).populate("mentor", "nombre usuario").populate("participantes", "nombre usuario")
-}
+  const room = await pool.query(
+    `SELECT r.*, u.nombre AS mentor_nombre, u.usuario AS mentor_usuario
+     FROM rooms r
+     JOIN users u ON r.mentor_id = u.id
+     WHERE r.id = $1`,
+    [id]
+  );
+
+  if (room.rows.length === 0) return null;
+
+  const participants = await pool.query(
+    `SELECT u.id, u.nombre, u.usuario FROM users u
+     JOIN room_participants rp ON u.id = rp.user_id
+     WHERE rp.room_id = $1`,
+    [id]
+  );
+
+  return { ...room.rows[0], participantes: participants.rows };
+};
 
 const unirseARoom = async (roomId, userId) => {
-  const room = await Room.findById(roomId)
-  if (!room) throw new Error("Sala no encontrada")
-  if (room.participantes.includes(userId)) throw new Error("Ya estás en esta sala")
-  if (room.participantes.length >= room.capacidad_maxima) throw new Error("La sala está llena")
-  room.participantes.push(userId)
-  await room.save()
-  return room
-}
+  const room = await pool.query('SELECT * FROM rooms WHERE id = $1', [roomId]);
+  if (room.rows.length === 0) throw new Error('Sala no encontrada');
+
+  const already = await pool.query(
+    'SELECT * FROM room_participants WHERE room_id = $1 AND user_id = $2',
+    [roomId, userId]
+  );
+  if (already.rows.length > 0) throw new Error('Ya estás en esta sala');
+
+  const count = await pool.query('SELECT COUNT(*) FROM room_participants WHERE room_id = $1', [roomId]);
+  if (parseInt(count.rows[0].count) >= room.rows[0].capacidad_maxima) throw new Error('La sala está llena');
+
+  await pool.query('INSERT INTO room_participants (room_id, user_id) VALUES ($1, $2)', [roomId, userId]);
+
+  return obtenerRoomPorId(roomId);
+};
 
 const eliminarRoom = async (id) => {
-  return await Room.findByIdAndDelete(id)
-}
+  await pool.query('DELETE FROM rooms WHERE id = $1', [id]);
+};
 
-module.exports = { crearRoom, obtenerRooms, obtenerRoomPorId, unirseARoom, eliminarRoom }
+const obtenerHistorialUsuario = async (userId) => {
+  const result = await pool.query(
+    `SELECT s.*, r.nombre AS room_name, u.nombre AS mentor_name
+     FROM sessions s
+     JOIN rooms r ON s.room_id = r.id
+     JOIN users u ON s.mentor_id = u.id
+     JOIN session_participants sp ON s.id = sp.session_id
+     WHERE sp.user_id = $1 OR s.mentor_id = $1
+     ORDER BY s.started_at DESC`,
+    [userId]
+  );
+  return result.rows;
+};
+
+module.exports = { crearRoom, obtenerRooms, obtenerRoomPorId, unirseARoom, eliminarRoom, obtenerHistorialUsuario };

@@ -1,69 +1,35 @@
-const Skill = require("./skill.model");
-
-const normalizeSkillPayload = (data = {}) => ({
-  nombre: data.nombre?.trim(),
-  descripcion: data.descripcion?.trim(),
-  categoria: data.categoria?.trim(),
-  nivel: data.nivel || "basico",
-});
+const { pool } = require('../../config/db');
 
 const crearSkill = async (data) => {
-  const skill = new Skill(normalizeSkillPayload(data));
-  await skill.save();
-  return skill;
-};
-
-const crearSkillsBase = async (skills = []) => {
-  const normalizedSkills = skills.map(normalizeSkillPayload);
-
-  const operations = normalizedSkills.map((skill) => ({
-    updateOne: {
-      filter: { nombre: skill.nombre },
-      update: { $set: skill },
-      upsert: true,
-    },
-  }));
-
-  if (operations.length > 0) {
-    await Skill.bulkWrite(operations, { ordered: false });
-  }
-
-  return obtenerSkills();
+  const { nombre, descripcion, categoria, nivel } = data;
+  const result = await pool.query(
+    `INSERT INTO skills (nombre, descripcion, categoria, nivel)
+     VALUES ($1, $2, $3, $4) RETURNING *`,
+    [nombre, descripcion, categoria, nivel || 'basico']
+  );
+  return result.rows[0];
 };
 
 const obtenerSkills = async () => {
-  return await Skill.find().sort({ nombre: 1 });
+  const result = await pool.query('SELECT * FROM skills ORDER BY created_at DESC');
+  return result.rows;
 };
 
 const obtenerSkillPorId = async (id) => {
-  return await Skill.findById(id);
+  const result = await pool.query('SELECT * FROM skills WHERE id = $1', [id]);
+  return result.rows[0] || null;
 };
 
 const buscarSkills = async (query) => {
-  const safeQuery = query?.trim();
-
-  if (!safeQuery) {
-    return obtenerSkills();
-  }
-
-  return await Skill.find({
-    $or: [
-      { nombre: { $regex: safeQuery, $options: "i" } },
-      { categoria: { $regex: safeQuery, $options: "i" } },
-      { descripcion: { $regex: safeQuery, $options: "i" } },
-    ],
-  }).sort({ nombre: 1 });
+  const result = await pool.query(
+    `SELECT * FROM skills WHERE nombre ILIKE $1 OR categoria ILIKE $1`,
+    [`%${query}%`]
+  );
+  return result.rows;
 };
 
 const eliminarSkill = async (id) => {
-  return await Skill.findByIdAndDelete(id);
+  await pool.query('DELETE FROM skills WHERE id = $1', [id]);
 };
 
-module.exports = {
-  crearSkill,
-  crearSkillsBase,
-  obtenerSkills,
-  obtenerSkillPorId,
-  buscarSkills,
-  eliminarSkill,
-};
+module.exports = { crearSkill, obtenerSkills, obtenerSkillPorId, buscarSkills, eliminarSkill };

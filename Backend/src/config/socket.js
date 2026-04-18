@@ -1,9 +1,8 @@
 const { Server } = require('socket.io');
+const { pool } = require('./db');
 
-// Almacenar salas activas y usuarios conectados
 const activeRooms = new Map();
 const connectedUsers = new Map();
-const completedSessions = [];
 
 const normalizeRoomMeta = (roomMeta = {}) => ({
   nombre: roomMeta.nombre || roomMeta.roomName || 'Sala de mentoría',
@@ -12,10 +11,7 @@ const normalizeRoomMeta = (roomMeta = {}) => ({
 });
 
 const buildSessionPayload = (session) => {
-  if (!session) {
-    return null;
-  }
-
+  if (!session) return null;
   return {
     id: session.id,
     roomId: session.roomId,
@@ -34,34 +30,57 @@ const buildSessionPayload = (session) => {
   };
 };
 
-const createRoomState = (roomId, roomMeta = {}) => ({
-  roomId,
-  roomMeta: normalizeRoomMeta(roomMeta),
-  participants: [],
-  messages: [],
-  reactions: [],
-  createdAt: Date.now(),
-  currentSession: null,
-});
-
 const getOrCreateRoomState = (roomId, roomMeta = {}) => {
   if (!activeRooms.has(roomId)) {
-    activeRooms.set(roomId, createRoomState(roomId, roomMeta));
+    activeRooms.set(roomId, {
+      roomId,
+      roomMeta: normalizeRoomMeta(roomMeta),
+      participants: [],
+      messages: [],
+      reactions: [],
+      createdAt: Date.now(),
+      currentSession: null,
+    });
   }
-
   const room = activeRooms.get(roomId);
-  room.roomMeta = {
-    ...room.roomMeta,
-    ...normalizeRoomMeta(roomMeta),
-  };
-
-  if (room.currentSession) {
-    room.currentSession.roomName = room.roomMeta.nombre;
-    room.currentSession.habilidad = room.roomMeta.habilidad;
-    room.currentSession.mood = room.roomMeta.mood;
-  }
-
+  room.roomMeta = { ...room.roomMeta, ...normalizeRoomMeta(roomMeta) };
   return room;
+};
+
+const persistSession = async (session) => {
+  try {
+    const existing = await pool.query(
+      'SELECT id FROM sessions WHERE room_id = $1 AND mentor_id = $2 AND started_at = $3',
+      [session.roomId, session.mentorId, session.startedAt]
+    );
+
+    let dbSessionId;
+    if (existing.rows.length === 0) {
+      const res = await pool.query(
+        `INSERT INTO sessions (room_id, mentor_id, mentor_name, room_name, habilidad, mood, started_at, ended_at, duration_seconds, is_active, end_reason)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id`,
+        [session.roomId, session.mentorId, session.mentorName, session.roomName,
+         session.habilidad, session.mood, session.startedAt, session.endedAt,
+         session.durationSeconds, session.isActive, session.endReason]
+      );
+      dbSessionId = res.rows[0].id;
+    } else {
+      dbSessionId = existing.rows[0].id;
+      await pool.query(
+        `UPDATE sessions SET ended_at=$1, duration_seconds=$2, is_active=$3, end_reason=$4 WHERE id=$5`,
+        [session.endedAt, session.durationSeconds, session.isActive, session.endReason, dbSessionId]
+      );
+    }
+
+    for (const participantId of session.participantIds) {
+      await pool.query(
+        `INSERT INTO session_participants (session_id, user_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`,
+        [dbSessionId, participantId]
+      );
+    }
+  } catch (err) {
+    console.error('[Socket] Error persistiendo sesión:', err.message);
+  }
 };
 
 const startMentorSession = (room, user) => {
@@ -70,9 +89,7 @@ const startMentorSession = (room, user) => {
     return room.currentSession;
   }
 
-  const participantIds = new Set(
-    room.participants.map((participant) => participant.userId)
-  );
+  const participantIds = new Set(room.participants.map((p) => p.userId));
   participantIds.add(user.userId);
 
   room.currentSession = {
@@ -94,16 +111,13 @@ const startMentorSession = (room, user) => {
   return room.currentSession;
 };
 
-const finalizeMentorSession = (room, reason = 'disconnect') => {
-  if (!room?.currentSession?.isActive) {
-    return null;
-  }
+const finalizeMentorSession = async (room, reason = 'disconnect') => {
+  if (!room?.currentSession?.isActive) return null;
 
-  const startedAtMs = new Date(room.currentSession.startedAt).getTime();
   const endedAtMs = Date.now();
   const durationSeconds = Math.max(
     0,
-    Math.floor((endedAtMs - startedAtMs) / 1000)
+    Math.floor((endedAtMs - new Date(room.currentSession.startedAt).getTime()) / 1000)
   );
 
   room.currentSession = {
@@ -114,25 +128,16 @@ const finalizeMentorSession = (room, reason = 'disconnect') => {
     endReason: reason,
   };
 
-  const completedSession = buildSessionPayload(room.currentSession);
-  completedSessions.unshift(completedSession);
-  room.lastCompletedSession = completedSession;
-
-  return completedSession;
+  await persistSession(room.currentSession);
+  room.lastCompletedSession = buildSessionPayload(room.currentSession);
+  return room.lastCompletedSession;
 };
 
 const getRoomSessionState = (roomId) => {
   const room = activeRooms.get(roomId);
-
   return room?.currentSession
     ? buildSessionPayload(room.currentSession)
     : room?.lastCompletedSession || null;
-};
-
-const getUserSessionHistory = (userId) => {
-  return completedSessions.filter((session) => (
-    session.mentorId === userId || session.participantIds.includes(userId)
-  ));
 };
 
 const initializeSocket = (server) => {
@@ -148,49 +153,20 @@ const initializeSocket = (server) => {
   io.on('connection', (socket) => {
     console.log(`[Socket] Usuario conectado: ${socket.id}`);
 
-    // ═══════════════════════════════════════════════════
-    // ════════════ EVENTOS DE SALA ════════════
-    // ═══════════════════════════════════════════════════
-
-    // Unirse a una sala
     socket.on('joinRoom', (data) => {
       const { roomId, userId, userName, userAvatar, userRole, roomMeta } = data;
+      connectedUsers.set(socket.id, { userId, userName, userAvatar, userRole, roomId, socketId: socket.id });
 
-      console.log(`[Socket] ${userName} uniéndose a sala: ${roomId}`);
-
-      // Guardar info del usuario
-      connectedUsers.set(socket.id, {
-        userId,
-        userName,
-        userAvatar,
-        userRole,
-        roomId,
-        socketId: socket.id,
-        connectionStatus: 'conectado',
-        timestamp: Date.now(),
-        roomMeta: normalizeRoomMeta(roomMeta),
-      });
-
-      // Unirse al room
       socket.join(roomId);
-
       const room = getOrCreateRoomState(roomId, roomMeta);
+
       const newParticipant = {
-        id: socket.id,
-        userId,
-        userName,
-        userAvatar,
-        userRole,
-        nombre: userName,
-        avatar: userAvatar,
-        rolInSala: userRole,
-        connectionStatus: 'conectado',
-        joinedAt: Date.now(),
+        id: socket.id, userId, userName, userAvatar, userRole,
+        nombre: userName, avatar: userAvatar, rolInSala: userRole,
+        connectionStatus: 'conectado', joinedAt: Date.now(),
       };
 
-      room.participants = room.participants.filter(
-        (participant) => participant.userId !== userId
-      );
+      room.participants = room.participants.filter((p) => p.userId !== userId);
       room.participants.push(newParticipant);
 
       if (room.currentSession?.isActive) {
@@ -209,111 +185,43 @@ const initializeSocket = (server) => {
       });
 
       io.to(roomId).emit('roomSessionUpdated', getRoomSessionState(roomId));
-
-      // Notificar a todos en la sala que alguien se unió
       io.to(roomId).emit('userJoined', newParticipant);
-
-      // Enviar lista de participantes actualizada
       io.to(roomId).emit('participantsList', room.participants);
-
-      console.log(
-        `[Socket] ${room.participants.length} participantes en sala ${roomId}`
-      );
     });
 
-    // Salir de una sala
-    socket.on('leaveRoom', (data) => {
+    socket.on('leaveRoom', async (data) => {
       const { roomId } = data;
       const user = connectedUsers.get(socket.id);
-
       if (user) {
-        console.log(`[Socket] ${user.userName} saliendo de sala: ${roomId}`);
-
         const room = activeRooms.get(roomId);
         if (room) {
-          room.participants = room.participants.filter(
-            (p) => p.userId !== user.userId
-          );
-
+          room.participants = room.participants.filter((p) => p.userId !== user.userId);
           if (user.userRole === 'mentor' && room.currentSession?.mentorId === user.userId) {
-            finalizeMentorSession(room, 'leaveRoom');
+            await finalizeMentorSession(room, 'leaveRoom');
             io.to(roomId).emit('roomSessionUpdated', getRoomSessionState(roomId));
           }
-
           io.to(roomId).emit('userLeft', socket.id);
           io.to(roomId).emit('participantsList', room.participants);
-
-          // Si no hay más participantes, eliminar sala
-          if (room.participants.length === 0) {
-            room.lastEmptyAt = Date.now();
-            console.log(`[Socket] Sala ${roomId} eliminada (vacía)`);
-          }
         }
-
         connectedUsers.delete(socket.id);
       }
-
       socket.leave(roomId);
     });
 
-    // ═══════════════════════════════════════════════════
-    // ════════════ EVENTOS DE CHAT ════════════
-    // ═══════════════════════════════════════════════════
-
     socket.on('sendMessage', (data) => {
       const { roomId, userId, userName, userAvatar, texto } = data;
-
-      console.log(
-        `[Socket] Mensaje en ${roomId} de ${userName}: "${texto.substring(0, 30)}..."`
-      );
-
-      const message = {
-        id: Date.now(),
-        userId,
-        userName,
-        userAvatar,
-        texto,
-        timestamp: new Date(),
-      };
-
+      const message = { id: Date.now(), userId, userName, userAvatar, texto, timestamp: new Date() };
       const room = activeRooms.get(roomId);
-      if (room) {
-        room.messages.push(message);
-      }
-
-      // Enviar mensaje a todos en la sala
+      if (room) room.messages.push(message);
       io.to(roomId).emit('newMessage', message);
     });
 
-    // ═══════════════════════════════════════════════════
-    // ════════════ EVENTOS DE REACCIONES ════════════
-    // ═══════════════════════════════════════════════════
-
     socket.on('sendReaction', (data) => {
       const { roomId, userId, userName, userAvatar, emoji } = data;
-
-      console.log(
-        `[Socket] Reacción en ${roomId} de ${userName}: ${emoji}`
-      );
-
-      const reaction = {
-        id: Date.now(),
-        userId,
-        userName,
-        userAvatar,
-        emoji,
-        timestamp: Date.now(),
-      };
-
+      const reaction = { id: Date.now(), userId, userName, userAvatar, emoji, timestamp: Date.now() };
       const room = activeRooms.get(roomId);
-      if (room) {
-        room.reactions.push(reaction);
-      }
-
-      // Enviar reacción a todos en la sala
+      if (room) room.reactions.push(reaction);
       io.to(roomId).emit('newReaction', reaction);
-
-      // Limpiar reacciones antiguas después de 3 segundos
       setTimeout(() => {
         if (room) {
           room.reactions = room.reactions.filter((r) => r.id !== reaction.id);
@@ -322,104 +230,46 @@ const initializeSocket = (server) => {
       }, 3000);
     });
 
-    // ═══════════════════════════════════════════════════
-    // ════════════ EVENTOS DE ESTADO ════════════
-    // ═══════════════════════════════════════════════════
-
     socket.on('userTyping', (data) => {
-      const { roomId, userName } = data;
-
-      io.to(roomId).emit('userTyping', {
-        userName,
-        isTyping: true,
-      });
+      io.to(data.roomId).emit('userTyping', { userName: data.userName, isTyping: true });
     });
 
     socket.on('userStoppedTyping', (data) => {
-      const { roomId, userName } = data;
-
-      io.to(roomId).emit('userStoppedTyping', {
-        userName,
-        isTyping: false,
-      });
+      io.to(data.roomId).emit('userStoppedTyping', { userName: data.userName, isTyping: false });
     });
 
     socket.on('videoStatusChanged', (data) => {
-      const { roomId, enabled } = data;
       const user = connectedUsers.get(socket.id);
-
-      if (user) {
-        io.to(roomId).emit('videoStatusChanged', {
-          userId: socket.id,
-          userName: user.userName,
-          enabled,
-        });
-      }
+      if (user) io.to(data.roomId).emit('videoStatusChanged', { userId: socket.id, userName: user.userName, enabled: data.enabled });
     });
 
     socket.on('audioStatusChanged', (data) => {
-      const { roomId, enabled } = data;
       const user = connectedUsers.get(socket.id);
-
-      if (user) {
-        io.to(roomId).emit('audioStatusChanged', {
-          userId: socket.id,
-          userName: user.userName,
-          enabled,
-        });
-      }
+      if (user) io.to(data.roomId).emit('audioStatusChanged', { userId: socket.id, userName: user.userName, enabled: data.enabled });
     });
 
-    // ═══════════════════════════════════════════════════
-    // ════════════ EVENTOS DE DESCONEXIÓN ════════════
-    // ═══════════════════════════════════════════════════
-
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
       const user = connectedUsers.get(socket.id);
-
       if (user) {
-        console.log(
-          `[Socket] ${user.userName} desconectado de sala: ${user.roomId}`
-        );
-
         const room = activeRooms.get(user.roomId);
         if (room) {
-          room.participants = room.participants.filter(
-            (p) => p.userId !== user.userId
-          );
-
+          room.participants = room.participants.filter((p) => p.userId !== user.userId);
           if (user.userRole === 'mentor' && room.currentSession?.mentorId === user.userId) {
-            finalizeMentorSession(room, 'disconnect');
+            await finalizeMentorSession(room, 'disconnect');
             io.to(user.roomId).emit('roomSessionUpdated', getRoomSessionState(user.roomId));
           }
-
           io.to(user.roomId).emit('userLeft', socket.id);
           io.to(user.roomId).emit('participantsList', room.participants);
-
-          if (room.participants.length === 0) {
-            room.lastEmptyAt = Date.now();
-            console.log(`[Socket] Sala ${user.roomId} eliminada (vacía)`);
-          }
         }
-
         connectedUsers.delete(socket.id);
       }
-
       console.log(`[Socket] Usuario desconectado: ${socket.id}`);
     });
 
-    socket.on('error', (error) => {
-      console.error(`[Socket] Error en ${socket.id}:`, error);
-    });
+    socket.on('error', (error) => console.error(`[Socket] Error en ${socket.id}:`, error));
   });
 
   return io;
 };
 
-module.exports = {
-  initializeSocket,
-  activeRooms,
-  connectedUsers,
-  getRoomSessionState,
-  getUserSessionHistory,
-};
+module.exports = { initializeSocket, activeRooms, connectedUsers, getRoomSessionState };
