@@ -72,6 +72,7 @@ const persistSession = async (session) => {
       );
     }
 
+    // Guardar TODOS los participantes incluyendo alumnos
     for (const participantId of session.participantIds) {
       await pool.query(
         `INSERT INTO session_participants (session_id, user_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`,
@@ -169,8 +170,10 @@ const initializeSocket = (server) => {
       room.participants = room.participants.filter((p) => p.userId !== userId);
       room.participants.push(newParticipant);
 
+      // Si hay sesión activa, agregar al participante (alumno o mentor)
       if (room.currentSession?.isActive) {
         room.currentSession.participantIds.add(userId);
+        console.log(`[Socket] ${userName} agregado a sesión activa en sala ${roomId}`);
       }
 
       if (userRole === 'mentor') {

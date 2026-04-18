@@ -2,13 +2,11 @@ const { pool } = require('../../config/db');
 
 const crearRoom = async (data) => {
   const { nombre, descripcion, mentor_id, habilidad, capacidad_maxima, mood } = data;
-
   const result = await pool.query(
     `INSERT INTO rooms (nombre, descripcion, mentor_id, habilidad, capacidad_maxima, mood)
      VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
     [nombre, descripcion || '', mentor_id, habilidad, capacidad_maxima || 10, mood || '']
   );
-
   return result.rows[0];
 };
 
@@ -30,7 +28,6 @@ const obtenerRoomPorId = async (id) => {
      WHERE r.id = $1`,
     [id]
   );
-
   if (room.rows.length === 0) return null;
 
   const participants = await pool.query(
@@ -39,7 +36,6 @@ const obtenerRoomPorId = async (id) => {
      WHERE rp.room_id = $1`,
     [id]
   );
-
   return { ...room.rows[0], participantes: participants.rows };
 };
 
@@ -57,7 +53,6 @@ const unirseARoom = async (roomId, userId) => {
   if (parseInt(count.rows[0].count) >= room.rows[0].capacidad_maxima) throw new Error('La sala está llena');
 
   await pool.query('INSERT INTO room_participants (room_id, user_id) VALUES ($1, $2)', [roomId, userId]);
-
   return obtenerRoomPorId(roomId);
 };
 
@@ -67,12 +62,12 @@ const eliminarRoom = async (id) => {
 
 const obtenerHistorialUsuario = async (userId) => {
   const result = await pool.query(
-    `SELECT s.*, r.nombre AS room_name, u.nombre AS mentor_name
+    `SELECT DISTINCT s.id, s.room_id, s.mentor_id, s.mentor_name,
+            s.started_at, s.ended_at, s.duration_seconds, s.is_active,
+            s.end_reason, s.room_name, s.habilidad, s.mood
      FROM sessions s
-     JOIN rooms r ON s.room_id = r.id
-     JOIN users u ON s.mentor_id = u.id
-     JOIN session_participants sp ON s.id = sp.session_id
-     WHERE sp.user_id = $1 OR s.mentor_id = $1
+     LEFT JOIN session_participants sp ON s.id = sp.session_id
+     WHERE s.mentor_id = $1 OR sp.user_id = $1
      ORDER BY s.started_at DESC`,
     [userId]
   );

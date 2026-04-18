@@ -9,9 +9,9 @@ import "../Styles/BuscarHabilidades.css";
 import "../Styles/HistorialSalasAprendiz.css";
 
 const formatDate = (value) => {
-  if (!value) return "";
+  if (!value) return "—";
   const date = new Date(value);
-  if (isNaN(date.getTime())) return "";
+  if (Number.isNaN(date.getTime())) return "—";
   return date.toLocaleDateString("es-MX", {
     day: "2-digit",
     month: "2-digit",
@@ -23,10 +23,10 @@ const formatDuration = (seconds = 0) => {
   const s = Math.max(0, Math.floor(seconds));
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
-  const r = s % 60;
-  if (h > 0) return `${h}h ${m}m ${r}s`;
-  if (m > 0) return `${m}m ${r}s`;
-  return `${r}s`;
+  const sec = s % 60;
+  if (h > 0) return `${h}h ${m}m ${sec}s`;
+  if (m > 0) return `${m}m ${sec}s`;
+  return `${sec}s`;
 };
 
 function HistorialSalasAprendiz() {
@@ -71,18 +71,19 @@ function HistorialSalasAprendiz() {
 
   const historialData = useMemo(() => {
     if (isLoading) {
-      return [{ id: "loading", fecha: "Cargando...", habilidad: "", mood: "", mentor: "", duracion: "" }];
+      return [{ id: "loading-row", fecha: "Cargando...", habilidad: "", mood: "", mentor: "", duracion: "" }];
     }
     if (history.length === 0) {
-      return [{ id: "empty", fecha: "Sin sesiones", habilidad: "", mood: "", mentor: "", duracion: "" }];
+      return [{ id: "empty-row", fecha: "Sin sesiones registradas", habilidad: "", mood: "", mentor: "", duracion: "" }];
     }
     return history.map((item) => ({
       id: item.id,
-      fecha: formatDate(item.startedAt || item.fecha),
-      habilidad: item.habilidad || item.nombreSala || "",
-      mood: item.mood || "",
-      mentor: item.mentor || "",
-      duracion: formatDuration(item.duracionSegundos ?? item.duracion ?? 0),
+      // PostgreSQL devuelve snake_case
+      fecha: formatDate(item.started_at || item.startedAt || item.fecha),
+      habilidad: item.habilidad || item.room_name || item.nombreSala || "—",
+      mood: item.mood || "—",
+      mentor: item.mentor_name || item.mentor || "—",
+      duracion: formatDuration(item.duration_seconds ?? item.duracionSegundos ?? item.duracion ?? 0),
     }));
   }, [history, isLoading]);
 
