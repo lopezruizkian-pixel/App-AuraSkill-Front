@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import PerfilStatCard from "../components/PerfilStatCard";
 import SkillTag from "../components/SkillTag";
-import { Bell, User, Edit3, Star, Clock, Video, Award, BookOpen, X, Check } from "lucide-react";
+import Notificaciones from "../components/Notificaciones";
+import { User, Edit3, Star, Clock, Video, Award, BookOpen, X, Check } from "lucide-react";
 import { httpClient } from "../services/httpClient";
 import "../Styles/Home.css";
 import "../Styles/Perfil.css";
@@ -15,9 +16,7 @@ function Perfil() {
   const [editData, setEditData] = useState({});
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  useEffect(() => { fetchProfile(); }, []);
 
   const fetchProfile = async () => {
     try {
@@ -38,9 +37,7 @@ function Perfil() {
   };
 
   const handleSave = async () => {
-    if (!editData.nombre || !editData.usuario) {
-      alert("Nombre y usuario son obligatorios"); return;
-    }
+    if (!editData.nombre || !editData.usuario) { alert("Nombre y usuario son obligatorios"); return; }
     setSaving(true);
     try {
       const updated = await httpClient.put("/auth/update-profile", {
@@ -76,11 +73,10 @@ function Perfil() {
               <span>{rol === "mentor" ? "Modo Enseñanza" : "Modo Aprendizaje"}</span>
             </div>
             <div className="header-actions-right">
-              <div className="icon-action bell-icon"><Bell size={24} /></div>
+              <Notificaciones />
               <div className="icon-action user-icon active-user"><User size={24} /></div>
             </div>
           </div>
-
           <section className="perfil-section">
             <div className="neon-card perfil-header-card">
               <div className="perfil-avatar-container">
@@ -126,11 +122,9 @@ function Perfil() {
               {rol === "mentor" ? "Habilidades que dominas" : "Habilidades que estás aprendiendo"}
             </h2>
             <div className="neon-card perfil-skills-card">
-              {userData.habilidades && userData.habilidades.length > 0 ? (
-                userData.habilidades.map((hab, i) => <SkillTag key={i} nombre={hab} nivel="—" color="#00ffff" />)
-              ) : (
-                <p>No hay habilidades registradas.</p>
-              )}
+              {userData.habilidades && userData.habilidades.length > 0
+                ? userData.habilidades.map((hab, i) => <SkillTag key={i} nombre={hab} nivel="—" color="#00ffff" />)
+                : <p>No hay habilidades registradas.</p>}
             </div>
 
             {userData.intereses && userData.intereses.length > 0 && (
@@ -152,30 +146,23 @@ function Perfil() {
               <h3 style={{ color:"#00ffff", margin:0 }}>Editar perfil</h3>
               <X size={20} style={{ cursor:"pointer", color:"#aaa" }} onClick={() => setShowEditModal(false)} />
             </div>
-
             {[
-              { label: "Nombre", key: "nombre", type: "text" },
-              { label: "Usuario", key: "usuario", type: "text" },
-              { label: "Mood actual", key: "mood_actual", type: "text", placeholder: "neutral, feliz, concentrado..." },
-              { label: "Habilidades (separadas por coma)", key: "habilidades", type: "text", placeholder: "React, Python..." },
-              { label: "Intereses (separados por coma)", key: "intereses", type: "text", placeholder: "IA, Diseño..." },
-            ].map(({ label, key, type, placeholder }) => (
+              { label: "Nombre", key: "nombre" },
+              { label: "Usuario", key: "usuario" },
+              { label: "Mood actual", key: "mood_actual", placeholder: "neutral, feliz..." },
+              { label: "Habilidades (separadas por coma)", key: "habilidades", placeholder: "React, Python..." },
+              { label: "Intereses (separados por coma)", key: "intereses", placeholder: "IA, Diseño..." },
+            ].map(({ label, key, placeholder }) => (
               <div key={key}>
                 <label style={{ color:"#aaa", fontSize:"0.85rem", marginBottom:"4px", display:"block" }}>{label}</label>
-                <input
-                  type={type}
-                  placeholder={placeholder || label}
-                  value={editData[key]}
+                <input type="text" placeholder={placeholder || label} value={editData[key]}
                   onChange={(e) => setEditData({ ...editData, [key]: e.target.value })}
-                  style={{ background:"#1a1a2e", border:"1px solid #333", borderRadius:"8px", padding:"0.65rem 1rem", color:"#fff", width:"100%", fontSize:"0.95rem", boxSizing:"border-box" }}
-                />
+                  style={{ background:"#1a1a2e", border:"1px solid #333", borderRadius:"8px", padding:"0.65rem 1rem", color:"#fff", width:"100%", fontSize:"0.95rem", boxSizing:"border-box" }} />
               </div>
             ))}
-
             <div style={{ display:"flex", gap:"1rem", marginTop:"0.5rem" }}>
               <button className="primary-btn-neon-s" onClick={handleSave} disabled={saving}>
-                <Check size={14} style={{ marginRight:"6px" }} />
-                {saving ? "Guardando..." : "Guardar cambios"}
+                <Check size={14} style={{ marginRight:"6px" }} />{saving ? "Guardando..." : "Guardar cambios"}
               </button>
               <button className="danger-btn-neon-s" onClick={() => setShowEditModal(false)}>Cancelar</button>
             </div>
