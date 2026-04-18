@@ -406,3 +406,13 @@
     font-size: 0.85rem;
   }
 }
+.config-grid-single {
+  grid-template-columns: minmax(0, 420px);
+}
+
+.config-btn-center {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: 8px;
+}

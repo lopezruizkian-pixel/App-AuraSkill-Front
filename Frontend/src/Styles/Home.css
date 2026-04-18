@@ -167,3 +167,78 @@
   transition: 0.3s;
   width: fit-content;
 } 
+.input-wrapper-mini {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.mini-icon {
+  position: absolute;
+  left: 12px;
+  color: #00ffff;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.textarea-mini {
+  align-items: flex-start;
+}
+
+.textarea-mini .mini-icon {
+  top: 12px;
+}
+
+.neon-input-s {
+  width: 100%;
+  padding: 12px 12px 12px 36px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.neon-input-s:focus {
+  border-color: #ff00ff;
+  background: rgba(255, 0, 255, 0.05);
+  box-shadow: 0 0 12px rgba(255, 0, 255, 0.15);
+}
+
+.neon-select-s {
+  appearance: auto;
+  cursor: pointer;
+}
+
+.neon-select-s option {
+  background: #140022;
+  color: white;
+}
+
+.neon-textarea-s {
+  resize: vertical;
+  min-height: 64px;
+}
+
+.mini-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.mini-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 768px) {
+  .mini-row {
+    grid-template-columns: 1fr;
+  }
+}

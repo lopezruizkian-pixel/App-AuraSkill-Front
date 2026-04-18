@@ -1,4 +1,4 @@
-const User = require("../users/user.model")
+const User = require("./auth.model") // 👈 corregido el path
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 
@@ -12,7 +12,7 @@ const registerUser = async (data) => {
   const existingUser = await User.findOne({
     $or: [
       { correo: email },
-      { usuario: usuario }
+      { usuario: normalizedUser }
     ]
   })
 
@@ -20,13 +20,8 @@ const registerUser = async (data) => {
     throw new Error("El usuario o correo ya está registrado")
   }
 
-  const existingUsername = await User.findOne({ usuario: normalizedUser })
-
-  if (existingUsername) {
-    throw new Error("El nombre de usuario ya existe")
-  }
-
-  const hashedPassword = await hashPassword(password)
+  // 🔥 FIX: usar bcrypt directamente
+  const hashedPassword = await bcrypt.hash(password, 10)
 
   const newUser = new User({
     nombre,
