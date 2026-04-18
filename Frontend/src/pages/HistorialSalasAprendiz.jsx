@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import HistorialRow from "../components/HistorialRow";
-import { Search, Bell, User } from "lucide-react";
+import Notificaciones from "../components/Notificaciones";
+import { Search, User } from "lucide-react";
 import { getUserRoomHistory } from "../services/roomService";
-
 import "../Styles/Home.css";
 import "../Styles/BuscarHabilidades.css";
 import "../Styles/HistorialSalasAprendiz.css";
@@ -13,11 +13,7 @@ const formatDate = (value) => {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString("es-MX", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+  return date.toLocaleDateString("es-MX", { day: "2-digit", month: "2-digit", year: "numeric" });
 };
 
 const formatDuration = (seconds = 0) => {
@@ -52,17 +48,10 @@ function HistorialSalasAprendiz() {
   }, []);
 
   const historialData = useMemo(() => {
-    if (isLoading) {
-      return [{ id: "loading-row", fecha: "Cargando...", habilidad: "", mood: "", mentor: "", duracion: "" }];
-    }
-
-    if (history.length === 0) {
-      return [{ id: "empty-row", fecha: "Sin sesiones registradas", habilidad: "", mood: "", mentor: "", duracion: "" }];
-    }
-
+    if (isLoading) return [{ id: "loading-row", fecha: "Cargando...", habilidad: "", mood: "", mentor: "", duracion: "" }];
+    if (history.length === 0) return [{ id: "empty-row", fecha: "Sin sesiones registradas", habilidad: "", mood: "", mentor: "", duracion: "" }];
     return history.map((item) => ({
       id: item.id,
-      // PostgreSQL devuelve snake_case
       fecha: formatDate(item.started_at || item.startedAt || item.fecha),
       habilidad: item.habilidad || item.room_name || item.nombreSala || "—",
       mood: item.mood || "—",
@@ -83,15 +72,12 @@ function HistorialSalasAprendiz() {
             </div>
             <div className="header-actions-right">
               <div className="mood-indicator">Mood: Concentrado</div>
-              <div className="icon-action bell-icon">
-                <Bell size={24} /><span className="notification-dot">1</span>
-              </div>
-              <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{ cursor: 'pointer' }}>
+              <Notificaciones />
+              <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{ cursor: "pointer" }}>
                 <User size={24} />
               </div>
             </div>
           </div>
-
           <section className="historial-section">
             <h2 className="welcome-title">Historial de Sesiones</h2>
             <div className="historial-table-header">
@@ -102,9 +88,7 @@ function HistorialSalasAprendiz() {
               <div className="header-item-neon">Duración</div>
             </div>
             <div className="historial-list">
-              {historialData.map((item) => (
-                <HistorialRow key={item.id} {...item} />
-              ))}
+              {historialData.map((item) => <HistorialRow key={item.id} {...item} />)}
             </div>
           </section>
         </main>
