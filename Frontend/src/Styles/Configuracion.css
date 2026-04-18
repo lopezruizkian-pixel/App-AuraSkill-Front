@@ -406,3 +406,56 @@
     font-size: 0.85rem;
   }
 }
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 2.8rem !important;
+  box-sizing: border-box;
+}
+
+.password-eye-btn {
+  position: absolute;
+  right: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #aaa;
+  z-index: 10;
+}
+
+.password-eye-btn:hover {
+  color: #00ffff;
+}
+
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 2.8rem !important;
+  box-sizing: border-box;
+}
+
+.password-eye-btn {
+  position: absolute;
+  right: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #aaa;
+  z-index: 10;
+}
+
+.password-eye-btn:hover {
+  color: #00ffff;
+}
