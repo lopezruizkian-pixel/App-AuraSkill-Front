@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
-import { fetchActiveRooms, joinRoom } from "../services/roomService";
+import { fetchActiveRooms, joinRoom, fetchRoom } from "../services/roomService";
 
 function HomeAprendiz() {
   const navigate = useNavigate();
@@ -47,13 +47,8 @@ function HomeAprendiz() {
     setJoining(room.id);
     try {
       // Verificar estado actual con el backend para evitar bloqueos por estado obsoleto
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/rooms/${room.id}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      const roomDetails = await response.json();
-      
+      const roomDetails = await fetchRoom(room.id);
+
       if (!roomDetails.sessionInfo?.isActive) {
         alert("El mentor aún no ha ingresado a esta sala.");
         setJoining(null);
