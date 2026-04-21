@@ -5,8 +5,7 @@ import MentorCard from "../components/MentorCard";
 import Notificaciones from "../components/Notificaciones";
 import { Search, User } from "lucide-react";
 import { fetchActiveRooms, joinRoom, fetchRoom } from "../services/roomService";
-import { getSocketUrl } from "../services/socketConfig";
-import { io } from "socket.io-client";
+import { getDashboardSocket } from "../services/socketConfig";
 import "../Styles/Mentores.css";
 
 function Mentores() {
@@ -35,16 +34,17 @@ function Mentores() {
   useEffect(() => {
     load();
     
-    const socketURL = getSocketUrl();
-    const socket = io(socketURL, { transports: ['websocket', 'polling'] });
+    const socket = getDashboardSocket();
     
-    socket.on('roomsUpdated', () => {
+    const handleUpdate = () => {
       console.log('Salas actualizadas, recargando...');
       load();
-    });
+    };
+    
+    socket.on('roomsUpdated', handleUpdate);
 
     return () => {
-      socket.disconnect();
+      socket.off('roomsUpdated', handleUpdate);
     };
   }, []);
   useEffect(() => {
