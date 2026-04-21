@@ -1,11 +1,18 @@
-import { User } from "lucide-react";
+import { User, Circle } from "lucide-react";
 
-function MentorCard({ nombre, habilidad, mood, nombreSala, onJoin, isJoining }) {
+function MentorCard({ nombre, habilidad, mood, nombreSala, onJoin, isJoining, isActive }) {
   return (
     <div className="neon-card mentor-card-layout">
       <div className="mentor-card-content">
         <div className="mentor-avatar-container">
           <User className="mentor-avatar-icon" size={32} />
+          <Circle 
+            className="mentor-status-dot" 
+            size={12} 
+            fill={isActive ? "#00ff00" : "#ff0000"} 
+            stroke={isActive ? "#00ff00" : "#ff0000"} 
+            style={{ position: "absolute", bottom: 0, right: 0 }}
+          />
         </div>
         <div className="mentor-details">
           <p className="mentor-text"><strong>Mentor:</strong> {nombre}</p>
@@ -15,7 +22,12 @@ function MentorCard({ nombre, habilidad, mood, nombreSala, onJoin, isJoining }) 
         </div>
       </div>
       <div className="mentor-card-action">
-        <button className="primary-btn-s" onClick={onJoin} disabled={isJoining}>
+        <button 
+          className="primary-btn-s" 
+          onClick={onJoin} 
+          disabled={isJoining || !isActive}
+          title={!isActive ? "El mentor no está activo" : ""}
+        >
           {isJoining ? "Entrando..." : "Entrar a sala"}
         </button>
       </div>
