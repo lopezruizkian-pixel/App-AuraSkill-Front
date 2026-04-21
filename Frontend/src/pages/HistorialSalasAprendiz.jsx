@@ -35,10 +35,29 @@ function HistorialSalasAprendiz() {
   useEffect(() => {
     const loadHistory = async () => {
       try {
-        const data = await getUserRoomHistory();
-        setHistory(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("No se pudo cargar el historial:", error);
+        // Combina historial del backend con el guardado localmente
+        let backendHistory = [];
+        try {
+          backendHistory = await getUserRoomHistory();
+        } catch {
+          backendHistory = [];
+        }
+
+        const localRaw = localStorage.getItem("historialSalas");
+        const localHistory = localRaw ? JSON.parse(localRaw) : [];
+
+        // Unifica por id, priorizando backend
+        const backendIds = new Set(backendHistory.map((s) => s.id));
+        const merged = [
+          ...backendHistory,
+          ...localHistory.filter((s) => !backendIds.has(s.id)),
+        ];
+
+        // Ordena por fecha desc
+        merged.sort((a, b) => new Date(b.startedAt || b.fecha || 0) - new Date(a.startedAt || a.fecha || 0));
+
+        setHistory(merged);
+      } catch {
         setHistory([]);
       } finally {
         setIsLoading(false);

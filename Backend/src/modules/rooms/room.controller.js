@@ -11,7 +11,11 @@ const { getRoomSessionState } = require("../../config/socket")
 const getRooms = async (req, res) => {
   try {
     const rooms = await obtenerRooms()
-    res.json(rooms)
+    const roomsWithSession = rooms.map(room => {
+      const sessionInfo = getRoomSessionState(room.id)
+      return { ...room, sessionInfo }
+    })
+    res.json(roomsWithSession)
   } catch (error) {
     res.status(500).json({ error: error.message })
   }

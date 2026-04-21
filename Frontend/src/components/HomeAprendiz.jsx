@@ -10,9 +10,12 @@ function HomeAprendiz() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [joining, setJoining] = useState(null);
+  const [salasVisitadas, setSalasVisitadas] = useState([]);
 
   useEffect(() => {
     loadRooms();
+    const historialGuardado = JSON.parse(localStorage.getItem("historialSalas")) || [];
+    setSalasVisitadas(historialGuardado);
   }, []);
 
   useEffect(() => {
@@ -41,6 +44,10 @@ function HomeAprendiz() {
   };
 
   const handleJoin = async (room) => {
+    if (!room.sessionInfo?.isActive) {
+      alert("El mentor aún no ha ingresado a esta sala.");
+      return;
+    }
     setJoining(room.id);
     try {
       // Intentar unirse, si ya está en la sala simplemente entrar
@@ -85,7 +92,9 @@ function HomeAprendiz() {
         <div className="mood-indicator">Mood: Concentrado</div>
       </div>
 
-      <h2 className="welcome-title">Mentores disponibles</h2>
+      <h2 className="welcome-title">
+        {salasVisitadas.length > 0 ? "Mentores que has visitado" : "Aún no has visitado ninguna sala"}
+      </h2>
 
       {loading ? (
         <p>Cargando salas...</p>
@@ -97,14 +106,25 @@ function HomeAprendiz() {
             <div className="mentor-item">
               <div className="mentor-info">
                 <p><strong>Sala:</strong> {room.nombre}</p>
-                <p><strong>Mentor:</strong> {room.mentor_nombre || "Sin mentor"}</p>
+                <p>
+                  <strong>Mentor:</strong> {room.mentor_nombre || "Sin mentor"}
+                  <span style={{ 
+                    display: 'inline-block', 
+                    width: '10px', 
+                    height: '10px', 
+                    borderRadius: '50%', 
+                    backgroundColor: room.sessionInfo?.isActive ? '#00ff00' : '#ff0000',
+                    marginLeft: '8px'
+                  }} title={room.sessionInfo?.isActive ? "Mentor activo" : "Mentor inactivo"}></span>
+                </p>
                 <p><strong>Habilidad:</strong> {room.habilidad}</p>
                 <p><strong>Mood:</strong> {room.mood || "—"}</p>
               </div>
               <button
                 className="primary-btn-s"
                 onClick={() => handleJoin(room)}
-                disabled={joining === room.id}
+                disabled={joining === room.id || !room.sessionInfo?.isActive}
+                title={!room.sessionInfo?.isActive ? "El mentor no está activo" : ""}
               >
                 {joining === room.id ? "Entrando..." : "Entrar a sala"}
               </button>

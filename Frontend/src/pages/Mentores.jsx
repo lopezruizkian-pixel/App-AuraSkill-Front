@@ -51,6 +51,10 @@ function Mentores() {
   const moods = [...new Set(rooms.map((r) => r.mood).filter(Boolean))];
 
   const handleJoin = async (room) => {
+    if (!room.sessionInfo?.isActive) {
+      alert("El mentor aún no ha ingresado a esta sala.");
+      return;
+    }
     setJoining(room.id);
     try {
       try { await joinRoom(room.id); } catch (err) {
@@ -108,6 +112,7 @@ function Mentores() {
                 {filtered.map((room) => (
                   <MentorCard key={room.id} id={room.id} nombre={room.mentor_nombre || "Mentor"}
                     habilidad={room.habilidad} mood={room.mood} nombreSala={room.nombre}
+                    isActive={room.sessionInfo?.isActive}
                     onJoin={() => handleJoin(room)} isJoining={joining === room.id} />
                 ))}
               </div>
