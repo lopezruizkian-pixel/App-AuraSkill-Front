@@ -3,6 +3,13 @@ const { pool } = require('./db');
 
 const activeRooms = new Map();
 const connectedUsers = new Map();
+let ioInstance = null;
+
+const broadcastRoomsUpdated = () => {
+  if (ioInstance) {
+    ioInstance.emit('roomsUpdated');
+  }
+};
 
 const normalizeRoomMeta = (roomMeta = {}) => ({
   nombre: roomMeta.nombre || roomMeta.roomName || 'Sala de mentoría',
@@ -110,6 +117,7 @@ const startMentorSession = (room, user) => {
     endReason: null,
   };
 
+  broadcastRoomsUpdated();
   return room.currentSession;
 };
 
@@ -132,6 +140,7 @@ const finalizeMentorSession = async (room, reason = 'disconnect') => {
 
   await persistSession(room.currentSession);
   room.lastCompletedSession = buildSessionPayload(room.currentSession);
+  broadcastRoomsUpdated();
   return room.lastCompletedSession;
 };
 
@@ -150,6 +159,7 @@ const initializeSocket = (server) => {
     },
     transports: ['websocket', 'polling'],
   });
+  ioInstance = io;
 
   io.on('connection', (socket) => {
     console.log(`[Socket] Usuario conectado: ${socket.id}`);
@@ -280,4 +290,10 @@ const initializeSocket = (server) => {
   return io;
 };
 
-module.exports = { initializeSocket, activeRooms, connectedUsers, getRoomSessionState };
+module.exports = {
+  initializeSocket,
+  getRoomSessionState,
+  activeRooms,
+  connectedUsers,
+  broadcastRoomsUpdated,
+};

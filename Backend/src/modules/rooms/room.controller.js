@@ -6,7 +6,7 @@ const {
   eliminarRoom,
   obtenerHistorialUsuario,
 } = require("./room.service")
-const { getRoomSessionState } = require("../../config/socket")
+const { getRoomSessionState, broadcastRoomsUpdated } = require("../../config/socket")
 
 const getRooms = async (req, res) => {
   try {
@@ -52,6 +52,7 @@ const createRoom = async (req, res) => {
       mood: req.body.mood || "",
     }
     const room = await crearRoom(payload)
+    broadcastRoomsUpdated()
     res.json({ message: "Sala creada", room })
   } catch (error) {
     res.status(400).json({ error: error.message })
@@ -70,6 +71,7 @@ const joinRoom = async (req, res) => {
 const deleteRoom = async (req, res) => {
   try {
     await eliminarRoom(req.params.id)
+    broadcastRoomsUpdated()
     res.json({ message: "Sala eliminada" })
   } catch (error) {
     res.status(500).json({ error: error.message })

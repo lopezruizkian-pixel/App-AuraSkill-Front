@@ -5,6 +5,7 @@ import MentorCard from "../components/MentorCard";
 import Notificaciones from "../components/Notificaciones";
 import { Search, User } from "lucide-react";
 import { fetchActiveRooms, joinRoom, fetchRoom } from "../services/roomService";
+import { io } from "socket.io-client";
 import "../Styles/Mentores.css";
 
 function Mentores() {
@@ -18,21 +19,33 @@ function Mentores() {
   const [filtroMood, setFiltroMood] = useState("");
   const [joining, setJoining] = useState(null);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await fetchActiveRooms();
-        setRooms(data);
-        setFiltered(data);
-      } catch (err) {
-        console.error("Error cargando mentores:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
+  const load = async () => {
+    try {
+      const data = await fetchActiveRooms();
+      setRooms(data);
+      setFiltered(data);
+    } catch (err) {
+      console.error("Error cargando mentores:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    load();
+    
+    const socketURL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
+    const socket = io(socketURL, { transports: ['websocket', 'polling'] });
+    
+    socket.on('roomsUpdated', () => {
+      console.log('Salas actualizadas, recargando...');
+      load();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
   useEffect(() => {
     let result = rooms;
     if (search.trim()) {

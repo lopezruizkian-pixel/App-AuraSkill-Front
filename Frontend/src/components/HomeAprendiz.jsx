@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { fetchActiveRooms, joinRoom, fetchRoom } from "../services/roomService";
+import { io } from "socket.io-client";
 
 function HomeAprendiz() {
   const navigate = useNavigate();
@@ -14,8 +15,22 @@ function HomeAprendiz() {
 
   useEffect(() => {
     loadRooms();
+    
+    // Conectar a WebSockets para actualizaciones en tiempo real
+    const socketURL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
+    const socket = io(socketURL, { transports: ['websocket', 'polling'] });
+    
+    socket.on('roomsUpdated', () => {
+      console.log('Salas actualizadas, recargando...');
+      loadRooms();
+    });
+
     const historialGuardado = JSON.parse(localStorage.getItem("historialSalas")) || [];
     setSalasVisitadas(historialGuardado);
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   useEffect(() => {
