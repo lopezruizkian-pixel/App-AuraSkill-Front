@@ -1,20 +1,65 @@
 import { useState, useEffect, useRef } from "react";
-import { Bell, X, BookOpen, Video } from "lucide-react";
-import { fetchActiveRooms } from "../services/roomService";
+import { Bell, BellOff, X, Video } from "lucide-react";
+import { io } from "socket.io-client";
+
+const SOCKET_URL = import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:3000";
 
 function Notificaciones() {
   const [open, setOpen] = useState(false);
   const [notifs, setNotifs] = useState([]);
   const [unread, setUnread] = useState(0);
+  const [activas, setActivas] = useState(() =>
+    localStorage.getItem("notificaciones") !== "false"
+  );
   const ref = useRef(null);
+  const socketRef = useRef(null);
+  const vistasRef = useRef(new Set(JSON.parse(localStorage.getItem("notifs_vistas") || "[]")));
 
+  // Escuchar cambios desde Configuracion
   useEffect(() => {
-    loadNotifs();
-    // Actualizar cada 30 segundos
-    const interval = setInterval(loadNotifs, 30000);
-    return () => clearInterval(interval);
+    const handleChanged = () => {
+      const nuevo = localStorage.getItem("notificaciones") !== "false";
+      setActivas(nuevo);
+      if (!nuevo) { setNotifs([]); setUnread(0); }
+    };
+    window.addEventListener("notificaciones-changed", handleChanged);
+    return () => window.removeEventListener("notificaciones-changed", handleChanged);
   }, []);
 
+  // Conectar socket y escuchar evento de mentor activo
+  useEffect(() => {
+    if (!activas) {
+      socketRef.current?.disconnect();
+      return;
+    }
+
+    const socket = io(SOCKET_URL, { transports: ["websocket", "polling"] });
+    socketRef.current = socket;
+
+    socket.on("mentor_sala_activa", (data) => {
+      const { roomId, roomNombre, mentorNombre, habilidad, mood } = data;
+
+      // No mostrar si ya la vimos
+      if (vistasRef.current.has(roomId)) return;
+
+      const nuevaNotif = {
+        id: `${roomId}-${Date.now()}`,
+        titulo: `¡Sala activa: ${roomNombre}!`,
+        descripcion: `${mentorNombre} está enseñando ${habilidad}`,
+        mood: mood || "—",
+        roomId,
+      };
+
+      setNotifs((prev) => [nuevaNotif, ...prev]);
+      setUnread((prev) => prev + 1);
+      vistasRef.current.add(roomId);
+      localStorage.setItem("notifs_vistas", JSON.stringify([...vistasRef.current]));
+    });
+
+    return () => socket.disconnect();
+  }, [activas]);
+
+  // Cerrar al click afuera
   useEffect(() => {
     const handleClick = (e) => {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);
@@ -23,33 +68,21 @@ function Notificaciones() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const loadNotifs = async () => {
-    try {
-      const rooms = await fetchActiveRooms();
-      const nuevas = rooms.map((r) => ({
-        id: r.id,
-        tipo: "sala",
-        titulo: `Sala disponible: ${r.nombre}`,
-        descripcion: `${r.mentor_nombre} está enseñando ${r.habilidad}`,
-        mood: r.mood || "—",
-        leida: false,
-        tiempo: "Ahora",
-      }));
-      setNotifs(nuevas);
-      setUnread(nuevas.length);
-    } catch (err) {
-      console.error("Error cargando notificaciones:", err);
-    }
-  };
-
   const handleOpen = () => {
     setOpen(!open);
     if (!open) setUnread(0);
   };
 
-  const handleDismiss = (id) => {
-    setNotifs((prev) => prev.filter((n) => n.id !== id));
-  };
+  const handleDismiss = (id) => setNotifs((prev) => prev.filter((n) => n.id !== id));
+  const handleLimpiar = () => { setNotifs([]); setUnread(0); };
+
+  if (!activas) {
+    return (
+      <div className="icon-action bell-icon" style={{ opacity: 0.4 }}>
+        <BellOff size={24} />
+      </div>
+    );
+  }
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
@@ -66,23 +99,22 @@ function Notificaciones() {
         }}>
           <div style={{ padding: "1rem 1.25rem", borderBottom: "1px solid #1a1a2e", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h4 style={{ color: "#00ffff", margin: 0 }}>Notificaciones</h4>
-            <span style={{ color: "#aaa", fontSize: "0.8rem" }}>{notifs.length} activas</span>
+            <span style={{ color: "#aaa", fontSize: "0.8rem" }}>{notifs.length} nuevas</span>
           </div>
 
           <div style={{ maxHeight: "360px", overflowY: "auto" }}>
             {notifs.length === 0 ? (
               <div style={{ padding: "2rem", textAlign: "center", color: "#aaa" }}>
-                No hay notificaciones
+                No hay notificaciones nuevas
               </div>
             ) : (
               notifs.map((n) => (
                 <div key={n.id} style={{
                   padding: "0.85rem 1.25rem", borderBottom: "1px solid #1a1a2e",
-                  display: "flex", gap: "0.75rem", alignItems: "flex-start",
-                  background: "#0d0d1a", transition: "background 0.2s",
+                  display: "flex", gap: "0.75rem", alignItems: "flex-start", background: "#0d0d1a",
                 }}>
                   <div style={{ marginTop: "2px", color: "#00ffff" }}>
-                    {n.tipo === "sala" ? <Video size={18} /> : <BookOpen size={18} />}
+                    <Video size={18} />
                   </div>
                   <div style={{ flex: 1 }}>
                     <p style={{ color: "#fff", margin: 0, fontSize: "0.9rem", fontWeight: 600 }}>{n.titulo}</p>
@@ -98,7 +130,7 @@ function Notificaciones() {
 
           {notifs.length > 0 && (
             <div style={{ padding: "0.75rem 1.25rem", borderTop: "1px solid #1a1a2e", textAlign: "center" }}>
-              <button onClick={() => setNotifs([])}
+              <button onClick={handleLimpiar}
                 style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", fontSize: "0.85rem" }}>
                 Limpiar todas
               </button>
