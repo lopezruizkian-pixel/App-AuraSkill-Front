@@ -167,7 +167,7 @@ function RoomPage() {
     setIsLeaving(true);
     leaveCurrentRoom();
     localStorage.removeItem('salaActiva');
-    navigate(isMentor ? '/historial' : '/salas-activas', { replace: true });
+    navigate('/home', { replace: true });
   };
 
   const stageTitle = isMentor

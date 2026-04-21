@@ -31,9 +31,10 @@ const buildSessionPayload = (session) => {
 };
 
 const getOrCreateRoomState = (roomId, roomMeta = {}) => {
-  if (!activeRooms.has(roomId)) {
-    activeRooms.set(roomId, {
-      roomId,
+  const roomIdStr = String(roomId);
+  if (!activeRooms.has(roomIdStr)) {
+    activeRooms.set(roomIdStr, {
+      roomId: roomIdStr,
       roomMeta: normalizeRoomMeta(roomMeta),
       participants: [],
       messages: [],
@@ -42,7 +43,7 @@ const getOrCreateRoomState = (roomId, roomMeta = {}) => {
       currentSession: null,
     });
   }
-  const room = activeRooms.get(roomId);
+  const room = activeRooms.get(roomIdStr);
   room.roomMeta = { ...room.roomMeta, ...normalizeRoomMeta(roomMeta) };
   return room;
 };
@@ -135,7 +136,7 @@ const finalizeMentorSession = async (room, reason = 'disconnect') => {
 };
 
 const getRoomSessionState = (roomId) => {
-  const room = activeRooms.get(roomId);
+  const room = activeRooms.get(String(roomId));
   return room?.currentSession
     ? buildSessionPayload(room.currentSession)
     : room?.lastCompletedSession || null;
@@ -196,7 +197,7 @@ const initializeSocket = (server) => {
       const { roomId } = data;
       const user = connectedUsers.get(socket.id);
       if (user) {
-        const room = activeRooms.get(roomId);
+        const room = activeRooms.get(String(roomId));
         if (room) {
           room.participants = room.participants.filter((p) => p.userId !== user.userId);
           if (user.userRole === 'mentor' && room.currentSession?.mentorId === user.userId) {
@@ -214,7 +215,7 @@ const initializeSocket = (server) => {
     socket.on('sendMessage', (data) => {
       const { roomId, userId, userName, userAvatar, texto } = data;
       const message = { id: Date.now(), userId, userName, userAvatar, texto, timestamp: new Date() };
-      const room = activeRooms.get(roomId);
+      const room = activeRooms.get(String(roomId));
       if (room) room.messages.push(message);
       io.to(roomId).emit('newMessage', message);
     });
@@ -222,7 +223,7 @@ const initializeSocket = (server) => {
     socket.on('sendReaction', (data) => {
       const { roomId, userId, userName, userAvatar, emoji } = data;
       const reaction = { id: Date.now(), userId, userName, userAvatar, emoji, timestamp: Date.now() };
-      const room = activeRooms.get(roomId);
+      const room = activeRooms.get(String(roomId));
       if (room) room.reactions.push(reaction);
       io.to(roomId).emit('newReaction', reaction);
       setTimeout(() => {
@@ -254,7 +255,7 @@ const initializeSocket = (server) => {
     socket.on('disconnect', async () => {
       const user = connectedUsers.get(socket.id);
       if (user) {
-        const room = activeRooms.get(user.roomId);
+        const room = activeRooms.get(String(user.roomId));
         if (room) {
           room.participants = room.participants.filter((p) => p.userId !== user.userId);
           if (user.userRole === 'mentor' && room.currentSession?.mentorId === user.userId) {

@@ -12,7 +12,7 @@ const getRooms = async (req, res) => {
   try {
     const rooms = await obtenerRooms()
     const roomsWithSession = rooms.map(room => {
-      const sessionInfo = getRoomSessionState(room.id)
+      const sessionInfo = getRoomSessionState(String(room.id))
       return { ...room, sessionInfo }
     })
     res.json(roomsWithSession)
