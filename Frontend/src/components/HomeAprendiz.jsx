@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
-import { fetchActiveRooms, joinRoom } from "../services/roomService";
+import { fetchActiveRooms, joinRoom, fetchRoom } from "../services/roomService";
+import { getSocketUrl } from "../services/socketConfig";
+import { io } from "socket.io-client";
 
 function HomeAprendiz() {
   const navigate = useNavigate();
@@ -14,8 +16,22 @@ function HomeAprendiz() {
 
   useEffect(() => {
     loadRooms();
+    
+    // Conectar a WebSockets para actualizaciones en tiempo real
+    const socketURL = getSocketUrl();
+    const socket = io(socketURL, { transports: ['websocket', 'polling'] });
+    
+    socket.on('roomsUpdated', () => {
+      console.log('Salas actualizadas, recargando...');
+      loadRooms();
+    });
+
     const historialGuardado = JSON.parse(localStorage.getItem("historialSalas")) || [];
     setSalasVisitadas(historialGuardado);
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -44,12 +60,17 @@ function HomeAprendiz() {
   };
 
   const handleJoin = async (room) => {
-    if (!room.sessionInfo?.isActive) {
-      alert("El mentor aún no ha ingresado a esta sala.");
-      return;
-    }
     setJoining(room.id);
     try {
+      // Verificar estado actual con el backend para evitar bloqueos por estado obsoleto
+      const roomDetails = await fetchRoom(room.id);
+
+      if (!roomDetails.sessionInfo?.isActive) {
+        alert("El mentor aún no ha ingresado a esta sala.");
+        setJoining(null);
+        return;
+      }
+
       // Intentar unirse, si ya está en la sala simplemente entrar
       try {
         await joinRoom(room.id);

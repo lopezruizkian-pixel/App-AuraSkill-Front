@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Wrench, Smile, Users, PlusCircle, Video } from "lucide-react";
 import { fetchActiveRooms, createRoom } from "../services/roomService";
+import { getSocketUrl } from "../services/socketConfig";
+import { io } from "socket.io-client";
 import "../Styles/Mentores.css";
 
 function HomeMentor() {
@@ -15,6 +17,18 @@ function HomeMentor() {
 
   useEffect(() => {
     loadRooms();
+
+    const socketURL = getSocketUrl();
+    const socket = io(socketURL, { transports: ['websocket', 'polling'] });
+    
+    socket.on('roomsUpdated', () => {
+      console.log('Salas actualizadas, recargando (mentor)...');
+      loadRooms();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   const loadRooms = async () => {

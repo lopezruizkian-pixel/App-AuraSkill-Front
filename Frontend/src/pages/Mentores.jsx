@@ -4,7 +4,9 @@ import Sidebar from "../components/Sidebar";
 import MentorCard from "../components/MentorCard";
 import Notificaciones from "../components/Notificaciones";
 import { Search, User } from "lucide-react";
-import { fetchActiveRooms, joinRoom } from "../services/roomService";
+import { fetchActiveRooms, joinRoom, fetchRoom } from "../services/roomService";
+import { getSocketUrl } from "../services/socketConfig";
+import { io } from "socket.io-client";
 import "../Styles/Mentores.css";
 
 function Mentores() {
@@ -18,21 +20,33 @@ function Mentores() {
   const [filtroMood, setFiltroMood] = useState("");
   const [joining, setJoining] = useState(null);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await fetchActiveRooms();
-        setRooms(data);
-        setFiltered(data);
-      } catch (err) {
-        console.error("Error cargando mentores:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
+  const load = async () => {
+    try {
+      const data = await fetchActiveRooms();
+      setRooms(data);
+      setFiltered(data);
+    } catch (err) {
+      console.error("Error cargando mentores:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    load();
+    
+    const socketURL = getSocketUrl();
+    const socket = io(socketURL, { transports: ['websocket', 'polling'] });
+    
+    socket.on('roomsUpdated', () => {
+      console.log('Salas actualizadas, recargando...');
+      load();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
   useEffect(() => {
     let result = rooms;
     if (search.trim()) {
@@ -51,12 +65,17 @@ function Mentores() {
   const moods = [...new Set(rooms.map((r) => r.mood).filter(Boolean))];
 
   const handleJoin = async (room) => {
-    if (!room.sessionInfo?.isActive) {
-      alert("El mentor aún no ha ingresado a esta sala.");
-      return;
-    }
     setJoining(room.id);
     try {
+      // Verificar estado actual con el backend para evitar bloqueos por estado obsoleto
+      const roomDetails = await fetchRoom(room.id);
+
+      if (!roomDetails.sessionInfo?.isActive) {
+        alert("El mentor aún no ha ingresado a esta sala.");
+        setJoining(null);
+        return;
+      }
+
       try { await joinRoom(room.id); } catch (err) {
         if (!err.message?.includes("Ya estás en esta sala")) throw err;
       }
