@@ -76,7 +76,7 @@ function Mentores() {
           <div className="dashboard-header full-header">
             <div className="search-container-neon search-extended">
               <Search className="search-icon" size={20} />
-              <input type="text" placeholder="Buscar mentor o habilidad..." className="search-input-neon"
+              <input type="text" placeholder="Search mentor or skill..." className="search-input-neon"
                 value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             <div className="header-actions-right">
@@ -88,10 +88,10 @@ function Mentores() {
             </div>
           </div>
           <section className="mentores-section">
-            <h2 className="welcome-title">Mentores disponibles</h2>
+            <h2 className="welcome-title">Available Mentors</h2>
             <div className="filtros-container">
               <select className="filtro-neon" value={filtroHabilidad} onChange={(e) => setFiltroHabilidad(e.target.value)}>
-                <option value="">Habilidad</option>
+                <option value="">Skill</option>
                 {habilidades.map((h) => <option key={h} value={h}>{h}</option>)}
               </select>
               <select className="filtro-neon" value={filtroMood} onChange={(e) => setFiltroMood(e.target.value)}>
@@ -99,9 +99,9 @@ function Mentores() {
                 {moods.map((m) => <option key={m} value={m}>{m}</option>)}
               </select>
             </div>
-            {loading ? <p>Cargando mentores...</p> : filtered.length === 0 ? (
+            {loading ? <p>Loading mentors...</p> : filtered.length === 0 ? (
               <div className="neon-card" style={{ padding: "2rem", textAlign: "center" }}>
-                <p>No hay mentores disponibles en este momento.</p>
+                <p>No mentors available right now.</p>
               </div>
             ) : (
               <div className="mentores-grid">

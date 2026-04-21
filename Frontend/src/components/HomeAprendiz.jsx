@@ -76,7 +76,7 @@ function HomeAprendiz() {
           <Search className="search-icon" size={20} />
           <input
             type="text"
-            placeholder="Buscar habilidad o mentor..."
+            placeholder="Search skill or mentor..."
             className="search-input-neon"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -85,20 +85,20 @@ function HomeAprendiz() {
         <div className="mood-indicator">Mood: Concentrado</div>
       </div>
 
-      <h2 className="welcome-title">Mentores disponibles</h2>
+      <h2 className="welcome-title">Available Mentors</h2>
 
       {loading ? (
-        <p>Cargando salas...</p>
+        <p>Loading rooms...</p>
       ) : filtered.length === 0 ? (
-        <p>No hay salas disponibles en este momento.</p>
+        <p>No rooms available right now.</p>
       ) : (
         filtered.map((room) => (
           <div key={room.id} className="neon-card mentor-list-card">
             <div className="mentor-item">
               <div className="mentor-info">
-                <p><strong>Sala:</strong> {room.nombre}</p>
-                <p><strong>Mentor:</strong> {room.mentor_nombre || "Sin mentor"}</p>
-                <p><strong>Habilidad:</strong> {room.habilidad}</p>
+                <p><strong>Room:</strong> {room.nombre}</p>
+                <p><strong>Mentor:</strong> {room.mentor_nombre || "No mentor"}</p>
+                <p><strong>Skill:</strong> {room.habilidad}</p>
                 <p><strong>Mood:</strong> {room.mood || "—"}</p>
               </div>
               <button
@@ -106,7 +106,7 @@ function HomeAprendiz() {
                 onClick={() => handleJoin(room)}
                 disabled={joining === room.id}
               >
-                {joining === room.id ? "Entrando..." : "Entrar a sala"}
+                {joining === room.id ? "Joining..." : "Enter Room"}
               </button>
             </div>
           </div>

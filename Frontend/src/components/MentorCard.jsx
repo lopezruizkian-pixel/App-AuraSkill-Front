@@ -9,14 +9,14 @@ function MentorCard({ nombre, habilidad, mood, nombreSala, onJoin, isJoining }) 
         </div>
         <div className="mentor-details">
           <p className="mentor-text"><strong>Mentor:</strong> {nombre}</p>
-          <p className="mentor-text"><strong>Sala:</strong> {nombreSala}</p>
-          <p className="mentor-text"><strong>Habilidad:</strong> {habilidad}</p>
+          <p className="mentor-text"><strong>Room:</strong> {nombreSala}</p>
+          <p className="mentor-text"><strong>Skill:</strong> {habilidad}</p>
           <p className="mentor-text"><strong>Mood:</strong> {mood || "—"}</p>
         </div>
       </div>
       <div className="mentor-card-action">
         <button className="primary-btn-s" onClick={onJoin} disabled={isJoining}>
-          {isJoining ? "Entrando..." : "Entrar a sala"}
+          {isJoining ? "Joining..." : "Enter Room"}
         </button>
       </div>
     </div>
