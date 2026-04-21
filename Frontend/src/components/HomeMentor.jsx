@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Wrench, Smile, Users, PlusCircle, Video } from "lucide-react";
 import { fetchActiveRooms, createRoom } from "../services/roomService";
+import "../Styles/Mentores.css";
 
 function HomeMentor() {
   const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState({ nombre: "", habilidad: "", mood: "" });
+  const [formData, setFormData] = useState({ nombre: "", habilidad: "", mood: "", limite: 10 });
   const [creating, setCreating] = useState(false);
 
   const userId = localStorage.getItem("userId");
@@ -43,7 +45,7 @@ function HomeMentor() {
         nombre: formData.nombre,
         habilidad: formData.habilidad,
         mood: formData.mood,
-        capacidad_maxima: 10,
+        capacidad_maxima: formData.limite,
         descripcion: "",
       });
       const room = newRoom.room || newRoom;
@@ -66,12 +68,19 @@ function HomeMentor() {
 
   return (
     <section className="dashboard-section">
-      <div className="dashboard-header">
-        <button className="boton-estadoDispo">Estado: Disponible</button>
+      <div className="dashboard-header full-header" style={{ marginBottom: "2rem" }}>
+        <h2 className="welcome-title" style={{ margin: 0 }}>Dashboard del Mentor</h2>
+        <div className="estado-mentor-pill">
+          <span>Estado: Disponible</span>
+          <div className="status-dot online" style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#00ff00", marginLeft: "10px" }}></div>
+        </div>
       </div>
 
-      <div className="neon-card main-card">
-        <h3>Crear nueva sala</h3>
+      <div className="neon-card main-card" style={{ marginBottom: "3rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
+          <PlusCircle size={24} color="#00ffff" />
+          <h3 style={{ margin: 0, color: "#fff" }}>Crear nueva sala de mentoría</h3>
+        </div>
         <div className="form-mini">
 
           <div className="mini-input-group">
@@ -84,14 +93,14 @@ function HomeMentor() {
               <label>Habilidad</label>
               <div className="input-wrapper-mini">
                 <Wrench size={16} className="mini-icon" />
-                <select className="neon-input-s neon-select-s">
-                  <option value="" disabled selected>Selecciona</option>
-                  <option value="programacion">💻 Programación</option>
-                  <option value="diseno">🎨 Diseño UI/UX</option>
-                  <option value="idiomas">🌍 Idiomas</option>
-                  <option value="matematicas">📐 Matemáticas</option>
-                  <option value="musica">🎵 Música</option>
-                  <option value="otros">✨ Otros</option>
+                <select name="habilidad" className="neon-input-s neon-select-s" value={formData.habilidad} onChange={handleChange}>
+                  <option value="" disabled>Selecciona</option>
+                  <option value="Programacion">💻 Programación</option>
+                  <option value="Diseno">🎨 Diseño UI/UX</option>
+                  <option value="Idiomas">🌍 Idiomas</option>
+                  <option value="Matematicas">📐 Matemáticas</option>
+                  <option value="Musica">🎵 Música</option>
+                  <option value="Otros">✨ Otros</option>
                 </select>
               </div>
             </div>
@@ -100,12 +109,12 @@ function HomeMentor() {
               <label>Mood</label>
               <div className="input-wrapper-mini">
                 <Smile size={16} className="mini-icon" />
-                <select className="neon-input-s neon-select-s">
-                  <option value="" disabled selected>Selecciona</option>
-                  <option value="concentrado">🎯 Concentrado</option>
-                  <option value="creativo">🎨 Creativo</option>
-                  <option value="energetico">⚡ Energético</option>
-                  <option value="relajado">☕ Relajado</option>
+                <select name="mood" className="neon-input-s neon-select-s" value={formData.mood} onChange={handleChange}>
+                  <option value="" disabled>Selecciona</option>
+                  <option value="Concentrado">🎯 Concentrado</option>
+                  <option value="Creativo">🎨 Creativo</option>
+                  <option value="Energetico">⚡ Energético</option>
+                  <option value="Relajado">☕ Relajado</option>
                 </select>
               </div>
             </div>
@@ -116,45 +125,46 @@ function HomeMentor() {
               <label>Límite de estudiantes</label>
               <div className="input-wrapper-mini">
                 <Users size={16} className="mini-icon" />
-                <input type="number" min="1" max="50" className="neon-input-s" placeholder="Ej. 10" />
+                <input type="number" name="limite" min="1" max="50" className="neon-input-s" value={formData.limite} onChange={handleChange} placeholder="Ej. 10" />
               </div>
             </div>
           </div>
 
-          <div className="mini-input-group">
-            <label>Habilidad</label>
-            <input type="text" name="habilidad" className="neon-input-s" value={formData.habilidad} onChange={handleChange} placeholder="Ej. Programación" />
-          </div>
-          <div className="mini-input-group">
-            <label>Mood de la sesión</label>
-            <input type="text" name="mood" className="neon-input-s" value={formData.mood} onChange={handleChange} placeholder="Ej. Concentrado" />
-          </div>
-          <button className="primary-btn-s" onClick={handleCrear} disabled={creating}>
-            {creating ? "Creando..." : "Crear sala"}
+          <button className="primary-btn-s" onClick={handleCrear} disabled={creating} style={{ marginTop: "10px", width: "100%", maxWidth: "200px" }}>
+            {creating ? "Creando..." : "Crear e Iniciar sala"}
           </button>
         </div>
       </div>
 
-      <h2 className="welcome-title">Mis salas activas</h2>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
+        <Video size={24} color="#ff00ff" />
+        <h2 className="welcome-title" style={{ margin: 0 }}>Mis salas activas</h2>
+      </div>
+
       {loading ? (
         <p>Cargando salas...</p>
       ) : rooms.length === 0 ? (
-        <p>No tienes salas activas aún.</p>
+        <div className="neon-card empty-sala-state" style={{ padding: "2rem", textAlign: "center", marginTop: "1rem" }}>
+          <p>No tienes salas activas aún. Crea una para comenzar a ser mentor.</p>
+        </div>
       ) : (
-        rooms.map((room) => (
-          <div key={room.id} className="neon-card mentor-list-card">
-            <div className="mentor-item">
-              <div className="mentor-info">
-                <p><strong>Sala:</strong> {room.nombre}</p>
-                <p><strong>Habilidad:</strong> {room.habilidad}</p>
-                <p><strong>Mood:</strong> {room.mood}</p>
+        <div className="mentores-grid">
+          {rooms.map((room) => (
+            <div key={room.id} className="neon-card mentor-list-card">
+              <div className="mentor-item" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <div className="mentor-info">
+                  <h4 style={{ margin: "0 0 10px 0", color: "#00ffff" }}>{room.nombre}</h4>
+                  <p><strong>Habilidad:</strong> {room.habilidad}</p>
+                  <p><strong>Mood:</strong> {room.mood}</p>
+                  <p><strong>Participantes:</strong> {room.sessionInfo?.participantCount || 0} / {room.capacidad_maxima || 10}</p>
+                </div>
+                <button className="primary-btn-s" onClick={() => navigate(`/sala/${room.id}`)} style={{ alignSelf: 'flex-start' }}>
+                  Entrar a mi sala
+                </button>
               </div>
-              <button className="primary-btn-s" onClick={() => navigate(`/sala/${room.id}`)}>
-                Entrar
-              </button>
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
     </section>
   );
