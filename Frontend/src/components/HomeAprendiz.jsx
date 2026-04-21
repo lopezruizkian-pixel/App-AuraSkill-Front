@@ -44,12 +44,22 @@ function HomeAprendiz() {
   };
 
   const handleJoin = async (room) => {
-    if (!room.sessionInfo?.isActive) {
-      alert("El mentor aún no ha ingresado a esta sala.");
-      return;
-    }
     setJoining(room.id);
     try {
+      // Verificar estado actual con el backend para evitar bloqueos por estado obsoleto
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/rooms/${room.id}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const roomDetails = await response.json();
+      
+      if (!roomDetails.sessionInfo?.isActive) {
+        alert("El mentor aún no ha ingresado a esta sala.");
+        setJoining(null);
+        return;
+      }
+
       // Intentar unirse, si ya está en la sala simplemente entrar
       try {
         await joinRoom(room.id);

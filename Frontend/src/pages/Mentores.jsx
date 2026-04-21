@@ -51,12 +51,22 @@ function Mentores() {
   const moods = [...new Set(rooms.map((r) => r.mood).filter(Boolean))];
 
   const handleJoin = async (room) => {
-    if (!room.sessionInfo?.isActive) {
-      alert("El mentor aún no ha ingresado a esta sala.");
-      return;
-    }
     setJoining(room.id);
     try {
+      // Verificar estado actual con el backend para evitar bloqueos por estado obsoleto
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/rooms/${room.id}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const roomDetails = await response.json();
+
+      if (!roomDetails.sessionInfo?.isActive) {
+        alert("El mentor aún no ha ingresado a esta sala.");
+        setJoining(null);
+        return;
+      }
+
       try { await joinRoom(room.id); } catch (err) {
         if (!err.message?.includes("Ya estás en esta sala")) throw err;
       }

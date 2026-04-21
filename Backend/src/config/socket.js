@@ -145,9 +145,8 @@ const getRoomSessionState = (roomId) => {
 const initializeSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: ['http://localhost:5173', 'http://localhost:3000'],
+      origin: '*',
       methods: ['GET', 'POST'],
-      credentials: true,
     },
     transports: ['websocket', 'polling'],
   });
@@ -156,7 +155,8 @@ const initializeSocket = (server) => {
     console.log(`[Socket] Usuario conectado: ${socket.id}`);
 
     socket.on('joinRoom', (data) => {
-      const { roomId, userId, userName, userAvatar, userRole, roomMeta } = data;
+      const { userId, userName, userAvatar, userRole, roomMeta } = data;
+      const roomId = String(data.roomId);
       connectedUsers.set(socket.id, { userId, userName, userAvatar, userRole, roomId, socketId: socket.id });
 
       socket.join(roomId);
@@ -177,7 +177,7 @@ const initializeSocket = (server) => {
         console.log(`[Socket] ${userName} agregado a sesión activa en sala ${roomId}`);
       }
 
-      if (userRole === 'mentor') {
+      if (userRole?.toLowerCase() === 'mentor') {
         startMentorSession(room, newParticipant);
       }
 
@@ -194,13 +194,13 @@ const initializeSocket = (server) => {
     });
 
     socket.on('leaveRoom', async (data) => {
-      const { roomId } = data;
+      const roomId = String(data.roomId);
       const user = connectedUsers.get(socket.id);
       if (user) {
         const room = activeRooms.get(String(roomId));
         if (room) {
           room.participants = room.participants.filter((p) => p.userId !== user.userId);
-          if (user.userRole === 'mentor' && room.currentSession?.mentorId === user.userId) {
+          if (user.userRole?.toLowerCase() === 'mentor' && room.currentSession?.mentorId === user.userId) {
             await finalizeMentorSession(room, 'leaveRoom');
             io.to(roomId).emit('roomSessionUpdated', getRoomSessionState(roomId));
           }
@@ -213,7 +213,8 @@ const initializeSocket = (server) => {
     });
 
     socket.on('sendMessage', (data) => {
-      const { roomId, userId, userName, userAvatar, texto } = data;
+      const { userId, userName, userAvatar, texto } = data;
+      const roomId = String(data.roomId);
       const message = { id: Date.now(), userId, userName, userAvatar, texto, timestamp: new Date() };
       const room = activeRooms.get(String(roomId));
       if (room) room.messages.push(message);
@@ -221,7 +222,8 @@ const initializeSocket = (server) => {
     });
 
     socket.on('sendReaction', (data) => {
-      const { roomId, userId, userName, userAvatar, emoji } = data;
+      const { userId, userName, userAvatar, emoji } = data;
+      const roomId = String(data.roomId);
       const reaction = { id: Date.now(), userId, userName, userAvatar, emoji, timestamp: Date.now() };
       const room = activeRooms.get(String(roomId));
       if (room) room.reactions.push(reaction);
@@ -235,21 +237,23 @@ const initializeSocket = (server) => {
     });
 
     socket.on('userTyping', (data) => {
-      io.to(data.roomId).emit('userTyping', { userName: data.userName, isTyping: true });
+      const roomId = String(data.roomId);
+      io.to(roomId).emit('userTyping', { userName: data.userName });
     });
 
     socket.on('userStoppedTyping', (data) => {
-      io.to(data.roomId).emit('userStoppedTyping', { userName: data.userName, isTyping: false });
+      const roomId = String(data.roomId);
+      io.to(roomId).emit('userStoppedTyping', { userName: data.userName });
     });
 
     socket.on('videoStatusChanged', (data) => {
-      const user = connectedUsers.get(socket.id);
-      if (user) io.to(data.roomId).emit('videoStatusChanged', { userId: socket.id, userName: user.userName, enabled: data.enabled });
+      const roomId = String(data.roomId);
+      io.to(roomId).emit('videoStatusChanged', { userId: data.userId, enabled: data.enabled });
     });
 
     socket.on('audioStatusChanged', (data) => {
-      const user = connectedUsers.get(socket.id);
-      if (user) io.to(data.roomId).emit('audioStatusChanged', { userId: socket.id, userName: user.userName, enabled: data.enabled });
+      const roomId = String(data.roomId);
+      io.to(roomId).emit('audioStatusChanged', { userId: data.userId, enabled: data.enabled });
     });
 
     socket.on('disconnect', async () => {
@@ -258,7 +262,7 @@ const initializeSocket = (server) => {
         const room = activeRooms.get(String(user.roomId));
         if (room) {
           room.participants = room.participants.filter((p) => p.userId !== user.userId);
-          if (user.userRole === 'mentor' && room.currentSession?.mentorId === user.userId) {
+          if (user.userRole?.toLowerCase() === 'mentor' && room.currentSession?.mentorId === user.userId) {
             await finalizeMentorSession(room, 'disconnect');
             io.to(user.roomId).emit('roomSessionUpdated', getRoomSessionState(user.roomId));
           }
