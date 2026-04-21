@@ -5,6 +5,7 @@ import MentorCard from "../components/MentorCard";
 import Notificaciones from "../components/Notificaciones";
 import { Search, User } from "lucide-react";
 import { fetchActiveRooms, joinRoom, fetchRoom } from "../services/roomService";
+import { getSocketUrl } from "../services/socketConfig";
 import { io } from "socket.io-client";
 import "../Styles/Mentores.css";
 
@@ -34,7 +35,7 @@ function Mentores() {
   useEffect(() => {
     load();
     
-    const socketURL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
+    const socketURL = getSocketUrl();
     const socket = io(socketURL, { transports: ['websocket', 'polling'] });
     
     socket.on('roomsUpdated', () => {

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Wrench, Smile, Users, PlusCircle, Video } from "lucide-react";
 import { fetchActiveRooms, createRoom } from "../services/roomService";
+import { getSocketUrl } from "../services/socketConfig";
 import { io } from "socket.io-client";
 import "../Styles/Mentores.css";
 
@@ -17,7 +18,7 @@ function HomeMentor() {
   useEffect(() => {
     loadRooms();
 
-    const socketURL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
+    const socketURL = getSocketUrl();
     const socket = io(socketURL, { transports: ['websocket', 'polling'] });
     
     socket.on('roomsUpdated', () => {
