@@ -17,6 +17,15 @@ const initialState = {
 };
 
 const roomReducer = (state, action) => {
+  if (!action || !action.payload) {
+    // Si la acción llega corrupta, retornamos el estado actual sin romper la app
+    if (action && (action.type === 'CLEAR_MESSAGES' || action.type === 'RESET_ROOM' || action.type === 'CLEAR_REACTIONS')) {
+      // Estas acciones no requieren payload obligatoriamente
+    } else {
+      return state;
+    }
+  }
+
   switch (action.type) {
     // Inicializar sala
     case 'INIT_ROOM':
