@@ -1,9 +1,8 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import ConfigCard from "../components/ConfigCard";
 import Notificaciones from "../components/Notificaciones";
-import { Search, User, Headphones, Settings, Shield, Globe, Trash2, RefreshCw, Eye, EyeOff } from "lucide-react";
+import { Search, User, Bell, BellOff, Settings, Shield, Globe, Trash2, RefreshCw, Eye, EyeOff } from "lucide-react";
 import { ThemeContext } from "../context/ThemeContext";
 import { httpClient } from "../services/httpClient";
 import { logoutUser } from "../services/authService";
@@ -15,14 +14,28 @@ function Configuracion() {
   const [rol] = useState(localStorage.getItem("userRole") || "alumno");
   const { theme, setTheme } = useContext(ThemeContext);
   const navigate = useNavigate();
+
+  const [notifActivas, setNotifActivas] = useState(() =>
+    localStorage.getItem("notificaciones") !== "false"
+  );
+
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordData, setPasswordData] = useState({ passwordActual: "", passwordNueva: "", confirmar: "" });
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [showNueva, setShowNueva] = useState(false);
   const [showConfirmar, setShowConfirmar] = useState(false);
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const toggleNotificaciones = () => {
+    const nuevo = !notifActivas;
+    setNotifActivas(nuevo);
+    localStorage.setItem("notificaciones", String(nuevo));
+    window.dispatchEvent(new Event("notificaciones-changed"));
+    window.dispatchEvent(new Event("notificaciones-changed"));
+  };
 
   const handleChangePassword = async () => {
     if (!passwordData.passwordActual || !passwordData.passwordNueva || !passwordData.confirmar) { alert("Completa todos los campos"); return; }
@@ -69,57 +82,62 @@ function Configuracion() {
 
           <section className="configuracion-section">
             <h2 className="welcome-title">Configuración</h2>
+
+            {/* Notificaciones */}
             <div className="config-grid">
-              <ConfigCard titulo="Spotify" icon={Headphones} estadoTexto="Vinculado" estadoColor="#00ff00" btnTexto="Desvincular" />
-              <ConfigCard titulo="Notificaciones" icon={Notificaciones} estadoTexto="Activado" estadoColor="#00ff00" btnTexto="Desactivar" />
+              <div className="neon-card" style={{ padding: "1.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
+                  {notifActivas ? <Bell size={22} color="#00ffff" /> : <BellOff size={22} color="#aaa" />}
+                  <h3 style={{ color: notifActivas ? "#00ffff" : "#aaa", margin: 0 }}>Notificaciones</h3>
+                </div>
+                <p style={{ color: notifActivas ? "#00ff00" : "#ff0055", fontSize: "0.85rem", margin: "0 0 1rem" }}>
+                  Estado: {notifActivas ? "Activado" : "Desactivado"}
+                </p>
+                <button
+                  className={notifActivas ? "danger-btn-neon-s" : "primary-btn-neon-s"}
+                  onClick={toggleNotificaciones}
+                  
+                >
+                  {notifActivas ? "Desactivar" : "Activar"}
+                </button>
+              </div>
             </div>
+
+            {/* Personalización */}
             <div className="config-list-section">
               <h3 className="section-subtitle"><Settings size={20} className="section-icon" /> Personalización de sistema</h3>
               <div className="neon-card config-list-container">
                 <div className="config-list-item">
                   <span>Modo de visualización</span>
-                  <select
-                    className="config-select"
-                    onChange={(e) => setTheme(e.target.value)}
-                    value={theme}
-                  >
+                  <select className="config-select" onChange={(e) => setTheme(e.target.value)} value={theme}>
                     <option value="neon">Neón Cyberspace</option>
                     <option value="classic">Aura Clásico</option>
                   </select>
                 </div>
                 <div className="config-list-item">
-                  <span>Tema principal</span>
-                  <select className="config-select">
-                    <option>Neón Cyberspace (Actual)</option>
-                    <option>Aurora Neon</option>
-                    <option>Ocaso Digital</option>
-                    <option>Aura Clásico</option>
-                  </select>
-                </div>
-                <div className="config-list-item">
                   <span><Globe size={16} className="inline-icon" /> Idioma</span>
-                  <select className="config-select">
-                    <option>Neón Cyberspace</option>
-                    <option>Aurora Neon</option>
-                    <option>Ocaso Digital</option>
-                    <option>Aura Clásico</option>
+                  <select className="config-select" defaultValue="es">
+                    <option value="es">Español (Latinoamérica)</option>
+                    <option value="en">English (US)</option>
                   </select>
                 </div>
               </div>
             </div>
+
+            {/* Cuenta y Seguridad */}
             <div className="config-list-section">
               <h3 className="section-subtitle"><Shield size={20} className="section-icon" /> Cuenta y Seguridad</h3>
               <div className="neon-card config-list-container">
                 <div className="config-list-item">
                   <span>Cambiar contraseña</span>
                   <button className="primary-btn-neon-s" onClick={() => setShowPasswordModal(true)}>
-                    <RefreshCw size={14} style={{ marginRight:"8px" }} /> Actualizar
+                    <RefreshCw size={14} style={{ marginRight: "8px" }} /> Actualizar
                   </button>
                 </div>
                 <div className="config-list-item danger-zone">
                   <span>Eliminar cuenta definitivamente</span>
                   <button className="danger-btn-neon-s" onClick={() => setShowDeleteModal(true)}>
-                    <Trash2 size={14} style={{ marginRight:"8px" }} /> Eliminar
+                    <Trash2 size={14} style={{ marginRight: "8px" }} /> Eliminar
                   </button>
                 </div>
               </div>
@@ -128,6 +146,7 @@ function Configuracion() {
         </main>
       </div>
 
+      {/* Modal cambiar contraseña */}
       {showPasswordModal && (
         <div style={{ position:"fixed", top:0, left:0, width:"100vw", height:"100vh", background:"rgba(0,0,0,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000 }}>
           <div style={{ background:"#0d0d1a", border:"1px solid #00ffff", borderRadius:"12px", padding:"2rem", minWidth:"340px", display:"flex", flexDirection:"column", gap:"0.75rem" }}>
@@ -159,6 +178,7 @@ function Configuracion() {
         </div>
       )}
 
+      {/* Modal eliminar cuenta */}
       {showDeleteModal && (
         <div style={{ position:"fixed", top:0, left:0, width:"100vw", height:"100vh", background:"rgba(0,0,0,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000 }}>
           <div style={{ background:"#0d0d1a", border:"1px solid #ff00ff", borderRadius:"12px", padding:"2rem", minWidth:"340px", display:"flex", flexDirection:"column", gap:"0.75rem" }}>

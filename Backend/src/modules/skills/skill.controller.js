@@ -1,10 +1,4 @@
-const {
-  crearSkill,
-  obtenerSkills,
-  obtenerSkillPorId,
-  buscarSkills,
-  eliminarSkill,
-} = require("./skill.service");
+const { crearSkill, obtenerSkills, obtenerSkillPorId, buscarSkills, eliminarSkill } = require("./skill.service");
 
 const ensureMentor = (req) => {
   if (req.user?.rol !== "mentor") {
@@ -17,7 +11,10 @@ const ensureMentor = (req) => {
 const getSkills = async (req, res) => {
   try {
     const { q } = req.query;
-    const skills = q ? await buscarSkills(q) : await obtenerSkills();
+    const mentorId = req.user?.rol === "mentor" ? req.user.id : null;
+    const skills = q
+      ? await buscarSkills(q, mentorId)
+      : await obtenerSkills(mentorId);
     res.json(skills);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -27,11 +24,7 @@ const getSkills = async (req, res) => {
 const getSkillById = async (req, res) => {
   try {
     const skill = await obtenerSkillPorId(req.params.id);
-
-    if (!skill) {
-      return res.status(404).json({ error: "Habilidad no encontrada" });
-    }
-
+    if (!skill) return res.status(404).json({ error: "Habilidad no encontrada" });
     res.json(skill);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -41,7 +34,7 @@ const getSkillById = async (req, res) => {
 const createSkill = async (req, res) => {
   try {
     ensureMentor(req);
-    const skill = await crearSkill(req.body);
+    const skill = await crearSkill(req.body, req.user.id);
     res.status(201).json({ message: "Habilidad creada", skill });
   } catch (error) {
     res.status(error.status || 400).json({ error: error.message });
@@ -51,21 +44,11 @@ const createSkill = async (req, res) => {
 const deleteSkill = async (req, res) => {
   try {
     ensureMentor(req);
-    const deletedSkill = await eliminarSkill(req.params.id);
-
-    if (!deletedSkill) {
-      return res.status(404).json({ error: "Habilidad no encontrada" });
-    }
-
+    await eliminarSkill(req.params.id);
     res.json({ message: "Habilidad eliminada" });
   } catch (error) {
     res.status(error.status || 500).json({ error: error.message });
   }
 };
 
-module.exports = {
-  getSkills,
-  getSkillById,
-  createSkill,
-  deleteSkill,
-};
+module.exports = { getSkills, getSkillById, createSkill, deleteSkill };

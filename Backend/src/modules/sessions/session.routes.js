@@ -4,6 +4,7 @@ const { verifyToken } = require('../../middlewares/auth.middleware');
 
 const router = express.Router();
 
+// Autenticado (cualquier rol)
 router.get('/history', verifyToken, getHistorial);
 router.get('/room/:roomId', verifyToken, getSesion);
 

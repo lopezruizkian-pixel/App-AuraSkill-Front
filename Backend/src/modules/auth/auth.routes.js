@@ -4,8 +4,11 @@ const { verifyToken } = require("../../middlewares/auth.middleware")
 
 const router = express.Router()
 
+// Públicas
 router.post("/register", register)
 router.post("/login", login)
+
+// Cualquier usuario autenticado
 router.get("/profile", verifyToken, getProfile)
 router.put("/change-password", verifyToken, changePassword)
 router.put("/update-profile", verifyToken, updateProfile)
