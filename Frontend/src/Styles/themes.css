@@ -1,205 +1,66 @@
-/* ═══════════════════════════════════════
-   TEMA NEÓN CYBERSPACE (default)
-═══════════════════════════════════════ */
+/* Tema Neón Cyberspace */
 .theme-neon {
   --bg-main: #0a0014;
   --bg-card: #140022;
-  --bg-input: #1a1a2e;
   --border-card: #00ffff;
-  --border-input: #333;
   --accent: #ff00ff;
   --accent2: #00ffff;
   --text-main: #fff;
-  --text-secondary: #aaa;
   --text-accent: #00ffff;
   --shadow-card: 0 0 25px rgba(0, 255, 255, 0.1);
-  --sidebar-bg: #0d001a;
-  --sidebar-text: #ccc;
-  --sidebar-active: rgba(0, 255, 255, 0.1);
-  --header-bg: rgba(10, 0, 20, 0.95);
-  --btn-primary-bg: #ff00ff;
-  --btn-primary-text: #fff;
-  --btn-secondary-bg: transparent;
-  --mood-bg: rgba(0, 255, 255, 0.05);
-  --mood-border: #00ffff;
-  --mood-text: #00ffff;
-  --notification-dot: #ff00ff;
-  --danger: #ff0055;
 }
 
-/* ═══════════════════════════════════════
-   TEMA AURA CLÁSICO
-═══════════════════════════════════════ */
+/* Tema Aura Clásico */
 .theme-classic {
-  --bg-main: #f0f2f5;
-  --bg-card: #ffffff;
-  --bg-input: #f5f5f5;
-  --border-card: #ddd;
-  --border-input: #ccc;
-  --accent: #7c3aed;
-  --accent2: #4f46e5;
-  --text-main: #1a1a2e;
-  --text-secondary: #666;
-  --text-accent: #4f46e5;
-  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.08);
-  --sidebar-bg: #1a1a2e;
-  --sidebar-text: #ccc;
-  --sidebar-active: rgba(79, 70, 229, 0.2);
-  --header-bg: rgba(240, 242, 245, 0.95);
-  --btn-primary-bg: #4f46e5;
-  --btn-primary-text: #fff;
-  --btn-secondary-bg: transparent;
-  --mood-bg: rgba(79, 70, 229, 0.05);
-  --mood-border: #4f46e5;
-  --mood-text: #4f46e5;
-  --notification-dot: #7c3aed;
-  --danger: #dc2626;
+  --bg-main: #f5f5fa;
+  --bg-card: #fff;
+  --border-card: #222;
+  --accent: #007bff;
+  --accent2: #00c853;
+  --text-main: #222;
+  --text-accent: #007bff;
+  --shadow-card: 0 0 15px rgba(0, 123, 255, 0.08);
 }
 
-/* ═══════════════════════════════════════
-   ESTILOS GLOBALES CON VARIABLES
-═══════════════════════════════════════ */
 body {
   background-color: var(--bg-main);
-  color: var(--text-main);
-  transition: background-color 0.3s, color 0.3s;
 }
 
 .home-container {
   background-color: var(--bg-main);
 }
 
-.home-content {
-  background-color: var(--bg-main);
-}
-
-/* Cards */
 .neon-card {
   background: var(--bg-card);
   border: 1px solid var(--border-card);
   color: var(--text-main);
   box-shadow: var(--shadow-card);
-  transition: background 0.3s, border 0.3s;
 }
 
-.neon-card h2, .neon-card h3 {
+.neon-card h3 {
   color: var(--text-accent);
 }
 
-/* Sidebar */
-.sidebar {
-  background: var(--sidebar-bg) !important;
-}
-
-.sidebar-link {
-  color: var(--sidebar-text) !important;
-}
-
-.sidebar-link.active {
-  background: var(--sidebar-active) !important;
-}
-
-/* Títulos */
-.welcome-title {
+.primary-btn-neon, .primary-btn-neon-s {
+  background: var(--accent2);
   color: var(--text-main);
 }
 
-.section-subtitle-neon {
-  color: var(--text-accent);
+.secondary-btn-neon {
+  border: 1px solid var(--accent);
+  color: var(--text-main);
 }
 
-/* Inputs */
-input, select, textarea {
-  background: var(--bg-input) !important;
-  border-color: var(--border-input) !important;
-  color: var(--text-main) !important;
+.danger-btn-neon, .danger-btn-neon-s {
+  border: 1px solid var(--accent);
+  color: var(--accent);
 }
 
-.neon-input-s, .search-input-neon, .config-select, .skill-admin-input {
-  background: var(--bg-input) !important;
-  color: var(--text-main) !important;
-  border-color: var(--border-input) !important;
+.sidebar {
+  background: var(--bg-card);
+  color: var(--text-main);
 }
 
-/* Botones primarios */
-.primary-btn, .primary-btn-s, .primary-btn-neon, .primary-btn-neon-s {
-  background: var(--btn-primary-bg) !important;
-  color: var(--btn-primary-text) !important;
-  border: none !important;
-}
-
-/* Botones danger */
-.danger-btn-neon, .danger-btn-neon-s, .danger-btn-s {
-  border-color: var(--danger) !important;
-  color: var(--danger) !important;
-}
-
-/* Mood indicator */
-.mood-indicator {
-  background: var(--mood-bg);
-  border: 1px solid var(--mood-border);
-  color: var(--mood-text);
-}
-
-/* Notification dot */
-.notification-dot {
-  background: var(--notification-dot) !important;
-}
-
-/* Header */
-.dashboard-header {
-  background: var(--header-bg);
-  border-bottom: 1px solid var(--border-card);
-}
-
-/* Estado pill */
-.estado-mentor-pill {
-  border-color: var(--accent2) !important;
-  color: var(--accent2) !important;
-}
-
-/* Search container */
-.search-container-neon {
-  border-color: var(--accent2) !important;
-  background: var(--bg-input) !important;
-}
-
-.search-icon {
-  color: var(--accent2) !important;
-}
-
-/* Badges */
-.perfil-rol-badge {
-  background: var(--accent) !important;
-}
-
-/* Texto secundario */
-.perfil-usuario, .perfil-bio, .mentor-text {
-  color: var(--text-secondary) !important;
-}
-
-/* Links sidebar */
-.aura-logo {
-  color: var(--accent2) !important;
-}
-
-/* Historial headers */
-.header-item-neon {
-  border-color: var(--accent2) !important;
-  color: var(--accent2) !important;
-}
-
-/* Config list items */
-.config-list-item {
-  border-bottom-color: var(--border-card) !important;
-  color: var(--text-main) !important;
-}
-
-.config-list-item span {
-  color: var(--text-main) !important;
-}
-
-/* Section subtitles */
-.section-subtitle {
-  color: var(--text-accent) !important;
+.welcome-title {
+  color: var(--text-main);
 }

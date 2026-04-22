@@ -78,12 +78,8 @@ function Configuracion() {
               <div className="neon-card config-list-container">
                 <div className="config-list-item">
                   <span>Modo de visualización</span>
-                  <select
-                    className="config-select"
-                    onChange={(e) => setTheme(e.target.value)}
-                    value={theme}
-                  >
-                    <option value="neon">Neón Cyberspace</option>
+                  <select className="config-select" onChange={(e) => setTheme(e.target.value)} value={theme}>
+                    <option value="neon">Neón Cyberspace (Actual)</option>
                     <option value="classic">Aura Clásico</option>
                   </select>
                 </div>
@@ -99,10 +95,8 @@ function Configuracion() {
                 <div className="config-list-item">
                   <span><Globe size={16} className="inline-icon" /> Idioma</span>
                   <select className="config-select">
-                    <option>Neón Cyberspace</option>
-                    <option>Aurora Neon</option>
-                    <option>Ocaso Digital</option>
-                    <option>Aura Clásico</option>
+                    <option>Español (Latinoamérica)</option>
+                    <option>English (US)</option>
                   </select>
                 </div>
               </div>
