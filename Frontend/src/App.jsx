@@ -86,11 +86,7 @@ function App() {
 
               <Route 
                 path="/configuracion" 
-                element={
-                  <ProtectedRoute>
-                    <Configuracion />
-                  </ProtectedRoute>
-                } 
+                element={<Navigate to="/perfil" replace />}
               />
 
               <Route 

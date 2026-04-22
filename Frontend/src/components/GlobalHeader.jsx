@@ -27,11 +27,13 @@ function GlobalHeader() {
     return titles[location.pathname] || "AuraSkill";
   };
 
+  const rol = localStorage.getItem("userRole");
+
   return (
     <header className="global-header">
       <h1 className="page-title">{getTitle()}</h1>
       <div className="header-actions-right">
-        <Notificaciones />
+        {rol !== "mentor" && <Notificaciones />}
         <div
           className="header-icon-button user-icon"
           onClick={() => navigate("/perfil")}

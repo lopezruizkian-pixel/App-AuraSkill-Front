@@ -128,11 +128,11 @@ function Sidebar({ rol }) {
           </button>
 
           <button
-            className={`nav-item ${isActive("/configuracion") ? "active" : ""}`}
-            onClick={() => handleNavigate("/configuracion")}
-          >
-            <Settings size={18} className="nav-icon" />
-            Configuración
+            className={`nav-item ${isActive("/perfil") ? "active" : ""}`}
+                onClick={() => handleNavigate("/perfil")}
+              >
+                <Settings size={18} className="nav-icon" />
+                Perfil
           </button>
 
           <button className="nav-item logout" onClick={handleLogout}>

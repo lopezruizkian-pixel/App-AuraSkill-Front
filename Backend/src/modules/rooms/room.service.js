@@ -62,12 +62,12 @@ const eliminarRoom = async (id) => {
 
 const obtenerHistorialUsuario = async (userId) => {
   const result = await pool.query(
-    `SELECT DISTINCT s.id, s.room_id, s.mentor_id, s.mentor_name,
+    `SELECT s.id, s.room_id, s.mentor_id, s.mentor_name,
             s.started_at, s.ended_at, s.duration_seconds, s.is_active,
-            s.end_reason, s.room_name, s.habilidad, s.mood
+            s.end_reason, s.room_name, s.habilidad, s.mood,
+            (SELECT COUNT(*) FROM session_participants sp2 WHERE sp2.session_id = s.id) as participant_count
      FROM sessions s
-     LEFT JOIN session_participants sp ON s.id = sp.session_id
-     WHERE s.mentor_id = $1 OR sp.user_id = $1
+     WHERE s.mentor_id = $1 OR s.id IN (SELECT session_id FROM session_participants WHERE user_id = $1)
      ORDER BY s.started_at DESC`,
     [userId]
   );

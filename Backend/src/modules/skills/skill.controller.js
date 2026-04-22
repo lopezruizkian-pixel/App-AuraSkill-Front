@@ -17,7 +17,12 @@ const ensureMentor = (req) => {
 const getSkills = async (req, res) => {
   try {
     const { q, own } = req.query;
-    const mentor_id = own === 'true' && req.user ? req.user.id : null;
+    // Si el usuario es mentor, forzamos privacidad: solo ve las suyas
+    // Si es aprendiz, puede ver todas (para buscar mentores)
+    const mentor_id = (req.user?.rol === 'mentor' || own === 'true') && req.user 
+      ? req.user.id 
+      : null;
+
     const skills = q ? await buscarSkills(q, mentor_id) : await obtenerSkills(mentor_id);
     res.json(skills);
   } catch (error) {
@@ -42,7 +47,17 @@ const getSkillById = async (req, res) => {
 const createSkill = async (req, res) => {
   try {
     ensureMentor(req);
-    const skillData = { ...req.body, mentor_id: req.user.id };
+    
+    const mentor_id = req.user.id;
+    if (!mentor_id) {
+      return res.status(401).json({ error: "No se pudo identificar al mentor. Reintenta el login." });
+    }
+
+    const skillData = { 
+      ...req.body, 
+      mentor_id: mentor_id 
+    };
+    
     const skill = await crearSkill(skillData);
     res.status(201).json({ message: "Habilidad creada", skill });
   } catch (error) {

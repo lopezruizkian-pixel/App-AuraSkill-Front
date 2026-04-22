@@ -210,80 +210,45 @@ function RoomPage() {
 
       <div className="room-container">
         <section className="room-main-panel">
-          <div className="session-stage-card">
-            <div className="session-stage-copy">
-              <span className="session-stage-kicker">
-                {isMentor ? 'Sesion guiada' : 'Sesion en curso'}
-              </span>
-              <h2>{stageTitle}</h2>
-              <p>{stageDescription}</p>
-            </div>
-
-            <div className="session-stage-stats">
-              <div className="stage-stat-card">
-                <span className="stage-stat-label">Mentor</span>
-                <strong>{mentorName}</strong>
-              </div>
-              <div className="stage-stat-card">
-                <span className="stage-stat-label">Duracion activa</span>
-                <strong>{formatSessionDuration(sessionInfo, now)}</strong>
-              </div>
-              <div className="stage-stat-card">
-                <span className="stage-stat-label">
-                  {isMentor ? 'Participando ahora' : 'Tu experiencia'}
-                </span>
-                <strong>
-                  {isMentor
-                    ? `${participants.length} persona(s)`
-                    : 'Vista guiada por el mentor'}
-                </strong>
-              </div>
-            </div>
-          </div>
-
+          {/* Chat con prioridad máxima */}
           <div className="room-chat-area">
             <ChatRoom sendMessage={sendMessage} sendReaction={sendReaction} />
           </div>
         </section>
 
         <aside className="room-sidebar">
-          <section className="sidebar-section session-sidebar-card">
+          {/* Card: Identidad y Contexto */}
+          <section className="sidebar-section session-sidebar-card context-card-neon">
             <div className="session-sidebar-header">
-              <div>
-                <span className="session-sidebar-kicker">Contexto rapido</span>
-                <h3>{isMentor ? 'Resumen de la sesion' : 'Resumen para alumno'}</h3>
-              </div>
-              <div className="session-sidebar-badge">
-                <Users2 size={16} />
-                <span>{participants.length} conectados</span>
-              </div>
+              <span className="session-sidebar-kicker">Habilidad</span>
+              <h3 className="habilidad-highlight">{roomData?.habilidad || 'General'}</h3>
             </div>
-
-            <p className="session-sidebar-note">
-              {isMentor
-                ? 'Desde aqui puedes seguir el contexto general y cerrar la sesion cuando termines.'
-                : 'Esta vista es de acompanamiento: puedes participar en la conversacion, pero la configuracion de la sala la mantiene el mentor.'}
+            <p className="sidebar-description-text">
+              {roomData?.descripcion?.trim() || 'Sin descripción adicional para esta sesión.'}
             </p>
+          </section>
 
-            <div className="session-summary-grid">
-              {sessionSummary.map((item) => {
-                const Icon = item.icon;
-
-                return (
-                  <div key={item.id} className="session-summary-item">
-                    <div className="session-summary-icon">
-                      <Icon size={16} />
-                    </div>
-                    <div>
-                      <p className="session-summary-label">{item.label}</p>
-                      <strong className="session-summary-value">{item.value}</strong>
-                    </div>
-                  </div>
-                );
-              })}
+          {/* Card: Estado en Vivo */}
+          <section className="sidebar-section session-sidebar-card status-card-neon">
+            <div className="status-grid-compact">
+              <div className="status-item-mini">
+                <Clock3 size={14} className="icon-neon" />
+                <div className="status-item-info">
+                  <span>En vivo</span>
+                  <strong>{formatSessionDuration(sessionInfo, now)}</strong>
+                </div>
+              </div>
+              <div className="status-item-mini">
+                <Users2 size={14} className="icon-neon" />
+                <div className="status-item-info">
+                  <span>Capacidad</span>
+                  <strong>{participants.length} / {roomData?.capacidad_maxima || 10}</strong>
+                </div>
+              </div>
             </div>
           </section>
 
+          {/* Card: Participantes */}
           <ParticipantsList />
         </aside>
       </div>

@@ -105,26 +105,15 @@ function RoomHeader({ isMentor = false, onLeaveSession, isLeaving = false }) {
   };
 
   return (
-    <div className="room-header">
+    <div className="room-header-compact">
       <div className="room-header-left">
-        <span className="room-label">Sala activa</span>
-        <h1 className="room-title">{roomData?.nombre || 'Sala de mentoria'}</h1>
-
-        <div className="room-meta-row">
-          <div className="room-meta-pill">
-            <Sparkles size={14} />
-            <span>{roomData?.habilidad || 'Habilidad'}</span>
-          </div>
-          <div className="room-meta-pill subtle">
-            <span>Mentor: {mentorName}</span>
-          </div>
+        <h1 className="room-title-compact">{roomData?.nombre || 'Sala de mentoria'}</h1>
+        <div className="room-subtitle-compact">
+          <Sparkles size={12} />
+          <span>{roomData?.habilidad}</span>
+          <span className="divider">|</span>
+          <span>Mentor: {mentorName}</span>
         </div>
-
-        <p className="room-description">
-          {roomData?.descripcion?.trim()
-            ? roomData.descripcion
-            : 'Espacio de acompanamiento en vivo para mantener foco, contexto y conversacion durante la sesion.'}
-        </p>
       </div>
 
       <div className="room-header-right">

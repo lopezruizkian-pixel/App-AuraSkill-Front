@@ -75,7 +75,9 @@ function FormCrearSala({ onCancel }) {
 
     setIsCreatingSkill(true);
     try {
-      const created = await createSkill(newSkillData);
+      const mentorId = localStorage.getItem('userId');
+      const payload = { ...newSkillData, mentor_id: mentorId };
+      const created = await createSkill(payload);
       showSuccess('Habilidad creada con exito');
       setMySkills((prev) => [...prev, created]);
       setFormData((prev) => ({ ...prev, habilidad: created.id || created._id }));

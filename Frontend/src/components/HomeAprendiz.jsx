@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, BookOpen, User, Smile, Radio, Users } from "lucide-react";
-import { fetchActiveRooms, joinRoom, fetchRoom } from "../services/roomService";
+import { Search, BookOpen, User, Smile, Radio, Users, Clock, Award, Video } from "lucide-react";
+import PerfilStatCard from "./PerfilStatCard";
+import { fetchActiveRooms, joinRoom, fetchRoom, getUserRoomHistory } from "../services/roomService";
 import { getDashboardSocket } from "../services/socketConfig";
 import GlobalHeader from "../components/GlobalHeader";
 
@@ -13,6 +14,7 @@ function HomeAprendiz() {
   const [search, setSearch] = useState("");
   const [joining, setJoining] = useState(null);
   const [salasVisitadas, setSalasVisitadas] = useState([]);
+  const [stats, setStats] = useState({ salasAsistidas: 0, horasEstudio: 0, cursos: 0 });
 
   useEffect(() => {
     loadRooms();
@@ -55,6 +57,21 @@ function HomeAprendiz() {
       const data = await fetchActiveRooms();
       setRooms(data);
       setFiltered(data);
+
+      // Cargar estadísticas desde el historial
+      const history = await getUserRoomHistory();
+      // Filtrar sesiones donde el usuario fue participante (no mentor)
+      const userId = localStorage.getItem("userId");
+      const myStudySessions = history.filter(s => s.mentor_id !== userId);
+
+      const totalSeconds = myStudySessions.reduce((acc, s) => acc + (s.duration_seconds || 0), 0);
+      const uniqueSkills = new Set(myStudySessions.map(s => s.habilidad).filter(Boolean));
+
+      setStats({
+        salasAsistidas: myStudySessions.length,
+        horasEstudio: Math.round(totalSeconds / 3600 * 10) / 10,
+        cursos: uniqueSkills.size
+      });
     } catch (err) {
       console.error("Error cargando salas:", err);
     } finally {
@@ -118,6 +135,13 @@ function HomeAprendiz() {
     <section className="salas-activas-section">
       <GlobalHeader />
 
+      {/* Stats */}
+      <div className="perfil-stats-grid" style={{ marginBottom: "2rem" }}>
+        <PerfilStatCard titulo="Salas Asistidas" valor={stats.salasAsistidas} icon={Video} color="#00ffff" />
+        <PerfilStatCard titulo="Horas de Estudio" valor={`${stats.horasEstudio}h`} icon={Clock} color="#ff00ff" />
+        <PerfilStatCard titulo="Cursos" valor={stats.cursos} icon={BookOpen} color="#00ff00" />
+      </div>
+
       <div
         className="search-container-neon"
         style={{ display: "flex", justifyContent: "space-between", alignItems: "stretch", marginBottom: "1.5rem" }}
@@ -144,50 +168,53 @@ function HomeAprendiz() {
           <p className="empty-state-text">Vuelve mas tarde o explora nuevas habilidades para encontrar mentores activos.</p>
         </div>
       ) : (
-        filtered.map((room) => (
-          <article key={room.id} className="neon-card mentor-list-card dashboard-room-card dashboard-room-card-student">
-            <div className="dashboard-room-card-top">
-              <div className="dashboard-room-icon">
-                <BookOpen size={30} strokeWidth={1.7} />
+        <div className="salas-grid" style={{ alignItems: "stretch" }}>
+          {filtered.map((room) => (
+            <article key={room.id} className="neon-card mentor-list-card dashboard-room-card dashboard-room-card-student">
+              <div className="dashboard-room-card-top">
+                <div className="dashboard-room-icon">
+                  <BookOpen size={30} strokeWidth={1.7} />
+                </div>
+                <div className="dashboard-room-badges">
+                  <span className={`dashboard-room-badge ${room.sessionInfo?.isActive ? "live" : "offline"}`}>
+                    <Radio size={12} />
+                    {room.sessionInfo?.isActive ? "Mentor activo" : "Mentor inactivo"}
+                  </span>
+                </div>
               </div>
-              <div className="dashboard-room-badges">
-                <span className={`dashboard-room-badge ${room.sessionInfo?.isActive ? "live" : "offline"}`}>
-                  <Radio size={12} />
-                  {room.sessionInfo?.isActive ? "Mentor activo" : "Mentor inactivo"}
-                </span>
-              </div>
-            </div>
 
-            <div className="dashboard-room-content">
-              <h3 className="dashboard-room-title">{room.nombre}</h3>
-              <div className="dashboard-room-meta">
-                <p>
-                  <User size={15} />
-                  <span>{room.mentor_nombre || "Sin mentor"}</span>
-                </p>
-                <p>
-                  <BookOpen size={15} />
-                  <span>{room.habilidad || "Habilidad no definida"}</span>
-                </p>
-                <p>
-                  <Smile size={15} />
-                  <span>{room.mood || "Sin mood definido"}</span>
-                </p>
+              <div className="dashboard-room-content">
+                <h3 className="dashboard-room-title">{room.nombre}</h3>
+                <div className="dashboard-room-meta">
+                  <p>
+                    <User size={15} />
+                    <span>{room.mentor_nombre || "Sin mentor"}</span>
+                  </p>
+                  <p>
+                    <BookOpen size={15} />
+                    <span>{room.habilidad || "Habilidad no definida"}</span>
+                  </p>
+                  <p>
+                    <Smile size={15} />
+                    <span>{room.mood || "Sin mood definido"}</span>
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <div className="dashboard-room-actions">
-              <button
-                className="primary-btn-s dashboard-room-btn"
-                onClick={() => handleJoin(room)}
-                disabled={joining === room.id || !room.sessionInfo?.isActive}
-                title={!room.sessionInfo?.isActive ? "El mentor no esta activo" : ""}
-              >
-                {joining === room.id ? "Entrando..." : "Entrar a sala"}
-              </button>
-            </div>
-          </article>
-        ))
+              <div className="dashboard-room-actions">
+                <button
+                  className="primary-btn-s dashboard-room-btn"
+                  onClick={() => handleJoin(room)}
+                  disabled={joining === room.id || !room.sessionInfo?.isActive}
+                  title={!room.sessionInfo?.isActive ? "El mentor no esta activo" : ""}
+                >
+                  {joining === room.id ? "Entrando..." : "Entrar a sala"}
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+
       )}
     </section>
   );

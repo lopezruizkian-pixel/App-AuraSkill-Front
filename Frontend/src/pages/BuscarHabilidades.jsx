@@ -29,9 +29,9 @@ function BuscarHabilidades() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const summaryText = useMemo(() => {
-    if (isLoading) return "Cargando habilidades disponibles...";
-    if (searchTerm.trim()) return `${skills.length} resultado(s) para "${searchTerm.trim()}"`;
-    return `${skills.length} habilidad(es) disponibles en la plataforma`;
+    if (isLoading) return "Loading skills...";
+    if (searchTerm.trim()) return `${skills.length} skills · "${searchTerm.trim()}"`;
+    return `${skills.length} skills`;
   }, [isLoading, searchTerm, skills.length]);
 
   useEffect(() => {
@@ -93,7 +93,10 @@ function BuscarHabilidades() {
                 className="search-input-neon" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
             </div>
             <div className="dashboard-actions-right">
-              <div className="mood-indicator">{summaryText}</div>
+<div className="mood-indicator" style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+  <BookOpen size={16} />
+  <span>{summaryText}</span>
+</div>
               {isMentor && (
                 <button
                   type="button"
@@ -110,9 +113,9 @@ function BuscarHabilidades() {
             {error && <div className="skills-feedback-card error">{error}</div>}
 
             {isLoading ? (
-              <div className="skills-feedback-card">Cargando habilidades desde /api/skills...</div>
+              <div className="skills-feedback-card">Loading skills...</div>
             ) : skills.length === 0 ? (
-              <div className="skills-feedback-card">No se encontraron habilidades con ese criterio.</div>
+              <div className="skills-feedback-card">No skills found.</div>
             ) : (
               <div className="habilidades-grid">
                 {skills.map((skill) => {

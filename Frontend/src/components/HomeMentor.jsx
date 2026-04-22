@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Users, Video } from "lucide-react";
-import { fetchActiveRooms } from "../services/roomService";
+import { BookOpen, Users, Video, Clock, User } from "lucide-react";
+import PerfilStatCard from "./PerfilStatCard";
+import { fetchActiveRooms, getUserRoomHistory } from "../services/roomService";
 import { getDashboardSocket } from "../services/socketConfig";
 import GlobalHeader from "../components/GlobalHeader";
 import "../Styles/Mentores.css";
@@ -10,6 +11,7 @@ function HomeMentor() {
   const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ salasCreadas: 0, alumnosAyudados: 0, horasMentoreando: 0 });
 
   const userId = localStorage.getItem("userId");
 
@@ -35,7 +37,23 @@ function HomeMentor() {
       const data = await fetchActiveRooms();
       // Solo salas del mentor actual
       const myRooms = data.filter((r) => r.mentor_id === userId);
-      setRooms(myRooms);
+
+      // Solo mostramos la sala "más actual" o la que esté en vivo (prioridad)
+      const activeRoom = myRooms.find(r => r.sessionInfo?.isActive) || myRooms[0];
+      setRooms(activeRoom ? [activeRoom] : []);
+
+      // Cargar estadísticas desde el historial
+      const history = await getUserRoomHistory();
+      const mySessions = history.filter(s => s.mentor_id === userId);
+      
+      const totalSeconds = mySessions.reduce((acc, s) => acc + (s.duration_seconds || 0), 0);
+      const totalParticipants = mySessions.reduce((acc, s) => acc + parseInt(s.participant_count || 0), 0);
+      
+      setStats({
+        salasCreadas: mySessions.length,
+        alumnosAyudados: totalParticipants,
+        horasMentoreando: Math.round(totalSeconds / 3600 * 10) / 10
+      });
     } catch (err) {
       console.error("Error cargando salas:", err);
     } finally {
@@ -43,19 +61,37 @@ function HomeMentor() {
     }
   };
 
+  const handleEnterRoom = (room) => {
+    // Sincronizar con la vista de "Salas Activas" guardando en localStorage
+    const infoSala = {
+      id: room.id,
+      titulo: room.nombre,
+      habilidad: room.habilidad,
+      mood: room.mood,
+      inscritos: room.sessionInfo?.participantCount || 0,
+      capacidad: room.capacidad_maxima || 10,
+    };
+    localStorage.setItem("salaActiva", JSON.stringify(infoSala));
+    
+    navigate(`/sala/${room.id}`);
+  };
+
 
 
   return (
     <section className="dashboard-page">
       <GlobalHeader />
-      
-      {/* Estado eliminado por redundancia */}
 
-
+      {/* Stats */}
+      <div className="perfil-stats-grid" style={{ marginBottom: "2rem" }}>
+        <PerfilStatCard titulo="Salas Creadas" valor={stats.salasCreadas} icon={Video} color="#00ffff" />
+        <PerfilStatCard titulo="Alumnos Ayudados" valor={stats.alumnosAyudados} icon={User} color="#ff00ff" />
+        <PerfilStatCard titulo="Horas Mentoreando" valor={`${stats.horasMentoreando}h`} icon={Clock} color="#00ff00" />
+      </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
         <Video size={24} color="#ff00ff" />
-        <h2 className="welcome-title" style={{ margin: 0 }}>Mis salas activas</h2>
+        <h2 className="welcome-title" style={{ margin: 0 }}>Tu sala activa</h2>
       </div>
 
       {loading ? (
@@ -98,7 +134,7 @@ function HomeMentor() {
               </div>
 
               <div className="dashboard-room-actions">
-                <button className="primary-btn-s dashboard-room-btn" onClick={() => navigate(`/sala/${room.id}`)}>
+                <button className="primary-btn-s dashboard-room-btn" onClick={() => handleEnterRoom(room)}>
                   Entrar a mi sala
                 </button>
               </div>
