@@ -100,7 +100,11 @@ function HomeAprendiz() {
         mood: room.mood,
         mentor: room.mentor_nombre || "Sin mentor"
       };
-      saveVisitedRoom(infoSala);
+      
+      const visitadas = JSON.parse(localStorage.getItem("historialSalas")) || [];
+      if (!visitadas.some((s) => s.id === room.id)) {
+        localStorage.setItem("historialSalas", JSON.stringify([infoSala, ...visitadas]));
+      }
       
       navigate(`/sala/${room.id}`);
     } catch (err) {
