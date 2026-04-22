@@ -65,28 +65,47 @@ function Mentores() {
   const moods = [...new Set(rooms.map((r) => r.mood).filter(Boolean))];
 
   const handleJoin = async (room) => {
+    console.log(`[DEBUG] Mentores.jsx - handleJoin iniciado para sala ID:`, room.id);
     setJoining(room.id);
     try {
-      // Verificar estado actual con el backend para evitar bloqueos por estado obsoleto
+      console.log(`[DEBUG] Obteniendo detalles de la sala...`);
       const roomDetails = await fetchRoom(room.id);
+      console.log(`[DEBUG] Detalles obtenidos:`, roomDetails);
 
       if (!roomDetails.sessionInfo?.isActive) {
+        console.log(`[DEBUG] Bloqueado: sessionInfo.isActive es falso o indefinido.`);
         alert("El mentor aún no ha ingresado a esta sala.");
         setJoining(null);
         return;
       }
 
-      try { await joinRoom(room.id); } catch (err) {
-        if (!err.message?.includes("Ya estás en esta sala")) throw err;
+      console.log(`[DEBUG] sessionInfo.isActive es TRUE. Intentando unirse (joinRoom)...`);
+      try { 
+        await joinRoom(room.id); 
+        console.log(`[DEBUG] joinRoom exitoso para sala ID:`, room.id);
+      } catch (err) {
+        console.log(`[DEBUG] Error atrapado en joinRoom:`, err.message);
+        if (!err.message?.includes("Ya estás en esta sala")) {
+          console.error(`[DEBUG] Error crítico en joinRoom:`, err);
+          throw err;
+        } else {
+          console.log(`[DEBUG] El usuario ya estaba en la sala, continuando a navegación.`);
+        }
       }
-      localStorage.setItem("salaActiva", JSON.stringify({
-        id: room.id, titulo: room.nombre, habilidad: room.habilidad,
-        mood: room.mood, inscritos: 0, capacidad: room.capacidad_maxima || 10,
-      }));
+
+      console.log(`[DEBUG] Guardando historial y navegando a /sala/${room.id}`);
+      const infoSala = { id: room.id, nombre: room.nombre, habilidad: room.habilidad, mood: room.mood, mentor: room.mentor_nombre || "Sin mentor" };
+      const visitadas = JSON.parse(localStorage.getItem("historialSalas")) || [];
+      if (!visitadas.some((s) => s.id === room.id)) {
+        localStorage.setItem("historialSalas", JSON.stringify([infoSala, ...visitadas]));
+      }
+
       navigate(`/sala/${room.id}`);
     } catch (err) {
-      alert(err.message || "Error al unirse");
+      console.error("[DEBUG] Error general en handleJoin:", err);
+      alert("Error al intentar unirte a la sala: " + (err.message || "Error desconocido"));
     } finally {
+      console.log(`[DEBUG] handleJoin finalizado. Restableciendo estado joining.`);
       setJoining(null);
     }
   };
