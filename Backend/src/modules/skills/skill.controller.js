@@ -16,8 +16,9 @@ const ensureMentor = (req) => {
 
 const getSkills = async (req, res) => {
   try {
-    const { q } = req.query;
-    const skills = q ? await buscarSkills(q) : await obtenerSkills();
+    const { q, own } = req.query;
+    const mentor_id = own === 'true' && req.user ? req.user.id : null;
+    const skills = q ? await buscarSkills(q, mentor_id) : await obtenerSkills(mentor_id);
     res.json(skills);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -41,7 +42,8 @@ const getSkillById = async (req, res) => {
 const createSkill = async (req, res) => {
   try {
     ensureMentor(req);
-    const skill = await crearSkill(req.body);
+    const skillData = { ...req.body, mentor_id: req.user.id };
+    const skill = await crearSkill(skillData);
     res.status(201).json({ message: "Habilidad creada", skill });
   } catch (error) {
     res.status(error.status || 400).json({ error: error.message });

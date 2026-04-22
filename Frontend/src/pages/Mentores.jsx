@@ -16,7 +16,6 @@ function Mentores() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filtroHabilidad, setFiltroHabilidad] = useState("");
-  const [filtroMood, setFiltroMood] = useState("");
   const [joining, setJoining] = useState(null);
 
   const load = async () => {
@@ -57,12 +56,10 @@ function Mentores() {
       );
     }
     if (filtroHabilidad) result = result.filter((r) => r.habilidad === filtroHabilidad);
-    if (filtroMood) result = result.filter((r) => r.mood === filtroMood);
     setFiltered(result);
-  }, [search, filtroHabilidad, filtroMood, rooms]);
+  }, [search, filtroHabilidad, rooms]);
 
   const habilidades = [...new Set(rooms.map((r) => r.habilidad).filter(Boolean))];
-  const moods = [...new Set(rooms.map((r) => r.mood).filter(Boolean))];
 
   const handleJoin = async (room) => {
     console.log(`[DEBUG] Mentores.jsx - handleJoin iniciado para sala ID:`, room.id);
@@ -122,7 +119,6 @@ function Mentores() {
                 value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             <div className="header-actions-right">
-              <div className="mood-indicator">Mood: Concentrado</div>
               <Notificaciones />
               <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{ cursor: "pointer" }}>
                 <User size={24} />
@@ -136,10 +132,6 @@ function Mentores() {
                 <option value="">Habilidad</option>
                 {habilidades.map((h) => <option key={h} value={h}>{h}</option>)}
               </select>
-              <select className="filtro-neon" value={filtroMood} onChange={(e) => setFiltroMood(e.target.value)}>
-                <option value="">Mood</option>
-                {moods.map((m) => <option key={m} value={m}>{m}</option>)}
-              </select>
             </div>
             {loading ? <p>Cargando mentores...</p> : filtered.length === 0 ? (
               <div className="neon-card" style={{ padding: "2rem", textAlign: "center" }}>
@@ -149,7 +141,7 @@ function Mentores() {
               <div className="mentores-grid">
                 {filtered.map((room) => (
                   <MentorCard key={room.id} id={room.id} nombre={room.mentor_nombre || "Mentor"}
-                    habilidad={room.habilidad} mood={room.mood} nombreSala={room.nombre}
+                    habilidad={room.habilidad} nombreSala={room.nombre}
                     isActive={room.sessionInfo?.isActive}
                     onJoin={() => handleJoin(room)} isJoining={joining === room.id} />
                 ))}

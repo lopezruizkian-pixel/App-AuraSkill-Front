@@ -67,13 +67,12 @@ function HistorialSalasAprendiz() {
   }, []);
 
   const historialData = useMemo(() => {
-    if (isLoading) return [{ id: "loading-row", fecha: "Cargando...", habilidad: "", mood: "", mentor: "", duracion: "" }];
-    if (history.length === 0) return [{ id: "empty-row", fecha: "Sin sesiones registradas", habilidad: "", mood: "", mentor: "", duracion: "" }];
+    if (isLoading) return [{ id: "loading-row", fecha: "Cargando...", habilidad: "", mentor: "", duracion: "" }];
+    if (history.length === 0) return [{ id: "empty-row", fecha: "Sin sesiones registradas", habilidad: "", mentor: "", duracion: "" }];
     return history.map((item) => ({
       id: item.id,
       fecha: formatDate(item.started_at || item.startedAt || item.fecha),
       habilidad: item.habilidad || item.room_name || item.nombreSala || "—",
-      mood: item.mood || "—",
       mentor: item.mentor_name || item.mentor || "—",
       duracion: formatDuration(item.duration_seconds ?? item.duracionSegundos ?? item.duracion ?? 0),
     }));
@@ -90,7 +89,6 @@ function HistorialSalasAprendiz() {
               <input type="text" placeholder="Buscar habilidad..." className="search-input-neon" />
             </div>
             <div className="header-actions-right">
-              <div className="mood-indicator">Mood: Concentrado</div>
               <Notificaciones />
               <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{ cursor: "pointer" }}>
                 <User size={24} />
@@ -102,7 +100,6 @@ function HistorialSalasAprendiz() {
             <div className="historial-table-header">
               <div className="header-item-neon">Fecha</div>
               <div className="header-item-neon">Habilidad</div>
-              <div className="header-item-neon">Mood</div>
               <div className="header-item-neon">Mentor</div>
               <div className="header-item-neon">Duración</div>
             </div>

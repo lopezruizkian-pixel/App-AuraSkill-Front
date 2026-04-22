@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Type, Wrench, Smile, Users, AlignLeft, Loader } from "lucide-react";
+import { Type, Wrench, Users, AlignLeft, Loader } from "lucide-react";
 import { createRoom } from "../services/roomService";
 import { useToast } from "../hooks/useToast";
 import { validateForm, validators } from "../services/validation";
+import { fetchMySkills, createSkill } from "../services/skillService";
 
 function FormCrearSala() {
   const navigate = useNavigate();
@@ -12,13 +13,33 @@ function FormCrearSala() {
   const [formData, setFormData] = useState({
     nombre: "",
     habilidad: "",
-    mood: "",
     limiteEstudiantes: "",
     descripcion: "",
   });
 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [misHabilidades, setMisHabilidades] = useState([]);
+  const [loadingSkills, setLoadingSkills] = useState(true);
+  
+  const [showSkillForm, setShowSkillForm] = useState(false);
+  const [newSkillData, setNewSkillData] = useState({ nombre: "", categoria: "Programacion", nivel: "basico", descripcion: "Creada desde formulario de sala" });
+  const [creatingSkill, setCreatingSkill] = useState(false);
+
+  const loadSkills = async () => {
+    try {
+      const data = await fetchMySkills();
+      setMisHabilidades(data);
+    } catch (err) {
+      console.error("Error al cargar habilidades", err);
+    } finally {
+      setLoadingSkills(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSkills();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,7 +72,6 @@ function FormCrearSala() {
       const roomData = {
         nombre: formData.nombre.trim(),
         habilidad: formData.habilidad,
-        mood: formData.mood,
         capacidad_maxima: parseInt(formData.limiteEstudiantes, 10),
         descripcion: formData.descripcion.trim(),
       };
@@ -61,7 +81,6 @@ function FormCrearSala() {
         id: newRoom.id || newRoom._id,
         titulo: newRoom.nombre,
         habilidad: newRoom.habilidad,
-        mood: newRoom.mood,
         inscritos: Array.isArray(newRoom.participantes) ? newRoom.participantes.length : 0,
         capacidad: newRoom.capacidad_maxima || roomData.capacidad_maxima,
       }));
@@ -81,21 +100,27 @@ function FormCrearSala() {
     }
   };
 
-  const habilidades = [
-    { value: "programacion", label: "💻 Programación" },
-    { value: "diseno", label: "🎨 Diseño UI/UX" },
-    { value: "idiomas", label: "🌍 Idiomas" },
-    { value: "matematicas", label: "📐 Matemáticas" },
-    { value: "musica", label: "🎵 Música" },
-    { value: "otros", label: "✨ Otros" },
-  ];
-
-  const moods = [
-    { value: "concentrado", label: "🎯 Concentrado", emoji: "🎯" },
-    { value: "creativo", label: "🎨 Creativo", emoji: "🎨" },
-    { value: "energetico", label: "⚡ Energético", emoji: "⚡" },
-    { value: "relajado", label: "☕ Relajado", emoji: "☕" },
-  ];
+  const handleCreateSkillInline = async (e) => {
+    e.preventDefault();
+    if (!newSkillData.nombre.trim()) {
+      showError("El nombre de la habilidad es requerido");
+      return;
+    }
+    setCreatingSkill(true);
+    try {
+      const newSkill = await createSkill(newSkillData);
+      showSuccess("Habilidad creada y añadida a tu lista");
+      setShowSkillForm(false);
+      setNewSkillData({ nombre: "", categoria: "Programacion", nivel: "basico", descripcion: "Creada desde formulario de sala" });
+      await loadSkills(); // Recargar la lista
+      // Seleccionar la nueva habilidad automáticamente
+      setFormData(prev => ({ ...prev, habilidad: newSkill.nombre }));
+    } catch (err) {
+      showError(err.message || "Error al crear la habilidad");
+    } finally {
+      setCreatingSkill(false);
+    }
+  };
 
   return (
     <div className="neon-card form-crear-sala-container">
@@ -127,41 +152,72 @@ function FormCrearSala() {
                 name="habilidad"
                 value={formData.habilidad}
                 onChange={handleChange}
-                disabled={isLoading}
+                disabled={isLoading || loadingSkills || misHabilidades.length === 0}
                 className={errors.habilidad ? "input-error" : ""}
               >
                 <option value="" disabled>Selecciona una habilidad</option>
-                {habilidades.map((hab) => (
-                  <option key={hab.value} value={hab.value}>
-                    {hab.label}
+                {misHabilidades.map((hab) => (
+                  <option key={hab.id} value={hab.nombre}>
+                    {hab.nombre} ({hab.categoria})
                   </option>
                 ))}
               </select>
             </div>
             {errors.habilidad && <span className="error-text">{errors.habilidad}</span>}
+            {!loadingSkills && misHabilidades.length === 0 && !showSkillForm && (
+              <small style={{ color: "#ffaa00", display: "block", marginTop: "5px" }}>
+                No tienes habilidades registradas. Crea una a continuación.
+              </small>
+            )}
+            
+            <div style={{ marginTop: "10px" }}>
+              <button 
+                type="button" 
+                onClick={() => setShowSkillForm(!showSkillForm)}
+                className="secondary-btn-s"
+                style={{ fontSize: "0.85rem", padding: "5px 10px" }}
+              >
+                {showSkillForm ? "Cancelar creación de habilidad" : "+ Agregar nueva habilidad"}
+              </button>
+            </div>
+
+            {showSkillForm && (
+              <div className="neon-card" style={{ padding: "15px", marginTop: "15px", border: "1px solid #00ffff" }}>
+                <h4 style={{ color: "#00ffff", margin: "0 0 10px 0" }}>Nueva Habilidad</h4>
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <input 
+                    type="text" 
+                    placeholder="Nombre (ej: React Avanzado)" 
+                    className="neon-input-s"
+                    value={newSkillData.nombre}
+                    onChange={(e) => setNewSkillData({...newSkillData, nombre: e.target.value})}
+                  />
+                  <select 
+                    className="neon-input-s neon-select-s"
+                    value={newSkillData.categoria}
+                    onChange={(e) => setNewSkillData({...newSkillData, categoria: e.target.value})}
+                  >
+                    <option value="Programacion">Programación</option>
+                    <option value="Diseno">Diseño</option>
+                    <option value="Idiomas">Idiomas</option>
+                    <option value="Musica">Música</option>
+                    <option value="Matematicas">Matemáticas</option>
+                    <option value="Otros">Otros</option>
+                  </select>
+                  <button 
+                    type="button" 
+                    className="primary-btn-s" 
+                    onClick={handleCreateSkillInline}
+                    disabled={creatingSkill}
+                  >
+                    {creatingSkill ? "Guardando..." : "Guardar habilidad"}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          <div className="input-group-neon">
-            <label>Mood de la sesión</label>
-            <div className="input-wrapper">
-              <Smile className="input-icon" size={18} />
-              <select 
-                name="mood"
-                value={formData.mood}
-                onChange={handleChange}
-                disabled={isLoading}
-                className={errors.mood ? "input-error" : ""}
-              >
-                <option value="" disabled>Selecciona el ambiente</option>
-                {moods.map((mood) => (
-                  <option key={mood.value} value={mood.value}>
-                    {mood.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {errors.mood && <span className="error-text">{errors.mood}</span>}
-          </div>
+
         </div>
 
         <div className="form-row">

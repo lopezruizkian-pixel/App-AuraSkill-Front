@@ -38,7 +38,6 @@ export const useRoom = (roomId) => {
           fecha: new Date().toISOString(),
           nombreSala: roomDataToSave.nombre || `Sala: ${roomId}`,
           habilidad: roomDataToSave.habilidad || 'Mentoria en vivo',
-          mood: roomDataToSave.mood || 'Sin mood',
           mentor: roomDataToSave.mentor_nombre || roomDataToSave.mentor?.nombre || roomDataToSave.mentor || 'Mentor Anonimo',
           duracion: 0
         };

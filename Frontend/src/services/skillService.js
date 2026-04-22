@@ -18,6 +18,11 @@ export const fetchSkills = async (query = '') => {
   return Array.isArray(response) ? response.map(normalizeSkill) : [];
 };
 
+export const fetchMySkills = async () => {
+  const response = await httpClient.get(`/skills?own=true`);
+  return Array.isArray(response) ? response.map(normalizeSkill) : [];
+};
+
 export const createSkill = async (skillData) => {
   const response = await httpClient.post('/skills', skillData);
   return normalizeSkill(response.skill || response);

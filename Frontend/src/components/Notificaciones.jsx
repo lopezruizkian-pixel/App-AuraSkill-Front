@@ -31,7 +31,6 @@ function Notificaciones() {
         tipo: "sala",
         titulo: `Sala disponible: ${r.nombre}`,
         descripcion: `${r.mentor_nombre} está enseñando ${r.habilidad}`,
-        mood: r.mood || "—",
         leida: false,
         tiempo: "Ahora",
       }));
@@ -87,7 +86,6 @@ function Notificaciones() {
                   <div style={{ flex: 1 }}>
                     <p style={{ color: "#fff", margin: 0, fontSize: "0.9rem", fontWeight: 600 }}>{n.titulo}</p>
                     <p style={{ color: "#aaa", margin: "2px 0 0", fontSize: "0.8rem" }}>{n.descripcion}</p>
-                    <p style={{ color: "#ff00ff", margin: "2px 0 0", fontSize: "0.75rem" }}>Mood: {n.mood}</p>
                   </div>
                   <X size={16} style={{ color: "#aaa", cursor: "pointer", flexShrink: 0 }}
                     onClick={() => handleDismiss(n.id)} />

@@ -7,7 +7,6 @@ const FormCrearSala = () => {
     const [formData, setFormData] = useState({
         titulo: "",
         habilidad: "",
-        mood: "",
         capacidad: 10,
         duracion: 60,
         descripcion: "",

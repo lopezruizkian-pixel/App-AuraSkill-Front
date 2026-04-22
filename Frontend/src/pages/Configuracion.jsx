@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import ConfigCard from "../components/ConfigCard";
 import Notificaciones from "../components/Notificaciones";
-import { Search, User, Headphones, Settings, Shield, Globe, Trash2, RefreshCw, Eye, EyeOff } from "lucide-react";
+import { Search, User, Settings, Shield, Globe, Trash2, RefreshCw, Eye, EyeOff } from "lucide-react";
 import { ThemeContext } from "../context/ThemeContext";
 import { httpClient } from "../services/httpClient";
 import { logoutUser } from "../services/authService";
@@ -61,7 +61,6 @@ function Configuracion() {
               <input type="text" placeholder="Buscar ajuste..." className="search-input-neon" />
             </div>
             <div className="header-actions-right">
-              <div className="mood-indicator">Mood: Concentrado</div>
               <Notificaciones />
               <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{ cursor: "pointer" }}><User size={24} /></div>
             </div>
@@ -70,7 +69,6 @@ function Configuracion() {
           <section className="configuracion-section">
             <h2 className="welcome-title">Configuración</h2>
             <div className="config-grid">
-              <ConfigCard titulo="Spotify" icon={Headphones} estadoTexto="Vinculado" estadoColor="#00ff00" btnTexto="Desvincular" />
               <ConfigCard titulo="Notificaciones" icon={Notificaciones} estadoTexto="Activado" estadoColor="#00ff00" btnTexto="Desactivar" />
             </div>
             <div className="config-list-section">

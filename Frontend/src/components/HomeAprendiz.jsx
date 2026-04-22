@@ -97,7 +97,6 @@ function HomeAprendiz() {
         id: room.id,
         nombre: room.nombre,
         habilidad: room.habilidad,
-        mood: room.mood,
         mentor: room.mentor_nombre || "Sin mentor"
       };
       
@@ -129,7 +128,6 @@ function HomeAprendiz() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="mood-indicator">Mood: Concentrado</div>
       </div>
 
       <h2 className="welcome-title">

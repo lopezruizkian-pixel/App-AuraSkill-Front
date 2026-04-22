@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import SalaActivaCard from "../components/SalaActivaCard";
-import { Bell, User, Circle, VideoOff } from "lucide-react";
+import FormCrearSala from "../components/FormCrearSala";
+import { Bell, User, Circle, VideoOff, PlusCircle, X } from "lucide-react";
 import { fetchActiveRooms, joinRoom } from "../services/roomService";
 import "../Styles/Home.css";
 import "../Styles/BuscarHabilidades.css";
@@ -23,6 +24,7 @@ function SalasActivas() {
   const [salasFiltered, setSalasFiltered] = useState([]);
   const [loading, setLoading] = useState(false);
   const [joining, setJoining] = useState(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   useEffect(() => {
     if (habilidadFiltro) {
@@ -107,8 +109,7 @@ function SalasActivas() {
                           <h3 style={{ color: "#00ffff", margin: 0 }}>{room.nombre}</h3>
                           <p style={{ color: "#aaa", margin: "0.5rem 0 0" }}>
                             <strong>Mentor:</strong> {room.mentor_nombre} &nbsp;|&nbsp;
-                            <strong>Habilidad:</strong> {room.habilidad} &nbsp;|&nbsp;
-                            <strong>Mood:</strong> {room.mood || "—"}
+                            <strong>Habilidad:</strong> {room.habilidad}
                           </p>
                         </div>
                         <button
@@ -147,14 +148,29 @@ function SalasActivas() {
             </div>
           </div>
           <section className="salas-activas-section">
-            <h2 className="welcome-title">Tu sala actual</h2>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+              <h2 className="welcome-title" style={{ margin: 0 }}>Tu sala actual</h2>
+              {!salaActiva && (
+                <button 
+                  className="primary-btn-s" 
+                  onClick={() => setShowCreateForm(!showCreateForm)}
+                  style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+                >
+                  {showCreateForm ? <><X size={18} /> Cancelar</> : <><PlusCircle size={18} /> Crear nueva sala</>}
+                </button>
+              )}
+            </div>
+
             <div className="single-sala-container">
               {salaActiva ? (
                 <SalaActivaCard {...salaActiva} onClose={handleCloseRoom} onEnter={handleEnterRoom} />
+              ) : showCreateForm ? (
+                <FormCrearSala />
               ) : (
                 <div className="neon-card empty-sala-state">
                   <VideoOff size={48} className="empty-icon" />
                   <h3>No tienes ninguna sala activa</h3>
+                  <p style={{ color: "#aaa", marginTop: "10px" }}>Crea una sala para empezar a mentorear.</p>
                 </div>
               )}
             </div>

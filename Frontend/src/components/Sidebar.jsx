@@ -92,14 +92,6 @@ function Sidebar({ rol }) {
               </button>
 
               <button
-                className={`nav-item ${isActive("/crear-sala") ? "active" : ""}`}
-                onClick={() => handleNavigate("/crear-sala")}
-              >
-                <PlusSquare size={18} className="nav-icon" />
-                Create Room
-              </button>
-
-              <button
                 className={`nav-item ${isActive("/salas-activas") ? "active" : ""}`}
                 onClick={() => handleNavigate("/salas-activas")}
               >

@@ -113,7 +113,6 @@ const startMentorSession = (room, user) => {
     participantIds,
     roomName: room.roomMeta.nombre,
     habilidad: room.roomMeta.habilidad,
-    mood: room.roomMeta.mood,
     endReason: null,
   };
 

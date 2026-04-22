@@ -4,7 +4,21 @@ const { verifyToken } = require("../../middlewares/auth.middleware")
 
 const router = express.Router()
 
-router.get("/", getSkills)
+// Creamos un middleware opcional para verificar token sin bloquear si no existe
+const optionalToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    const token = authHeader.split(" ")[1];
+    try {
+      req.user = require("jsonwebtoken").verify(token, require("../../utils/jwt").SECRET);
+    } catch (e) {
+      // Ignorar error si el token es inválido en modo opcional
+    }
+  }
+  next();
+};
+
+router.get("/", optionalToken, getSkills)
 router.get("/:id", getSkillById)
 router.post("/", verifyToken, createSkill)
 router.delete("/:id", verifyToken, deleteSkill)

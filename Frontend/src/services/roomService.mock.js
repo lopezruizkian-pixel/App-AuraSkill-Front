@@ -14,7 +14,6 @@ export const fetchRoom = async (roomId) => {
         id: roomId,
         nombre: `Sala: ${roomId}`,
         habilidad: 'programacion',
-        mood: 'concentrado',
         limiteEstudiantes: 15,
         descripcion: 'Sesión de mentoría en vivo (Mock)',
       });

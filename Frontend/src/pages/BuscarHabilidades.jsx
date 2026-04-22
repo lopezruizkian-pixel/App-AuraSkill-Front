@@ -89,7 +89,6 @@ function BuscarHabilidades() {
                 className="search-input-neon" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
             </div>
             <div className="header-actions-right">
-              <div className="mood-indicator">{summaryText}</div>
               <Notificaciones />
               <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{ cursor: "pointer" }}>
                 <User size={24} />

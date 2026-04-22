@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { BookOpen, Clock3, Mic2, ShieldCheck, Sparkles, Users2 } from 'lucide-react';
+import { BookOpen, Clock3, Mic2, ShieldCheck, Users2 } from 'lucide-react';
 import { RoomContext } from '../context/RoomContext';
 import { useRoom } from '../hooks/useRoom';
 import { useWebSocket } from '../hooks/useWebSocket';
@@ -139,12 +139,7 @@ function RoomPage() {
       label: 'Mentor al frente',
       value: mentorName,
     },
-    {
-      id: 'mood',
-      icon: Sparkles,
-      label: isMentor ? 'Mood de la sesion' : 'Mood definido por mentor',
-      value: roomData?.mood || sessionInfo?.mood || 'Sin mood',
-    },
+
     {
       id: 'start',
       icon: Clock3,

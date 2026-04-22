@@ -207,7 +207,6 @@ export const useWebSocket = (roomId, userId, userName, userAvatar, userRole) => 
           roomMeta: {
             nombre: roomData?.nombre,
             habilidad: roomData?.habilidad,
-            mood: roomData?.mood,
           },
         });
       });

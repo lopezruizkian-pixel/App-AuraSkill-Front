@@ -11,7 +11,6 @@ import Home from './pages/Home';
 import BuscarHabilidades from './pages/BuscarHabilidades'; 
 import Mentores from './pages/Mentores';
 import HistorialSalasAprendiz from './pages/HistorialSalasAprendiz';
-import CrearSala from './pages/CrearSala';
 import SalasActivas from './pages/SalasActivas';
 import RoomPage from './pages/RoomPage';
 import Configuracion from './pages/Configuracion';
@@ -63,15 +62,6 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <HistorialSalasAprendiz />
-                  </ProtectedRoute>
-                } 
-              />
-
-              <Route 
-                path="/crear-sala" 
-                element={
-                  <ProtectedRoute requiredRole="mentor">
-                    <CrearSala />
                   </ProtectedRoute>
                 } 
               />

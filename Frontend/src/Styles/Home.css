@@ -195,20 +195,7 @@
   color: rgba(0, 255, 255, 0.45);
 }
 
-.mood-indicator {
-  all: unset;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.8rem 1.3rem;
-  border-radius: 14px;
-  background: rgba(0, 255, 255, 0.05);
-  border: 1px solid rgba(0, 255, 255, 0.28);
-  color: #9bf6ff;
-  text-align: center;
-  font-weight: 700;
-  width: fit-content;
-}
+
 
 @media (max-width: 1024px) {
   .home-content {
@@ -242,17 +229,9 @@
     margin-bottom: 1.5rem;
   }
 
-  .search-container-neon,
-  .mood-indicator {
-    width: 100%;
-    max-width: none;
-  }
+  .search-container-neon {
 
-  .mood-indicator {
-    width: fit-content;
-    min-width: min(100%, 220px);
-    align-self: center;
-  }
+
 
   .mentor-item {
     flex-direction: column;
@@ -298,12 +277,11 @@
   }
 
   .primary-btn-s,
-  .boton-estadoDispo,
-  .mood-indicator {
+  .boton-estadoDispo {
     min-height: 44px;
     font-size: 0.92rem;
   }
-
+  
   .mentor-item .primary-btn-s {
     width: min(100%, 168px);
     padding: 0.78rem 1rem;

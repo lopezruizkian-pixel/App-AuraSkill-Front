@@ -1,7 +1,7 @@
 import React from "react";
-import { Users, Radio, Wrench, Smile, LogIn, Power } from "lucide-react";
+import { Users, Radio, Wrench, LogIn, Power } from "lucide-react";
 
-function SalaActivaCard({ id, titulo, habilidad, mood, inscritos, capacidad, onClose, onEnter }) {
+function SalaActivaCard({ id, titulo, habilidad, inscritos, capacidad, onClose, onEnter }) {
   const handleClose = () => {
     if (window.confirm("¿Seguro que quieres finalizar la sesión?")) {
       onClose();
@@ -27,13 +27,7 @@ function SalaActivaCard({ id, titulo, habilidad, mood, inscritos, capacidad, onC
               <p>{habilidad}</p>
             </div>
           </div>
-          <div className="info-item">
-            <Smile size={18} className="sala-info-icon" title="Mood de la sesión" />
-            <div>
-              <label>Mood de la sesión</label>
-              <p>{mood}</p>
-            </div>
-          </div>
+
           <div className="info-item">
             <Users size={18} className="sala-info-icon" title="Participantes" />
             <div>

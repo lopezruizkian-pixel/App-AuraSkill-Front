@@ -27,7 +27,6 @@ function Perfil() {
         usuario: data.usuario || "",
         habilidades: (data.habilidades || []).join(", "),
         intereses: (data.intereses || []).join(", "),
-        mood_actual: data.mood_actual || "neutral",
       });
     } catch (err) {
       console.error("Error cargando perfil:", err);
@@ -45,7 +44,6 @@ function Perfil() {
         usuario: editData.usuario.trim(),
         habilidades: editData.habilidades.split(",").map(h => h.trim()).filter(Boolean),
         intereses: editData.intereses.split(",").map(i => i.trim()).filter(Boolean),
-        mood_actual: editData.mood_actual,
       });
       setUserData(updated);
       localStorage.setItem("userName", updated.nombre);
@@ -90,7 +88,6 @@ function Perfil() {
                 </div>
                 <h3 className="perfil-usuario">@{userData.usuario}</h3>
                 <p className="perfil-bio">{userData.correo}</p>
-                {userData.mood_actual && <p style={{ color: "#aaa", fontSize: "0.9rem" }}>Mood: {userData.mood_actual}</p>}
               </div>
               <div className="perfil-actions">
                 <button className="primary-btn-neon-s edit-btn" onClick={() => setShowEditModal(true)}>
@@ -149,7 +146,6 @@ function Perfil() {
             {[
               { label: "Nombre", key: "nombre" },
               { label: "Usuario", key: "usuario" },
-              { label: "Mood actual", key: "mood_actual", placeholder: "neutral, feliz..." },
               { label: "Habilidades (separadas por coma)", key: "habilidades", placeholder: "React, Python..." },
               { label: "Intereses (separados por coma)", key: "intereses", placeholder: "IA, Diseño..." },
             ].map(({ label, key, placeholder }) => (

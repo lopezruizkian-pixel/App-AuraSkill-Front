@@ -188,10 +188,7 @@ export const validators = {
       validateRequired(value, 'Habilidad').valid
         ? { valid: true }
         : { valid: false, error: 'Debes seleccionar una habilidad' },
-    mood: (value) => 
-      validateRequired(value, 'Mood').valid
-        ? { valid: true }
-        : { valid: false, error: 'Debes seleccionar un mood' },
+
     limiteEstudiantes: (value) => 
       validateRange(value, 1, 50, 'Límite de estudiantes'),
     descripcion: (value) => 
