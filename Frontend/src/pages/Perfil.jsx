@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import PerfilStatCard from "../components/PerfilStatCard";
 import SkillTag from "../components/SkillTag";
 import Notificaciones from "../components/Notificaciones";
+import GlobalHeader from "../components/GlobalHeader";
 import { User, Edit3, Star, Clock, Video, Award, BookOpen, X, Check } from "lucide-react";
 import { httpClient } from "../services/httpClient";
 import "../Styles/Home.css";
@@ -66,14 +67,10 @@ function Perfil() {
       <div className="home-main-layout">
         <Sidebar rol={rol} />
         <main className="home-content">
-          <div className="dashboard-header full-header">
-            <div className="estado-mentor-pill">
-              <span>{rol === "mentor" ? "Modo Enseñanza" : "Modo Aprendizaje"}</span>
-            </div>
-            <div className="header-actions-right">
-              <Notificaciones />
-              <div className="icon-action user-icon active-user"><User size={24} /></div>
-            </div>
+          <GlobalHeader />
+          
+          <div className="estado-mentor-pill" style={{ marginBottom: "2rem", display: "inline-flex", alignItems: "center" }}>
+            <span>{rol === "mentor" ? "Modo Enseñanza" : "Modo Aprendizaje"}</span>
           </div>
           <section className="perfil-section">
             <div className="neon-card perfil-header-card">

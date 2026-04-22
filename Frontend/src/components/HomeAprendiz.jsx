@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { fetchActiveRooms, joinRoom, fetchRoom } from "../services/roomService";
 import { getDashboardSocket } from "../services/socketConfig";
+import { RefreshCw } from "lucide-react";
+import GlobalHeader from "../components/GlobalHeader";
 
 function HomeAprendiz() {
   const navigate = useNavigate();
@@ -116,31 +118,34 @@ function HomeAprendiz() {
   };
 
   return (
-    <section className="dashboard-section">
-      <div className="dashboard-header">
-        <div className="search-container-neon">
-          <Search className="search-icon" size={20} />
-          <input
-            type="text"
-            placeholder="Buscar habilidad o mentor..."
-            className="search-input-neon"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+    <section className="salas-activas-section">
+      <GlobalHeader />
+      
+      <div className="search-container-neon" style={{ display: "flex", justifyContent: "space-between", alignItems: "stretch", marginBottom: "1.5rem" }}>
+        <Search className="search-icon" size={20} />
+        <input
+          type="text"
+          placeholder="Buscar habilidad o mentor..."
+          className="search-input-neon"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
-      <h2 className="welcome-title">
-        {salasVisitadas.length > 0 ? "Mentores que has visitado" : "Aún no has visitado ninguna sala"}
-      </h2>
-
       {loading ? (
-        <p>Cargando salas...</p>
+        <div className="loading-global-container">
+          <div className="aura-spinner"></div>
+          <span className="loading-text-neon">Buscando salas</span>
+        </div>
       ) : filtered.length === 0 ? (
-        <p>No hay salas disponibles en este momento.</p>
+        <div className="empty-state-centered">
+          <Users size={100} className="empty-icon-neon" />
+          <h3 className="empty-state-title">No hay salas disponibles</h3>
+          <p className="empty-state-text">Vuelve más tarde o explora nuevas habilidades para encontrar mentores activos.</p>
+        </div>
       ) : (
         filtered.map((room) => (
-          <div key={room.id} className="neon-card mentor-list-card">
+          <div key={room.id} className="neon-card mentor-list-card" style={{ marginBottom: "1rem" }}>
             <div className="mentor-item">
               <div className="mentor-info">
                 <p><strong>Sala:</strong> {room.nombre}</p>

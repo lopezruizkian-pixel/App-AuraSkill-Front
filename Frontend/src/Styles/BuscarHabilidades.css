@@ -366,7 +366,13 @@
     justify-content: center;
   }
 
+  .header-actions-right .mood-indicator {
+    width: 100%;
+  }
 
+  .header-actions-right > :not(.mood-indicator) {
+    width: auto;
+  }
 
   .header-actions-right .icon-action,
   .header-actions-right .user-icon {

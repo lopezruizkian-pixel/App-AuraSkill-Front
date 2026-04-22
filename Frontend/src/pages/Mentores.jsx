@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import MentorCard from "../components/MentorCard";
 import Notificaciones from "../components/Notificaciones";
-import { Search, User } from "lucide-react";
+import GlobalHeader from "../components/GlobalHeader";
+import { Search, User, Users, RefreshCw } from "lucide-react";
 import { fetchActiveRooms, joinRoom, fetchRoom } from "../services/roomService";
 import { getDashboardSocket } from "../services/socketConfig";
 import "../Styles/Mentores.css";
@@ -112,30 +113,31 @@ function Mentores() {
       <div className="home-main-layout">
         <Sidebar rol={rol} />
         <main className="home-content">
-          <div className="dashboard-header full-header">
-            <div className="search-container-neon search-extended">
-              <Search className="search-icon" size={20} />
-              <input type="text" placeholder="Buscar mentor o habilidad..." className="search-input-neon"
-                value={search} onChange={(e) => setSearch(e.target.value)} />
-            </div>
-            <div className="header-actions-right">
-              <Notificaciones />
-              <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{ cursor: "pointer" }}>
-                <User size={24} />
-              </div>
-            </div>
+          <GlobalHeader />
+
+          <div className="search-container-neon search-extended">
+            <Search className="search-icon" size={20} />
+            <input type="text" placeholder="Buscar mentor o habilidad..." className="search-input-neon"
+              value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
           <section className="mentores-section">
-            <h2 className="welcome-title">Mentores disponibles</h2>
+            {/* Título redundante eliminado */}
             <div className="filtros-container">
               <select className="filtro-neon" value={filtroHabilidad} onChange={(e) => setFiltroHabilidad(e.target.value)}>
                 <option value="">Habilidad</option>
                 {habilidades.map((h) => <option key={h} value={h}>{h}</option>)}
               </select>
             </div>
-            {loading ? <p>Cargando mentores...</p> : filtered.length === 0 ? (
-              <div className="neon-card" style={{ padding: "2rem", textAlign: "center" }}>
-                <p>No hay mentores disponibles en este momento.</p>
+            {loading ? (
+              <div className="loading-global-container">
+                <div className="aura-spinner"></div>
+                <span className="loading-text-neon">Buscando mentores</span>
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="empty-state-centered">
+                <Users size={100} className="empty-icon" style={{ marginBottom: "2rem", opacity: 0.15 }} />
+                <h3 style={{ color: "#fff", fontSize: "2rem", marginBottom: "0.8rem", fontWeight: "700" }}>No hay mentores activos</h3>
+                <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "1.2rem", maxWidth: "450px", margin: "0 auto" }}>En este momento no hay mentores enseñando esta habilidad. ¡Sé el primero en crear una sala!</p>
               </div>
             ) : (
               <div className="mentores-grid">

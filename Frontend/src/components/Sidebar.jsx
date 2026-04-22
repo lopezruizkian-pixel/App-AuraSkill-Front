@@ -88,7 +88,7 @@ function Sidebar({ rol }) {
                 onClick={() => handleNavigate("/buscar-habilidades")}
               >
                 <Search size={18} className="nav-icon" />
-                Skills
+                Habilidades
               </button>
 
               <button
@@ -96,7 +96,7 @@ function Sidebar({ rol }) {
                 onClick={() => handleNavigate("/salas-activas")}
               >
                 <Video size={18} className="nav-icon" />
-                Live Room
+                Salas en Vivo
               </button>
             </>
           ) : (
@@ -106,7 +106,7 @@ function Sidebar({ rol }) {
                 onClick={() => handleNavigate("/buscar-habilidades")}
               >
                 <Search size={18} className="nav-icon" />
-                Search Skills
+                Buscar Habilidades
               </button>
 
               <button
@@ -114,7 +114,7 @@ function Sidebar({ rol }) {
                 onClick={() => handleNavigate("/mentores")}
               >
                 <Users size={18} className="nav-icon" />
-                Mentors
+                Mentores
               </button>
             </>
           )}
@@ -124,7 +124,7 @@ function Sidebar({ rol }) {
             onClick={() => handleNavigate("/historial")}
           >
             <History size={18} className="nav-icon" />
-            History
+            Historial
           </button>
 
           <button
@@ -132,12 +132,12 @@ function Sidebar({ rol }) {
             onClick={() => handleNavigate("/configuracion")}
           >
             <Settings size={18} className="nav-icon" />
-            Settings
+            Configuración
           </button>
 
           <button className="nav-item logout" onClick={handleLogout}>
             <LogOut size={18} className="nav-icon" />
-            Log Out
+            Cerrar Sesión
           </button>
         </nav>
       </aside>

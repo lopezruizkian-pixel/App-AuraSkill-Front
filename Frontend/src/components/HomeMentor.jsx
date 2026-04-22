@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Wrench, Users, PlusCircle, Video } from "lucide-react";
 import { fetchActiveRooms, createRoom } from "../services/roomService";
 import { getDashboardSocket } from "../services/socketConfig";
+import { RefreshCw } from "lucide-react";
+import GlobalHeader from "../components/GlobalHeader";
 import "../Styles/Mentores.css";
 
 function HomeMentor() {
@@ -46,13 +48,9 @@ function HomeMentor() {
 
   return (
     <section className="dashboard-section">
-      <div className="dashboard-header full-header" style={{ marginBottom: "2rem" }}>
-        <h2 className="welcome-title" style={{ margin: 0 }}>Dashboard del Mentor</h2>
-        <div className="estado-mentor-pill">
-          <span>Estado: Disponible</span>
-          <div className="status-dot online" style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#00ff00", marginLeft: "10px" }}></div>
-        </div>
-      </div>
+      <GlobalHeader />
+      
+      {/* Estado eliminado por redundancia */}
 
 
 
@@ -62,13 +60,16 @@ function HomeMentor() {
       </div>
 
       {loading ? (
-        <p>Cargando salas...</p>
+        <div className="loading-global-container">
+          <div className="aura-spinner" style={{ borderTopColor: "#ff00ff", filter: "drop-shadow(0 0 10px rgba(255, 0, 255, 0.3))" }}></div>
+          <span className="loading-text-neon" style={{ color: "#ff00ff" }}>Actualizando</span>
+        </div>
       ) : rooms.length === 0 ? (
         <div className="neon-card empty-sala-state" style={{ padding: "2rem", textAlign: "center", marginTop: "1rem" }}>
           <p>No tienes salas activas aún. Crea una para comenzar a ser mentor.</p>
         </div>
       ) : (
-        <div className="mentores-grid">
+        <div className="mentores-grid" style={{ alignItems: "stretch" }}>
           {rooms.map((room) => (
             <div key={room.id} className="neon-card mentor-list-card">
               <div className="mentor-item" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>

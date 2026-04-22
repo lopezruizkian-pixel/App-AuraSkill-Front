@@ -1,9 +1,9 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import ConfigCard from "../components/ConfigCard";
 import Notificaciones from "../components/Notificaciones";
-import { Search, User, Settings, Shield, Globe, Trash2, RefreshCw, Eye, EyeOff } from "lucide-react";
+import GlobalHeader from "../components/GlobalHeader";
+import { Search, User, Settings, Shield, Trash2, RefreshCw, Eye, EyeOff } from "lucide-react";
 import { ThemeContext } from "../context/ThemeContext";
 import { httpClient } from "../services/httpClient";
 import { logoutUser } from "../services/authService";
@@ -55,51 +55,38 @@ function Configuracion() {
       <div className="home-main-layout">
         <Sidebar rol={rol} />
         <main className="home-content">
-          <div className="dashboard-header full-header">
-            <div className="search-container-neon search-extended">
-              <Search className="search-icon" size={20} />
-              <input type="text" placeholder="Buscar ajuste..." className="search-input-neon" />
-            </div>
-            <div className="header-actions-right">
-              <Notificaciones />
-              <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{ cursor: "pointer" }}><User size={24} /></div>
-            </div>
+          <GlobalHeader />
+
+          <div className="search-container-neon search-extended">
+            <Search className="search-icon" size={20} />
+            <input type="text" placeholder="Buscar ajuste..." className="search-input-neon" />
           </div>
 
           <section className="configuracion-section">
-            <h2 className="welcome-title">Configuración</h2>
-            <div className="config-grid">
-              <ConfigCard titulo="Notificaciones" icon={Notificaciones} estadoTexto="Activado" estadoColor="#00ff00" btnTexto="Desactivar" />
-            </div>
-            <div className="config-list-section">
-              <h3 className="section-subtitle"><Settings size={20} className="section-icon" /> Personalización de sistema</h3>
+            {/* Título redundante eliminado */}
+            <div className="config-list-section" style={{ marginTop: "1rem" }}>
+              <h3 className="section-subtitle"><Settings size={20} className="section-icon" /> Preferencias de la aplicación</h3>
               <div className="neon-card config-list-container">
+                <div className="config-list-item">
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span style={{ display: "inline-block", width: "8px", height: "8px", borderRadius: "50%", background: "#00ff00", boxShadow: "0 0 8px #00ff00" }}></span>
+                    <span>Notificaciones</span>
+                  </div>
+                  <button className="primary-btn-neon-s" style={{ background: "transparent", border: "1px solid #00ff00", color: "#00ff00", padding: "0.5rem 1rem", fontSize: "0.85rem" }}>
+                    Desactivar
+                  </button>
+                </div>
                 <div className="config-list-item">
                   <span>Modo de visualización</span>
                   <select className="config-select" onChange={(e) => setTheme(e.target.value)} value={theme}>
-                    <option value="neon">Neón Cyberspace (Actual)</option>
+                    <option value="neon">Neón Cyberspace</option>
                     <option value="classic">Aura Clásico</option>
-                  </select>
-                </div>
-                <div className="config-list-item">
-                  <span>Tema principal</span>
-                  <select className="config-select">
-                    <option>Neón Cyberspace (Actual)</option>
-                    <option>Aurora Neon</option>
-                    <option>Ocaso Digital</option>
-                    <option>Aura Clásico</option>
-                  </select>
-                </div>
-                <div className="config-list-item">
-                  <span><Globe size={16} className="inline-icon" /> Idioma</span>
-                  <select className="config-select">
-                    <option>Español (Latinoamérica)</option>
-                    <option>English (US)</option>
                   </select>
                 </div>
               </div>
             </div>
             <div className="config-list-section">
+              {/* Título redundante eliminado */}
               <h3 className="section-subtitle"><Shield size={20} className="section-icon" /> Cuenta y Seguridad</h3>
               <div className="neon-card config-list-container">
                 <div className="config-list-item">

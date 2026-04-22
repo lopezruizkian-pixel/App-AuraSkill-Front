@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import SalaActivaCard from "../components/SalaActivaCard";
 import FormCrearSala from "../components/FormCrearSala";
-import { Bell, User, Circle, VideoOff, PlusCircle, X } from "lucide-react";
+import GlobalHeader from "../components/GlobalHeader";
+import { Bell, User, Circle, VideoOff, PlusCircle, X, RefreshCw } from "lucide-react";
 import { fetchActiveRooms, joinRoom } from "../services/roomService";
 import "../Styles/Home.css";
 import "../Styles/BuscarHabilidades.css";
@@ -82,23 +83,22 @@ function SalasActivas() {
         <div className="home-main-layout">
           <Sidebar rol={rol} />
           <main className="home-content">
-            <div className="dashboard-header full-header">
-              <div className="estado-mentor-pill">
-                <span>Salas de: {habilidadFiltro}</span>
-              </div>
-              <div className="header-actions-right">
-                <div className="icon-action bell-icon"><Bell size={24} /><span className="notification-dot">1</span></div>
-                <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{ cursor: "pointer" }}><User size={24} /></div>
-              </div>
+            <GlobalHeader />
+            
+            <div className="estado-mentor-pill" style={{ marginBottom: "2rem", display: "inline-flex", alignItems: "center" }}>
+              <span>Salas de: {habilidadFiltro}</span>
             </div>
             <section className="salas-activas-section">
-              <h2 className="welcome-title">Salas disponibles — {habilidadFiltro}</h2>
               {loading ? (
-                <p>Cargando salas...</p>
+                <div className="loading-global-container" style={{ padding: "2rem" }}>
+                  <div className="aura-spinner"></div>
+                  <span className="loading-text-neon">Sincronizando</span>
+                </div>
               ) : salasFiltered.length === 0 ? (
-                <div className="neon-card empty-sala-state">
-                  <VideoOff size={48} className="empty-icon" />
-                  <h3>No hay salas activas para esta habilidad</h3>
+                <div className="empty-state-centered">
+                  <VideoOff size={100} className="empty-icon" style={{ marginBottom: "2rem", opacity: 0.2 }} />
+                  <h3 style={{ color: "#fff", fontSize: "2rem", marginBottom: "0.8rem", fontWeight: "700" }}>No hay salas activas</h3>
+                  <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "1.2rem" }}>Parece que ningún mentor está enseñando esta habilidad ahora mismo.</p>
                 </div>
               ) : (
                 <div className="single-sala-container">
@@ -136,41 +136,34 @@ function SalasActivas() {
     <div className="home-container">
       <div className="home-main-layout">
         <Sidebar rol={rol} />
-        <main className="home-content">
-          <div className="dashboard-header full-header">
-            <div className="estado-mentor-pill">
-              <span>Estado: Disponible</span>
-              <Circle className="status-dot online" size={12} fill="#00ff00" />
-            </div>
-            <div className="header-actions-right">
-              <div className="icon-action bell-icon"><Bell size={24} /><span className="notification-dot">1</span></div>
-              <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{ cursor: "pointer" }}><User size={24} /></div>
-            </div>
-          </div>
-          <section className="salas-activas-section">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-              <h2 className="welcome-title" style={{ margin: 0 }}>Tu sala actual</h2>
-              {!salaActiva && (
+        <main className="home-content" style={{ display: "flex", flexDirection: "column" }}>
+          <GlobalHeader />
+
+          {/* Estado eliminado por redundancia */}
+          <section className="salas-activas-section" style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "1.5rem" }}>
+              {/* Título redundante eliminado */}
+              {!salaActiva && !showCreateForm && (
                 <button 
                   className="primary-btn-s" 
-                  onClick={() => setShowCreateForm(!showCreateForm)}
+                  onClick={() => setShowCreateForm(true)}
                   style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
                 >
-                  {showCreateForm ? <><X size={18} /> Cancelar</> : <><PlusCircle size={18} /> Crear nueva sala</>}
+                  <PlusCircle size={18} /> Crear nueva sala
                 </button>
               )}
             </div>
 
-            <div className="single-sala-container">
+            <div className="single-sala-container" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: (salaActiva || showCreateForm) ? "flex-start" : "center", alignItems: "center" }}>
               {salaActiva ? (
                 <SalaActivaCard {...salaActiva} onClose={handleCloseRoom} onEnter={handleEnterRoom} />
               ) : showCreateForm ? (
-                <FormCrearSala />
+                <FormCrearSala onCancel={() => setShowCreateForm(false)} />
               ) : (
-                <div className="neon-card empty-sala-state">
-                  <VideoOff size={48} className="empty-icon" />
-                  <h3>No tienes ninguna sala activa</h3>
-                  <p style={{ color: "#aaa", marginTop: "10px" }}>Crea una sala para empezar a mentorear.</p>
+                <div className="empty-state-centered">
+                  <VideoOff size={100} className="empty-icon" style={{ marginBottom: "2rem", opacity: 0.2 }} />
+                  <h3 style={{ color: "#fff", fontSize: "2rem", marginBottom: "0.8rem", fontWeight: "700" }}>No tienes ninguna sala activa</h3>
+                  <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "1.2rem", maxWidth: "450px", margin: "0 auto" }}>Crea una sala para empezar a mentorear y compartir tus conocimientos.</p>
                 </div>
               )}
             </div>
