@@ -25,8 +25,8 @@ function MentorCard({ nombre, habilidad, mood, nombreSala, onJoin, isJoining, is
         <button 
           className="primary-btn-s" 
           onClick={onJoin} 
-          disabled={isJoining || !isActive}
-          title={!isActive ? "El mentor no está activo" : ""}
+          disabled={isJoining}
+          title={!isActive ? "Presiona para verificar si el mentor ya entró" : ""}
         >
           {isJoining ? "Entrando..." : "Entrar a sala"}
         </button>
