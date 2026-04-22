@@ -84,10 +84,7 @@ function SalasActivas() {
           <Sidebar rol={rol} />
           <main className="home-content">
             <GlobalHeader />
-            
-            <div className="estado-mentor-pill" style={{ marginBottom: "2rem", display: "inline-flex", alignItems: "center" }}>
-              <span>Salas de: {habilidadFiltro}</span>
-            </div>
+
             <section className="salas-activas-section">
               {loading ? (
                 <div className="loading-global-container" style={{ padding: "2rem" }}>

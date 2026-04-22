@@ -100,15 +100,31 @@ function FormCrearSala({ onCancel }) {
 
     setIsLoading(true);
     try {
+      const selectedSkill = mySkills.find(
+        (skill) => (skill.id || skill._id) === formData.habilidad
+      );
+
       const roomData = {
         nombre: formData.nombre.trim(),
-        habilidad: formData.habilidad,
+        habilidad: selectedSkill?.nombre || formData.habilidad,
+        habilidad_id: selectedSkill?.id || selectedSkill?._id,
         mood: formData.mood,
         capacidad_maxima: parseInt(formData.limiteEstudiantes, 10),
         descripcion: formData.descripcion.trim(),
       };
 
-      await createRoom(roomData);
+      const createdRoom = await createRoom(roomData);
+      localStorage.setItem(
+        'salaActiva',
+        JSON.stringify({
+          id: createdRoom.id || createdRoom._id,
+          titulo: createdRoom.nombre || roomData.nombre,
+          habilidad: createdRoom.habilidad || roomData.habilidad,
+          mood: createdRoom.mood || roomData.mood,
+          inscritos: createdRoom.sessionInfo?.participantCount || 0,
+          capacidad: createdRoom.capacidad_maxima || roomData.capacidad_maxima,
+        })
+      );
       showSuccess('Sala creada con exito');
       navigate('/salas-activas');
     } catch (err) {

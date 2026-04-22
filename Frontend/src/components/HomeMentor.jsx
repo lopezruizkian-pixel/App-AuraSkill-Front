@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Wrench, Users, PlusCircle, Video } from "lucide-react";
-import { fetchActiveRooms, createRoom } from "../services/roomService";
+import { BookOpen, Users, Video } from "lucide-react";
+import { fetchActiveRooms } from "../services/roomService";
 import { getDashboardSocket } from "../services/socketConfig";
-import { RefreshCw } from "lucide-react";
 import GlobalHeader from "../components/GlobalHeader";
 import "../Styles/Mentores.css";
 
@@ -71,18 +70,39 @@ function HomeMentor() {
       ) : (
         <div className="mentores-grid" style={{ alignItems: "stretch" }}>
           {rooms.map((room) => (
-            <div key={room.id} className="neon-card mentor-list-card">
-              <div className="mentor-item" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <div className="mentor-info">
-                  <h4 style={{ margin: "0 0 10px 0", color: "#00ffff" }}>{room.nombre}</h4>
-                  <p><strong>Habilidad:</strong> {room.habilidad}</p>
-                  <p><strong>Participantes:</strong> {room.sessionInfo?.participantCount || 0} / {room.capacidad_maxima || 10}</p>
+            <article key={room.id} className="neon-card mentor-list-card dashboard-room-card">
+              <div className="dashboard-room-card-top">
+                <div className="dashboard-room-icon">
+                  <Video size={30} strokeWidth={1.7} />
                 </div>
-                <button className="primary-btn-s" onClick={() => navigate(`/sala/${room.id}`)} style={{ alignSelf: 'flex-start' }}>
+                <div className="dashboard-room-badges">
+                  <span className="dashboard-room-badge">Sala activa</span>
+                  <span className="dashboard-room-badge subtle">
+                    {room.sessionInfo?.participantCount || 0} / {room.capacidad_maxima || 10}
+                  </span>
+                </div>
+              </div>
+
+              <div className="dashboard-room-content">
+                <h3 className="dashboard-room-title">{room.nombre}</h3>
+                <div className="dashboard-room-meta">
+                  <p>
+                    <BookOpen size={15} />
+                    <span>{room.habilidad || "Habilidad no definida"}</span>
+                  </p>
+                  <p>
+                    <Users size={15} />
+                    <span>{room.sessionInfo?.participantCount || 0} participante(s) conectados</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="dashboard-room-actions">
+                <button className="primary-btn-s dashboard-room-btn" onClick={() => navigate(`/sala/${room.id}`)}>
                   Entrar a mi sala
                 </button>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       )}

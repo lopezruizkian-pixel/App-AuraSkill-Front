@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Notificaciones from "../components/Notificaciones";
 import GlobalHeader from "../components/GlobalHeader";
-import { Search, User, Settings, Shield, Trash2, RefreshCw, Eye, EyeOff } from "lucide-react";
+import { User, Settings, Shield, Trash2, RefreshCw, Eye, EyeOff } from "lucide-react";
 import { ThemeContext } from "../context/ThemeContext";
 import { httpClient } from "../services/httpClient";
 import { logoutUser } from "../services/authService";
@@ -56,11 +56,6 @@ function Configuracion() {
         <Sidebar rol={rol} />
         <main className="home-content">
           <GlobalHeader />
-
-          <div className="search-container-neon search-extended">
-            <Search className="search-icon" size={20} />
-            <input type="text" placeholder="Buscar ajuste..." className="search-input-neon" />
-          </div>
 
           <section className="configuracion-section">
             {/* Título redundante eliminado */}

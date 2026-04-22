@@ -10,10 +10,19 @@ const normalizeRoom = (room) => {
     return room;
   }
 
+  const normalizedSkill =
+    (typeof room.habilidad === 'object' && room.habilidad?.nombre) ||
+    room.habilidad_nombre ||
+    room.skill_name ||
+    room.skillName ||
+    room.skill?.nombre ||
+    room.habilidad;
+
   return {
     ...room,
     id: room.id || room._id,
     _id: room._id || room.id,
+    habilidad: normalizedSkill,
     capacidad_maxima: room.capacidad_maxima ?? room.limiteEstudiantes ?? 10,
     limiteEstudiantes: room.limiteEstudiantes ?? room.capacidad_maxima ?? 10,
   };

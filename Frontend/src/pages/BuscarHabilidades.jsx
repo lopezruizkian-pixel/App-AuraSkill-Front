@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { BookOpen, Code, Gamepad2, Languages, Megaphone, Music, Palette, Search, Sparkles, Wrench } from "lucide-react";
+import { createPortal } from "react-dom";
+import { BookOpen, Code, Gamepad2, Languages, Megaphone, Music, Palette, Search, PlusCircle, Wrench } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import HabilidadCard from "../components/HabilidadCard";
 import GlobalHeader from "../components/GlobalHeader";
 import { createSkill, deleteSkill, fetchSkills } from "../services/skillService";
 import "../Styles/Home.css";
 import "../Styles/BuscarHabilidades.css";
+import "../Styles/CrearSala.css";
 
 const iconByCategory = {
   Tecnologia: Code, Diseno: Palette, Negocios: Megaphone,
@@ -24,6 +26,7 @@ function BuscarHabilidades() {
   const [formData, setFormData] = useState(defaultForm);
   const [isCreating, setIsCreating] = useState(false);
   const [deletingId, setDeletingId] = useState("");
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const summaryText = useMemo(() => {
     if (isLoading) return "Cargando habilidades disponibles...";
@@ -59,6 +62,7 @@ function BuscarHabilidades() {
       const newSkill = await createSkill(formData);
       setSkills((prev) => [newSkill, ...prev].sort((a, b) => a.nombre.localeCompare(b.nombre)));
       setFormData(defaultForm);
+      setShowCreateModal(false);
     } catch (requestError) {
       setError(requestError.message || "No se pudo crear la habilidad.");
     } finally { setIsCreating(false); }
@@ -90,46 +94,19 @@ function BuscarHabilidades() {
             </div>
             <div className="dashboard-actions-right">
               <div className="mood-indicator">{summaryText}</div>
+              {isMentor && (
+                <button
+                  type="button"
+                  className="primary-btn-s"
+                  onClick={() => setShowCreateModal(true)}
+                >
+                  <PlusCircle size={18} /> Nueva skill
+                </button>
+              )}
             </div>
           </div>
 
           <section className="habilidades-section">
-            <div className="skills-heading-row">
-              <div>
-                <h2 className="welcome-title">Habilidades reales de la plataforma</h2>
-                <p className="skills-subtitle">Explora habilidades guardadas en la base de datos y encuentra sesiones o mentores afines.</p>
-              </div>
-              <div className="skills-counter-pill"><Sparkles size={18} /><span>{skills.length} skills</span></div>
-            </div>
-
-            {isMentor && (
-              <form className="skills-admin-card neon-card" onSubmit={handleCreateSkill}>
-                <div className="skills-admin-header">
-                  <div>
-                    <h3>Crear nueva skill</h3>
-                    <p>Disponible solo para mentores. Agrega habilidades nuevas al catalogo compartido.</p>
-                  </div>
-                  <div className="skills-admin-badge"><Wrench size={16} /><span>Modo mentor</span></div>
-                </div>
-                <div className="skills-admin-grid">
-                  <input name="nombre" value={formData.nombre} onChange={handleInputChange} placeholder="Nombre de la habilidad" className="skill-admin-input" required />
-                  <input name="categoria" value={formData.categoria} onChange={handleInputChange} placeholder="Categoria" className="skill-admin-input" required />
-                  <select name="nivel" value={formData.nivel} onChange={handleInputChange} className="skill-admin-input">
-                    <option value="basico">Basico</option>
-                    <option value="intermedio">Intermedio</option>
-                    <option value="avanzado">Avanzado</option>
-                  </select>
-                  <textarea name="descripcion" value={formData.descripcion} onChange={handleInputChange}
-                    placeholder="Descripcion breve de la habilidad" className="skill-admin-input skill-admin-textarea" required />
-                </div>
-                <div className="skills-admin-actions">
-                  <button type="submit" className="primary-btn-s" disabled={isCreating}>
-                    {isCreating ? "Guardando..." : "Crear skill"}
-                  </button>
-                </div>
-              </form>
-            )}
-
             {error && <div className="skills-feedback-card error">{error}</div>}
 
             {isLoading ? (
@@ -148,6 +125,109 @@ function BuscarHabilidades() {
               </div>
             )}
           </section>
+
+          {showCreateModal && typeof document !== "undefined" && createPortal(
+            <div className="skill-modal-overlay">
+              <div className="skill-modal-content">
+                <h3 className="skill-modal-title">Nueva habilidad</h3>
+                <p className="skill-modal-subtitle">Crea una skill y agregala al catalogo compartido.</p>
+                <form className="formulario-sala" onSubmit={handleCreateSkill}>
+                  <div className="input-group-neon">
+                    <div className="input-label-row">
+                      <label htmlFor="skill-name-modal">Nombre de la habilidad</label>
+                    </div>
+                    <div className="input-wrapper">
+                      <Wrench className="input-icon" size={18} />
+                      <input
+                        id="skill-name-modal"
+                        name="nombre"
+                        value={formData.nombre}
+                        onChange={handleInputChange}
+                        placeholder="Ej. React Avanzado"
+                        required
+                        className="skill-admin-input modal-skill-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="skills-admin-grid skills-admin-grid-modal">
+                    <div className="input-group-neon">
+                      <div className="input-label-row">
+                        <label htmlFor="skill-category-modal">Categoria</label>
+                      </div>
+                      <div className="input-wrapper">
+                        <Wrench className="input-icon" size={18} />
+                        <input
+                          id="skill-category-modal"
+                          name="categoria"
+                          value={formData.categoria}
+                          onChange={handleInputChange}
+                          placeholder="Ej. Tecnologia"
+                          required
+                          className="skill-admin-input modal-skill-input"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="input-group-neon">
+                      <div className="input-label-row">
+                        <label htmlFor="skill-level-modal">Nivel</label>
+                      </div>
+                      <div className="input-wrapper">
+                        <select
+                          id="skill-level-modal"
+                          name="nivel"
+                          value={formData.nivel}
+                          onChange={handleInputChange}
+                          className="skill-admin-input modal-skill-input"
+                        >
+                          <option value="basico">Basico</option>
+                          <option value="intermedio">Intermedio</option>
+                          <option value="avanzado">Avanzado</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="input-group-neon skills-modal-description">
+                      <div className="input-label-row">
+                        <label htmlFor="skill-description-modal">Descripcion breve</label>
+                      </div>
+                      <div className="input-wrapper is-textarea">
+                        <textarea
+                          id="skill-description-modal"
+                          name="descripcion"
+                          value={formData.descripcion}
+                          onChange={handleInputChange}
+                          placeholder="Describe en una o dos lineas esta habilidad."
+                          required
+                          className="skill-admin-input modal-skill-input skill-admin-textarea"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="skill-modal-actions">
+                    <button
+                      type="button"
+                      className="skill-modal-btn skill-btn-cancel"
+                      onClick={() => setShowCreateModal(false)}
+                      disabled={isCreating}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      className="skill-modal-btn skill-btn-save"
+                      disabled={isCreating}
+                    >
+                      {isCreating ? "Guardando..." : "Crear habilidad"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>,
+            document.body
+          )}
         </main>
       </div>
     </div>

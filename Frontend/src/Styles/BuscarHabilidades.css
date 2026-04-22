@@ -31,13 +31,6 @@
   white-space: nowrap;
 }
 
-.skills-admin-card {
-  padding: 1.4rem;
-  background: linear-gradient(180deg, rgba(20, 0, 34, 0.96), rgba(9, 14, 36, 0.94));
-  border: 1px solid rgba(0, 255, 255, 0.2);
-  border-radius: 22px;
-}
-
 .skills-admin-header {
   display: flex;
   align-items: flex-start;
@@ -75,6 +68,10 @@
   gap: 0.9rem;
 }
 
+.skills-admin-grid-modal {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .skill-admin-input {
   width: 100%;
   min-height: 48px;
@@ -103,6 +100,14 @@
   resize: vertical;
 }
 
+.modal-skill-input {
+  padding-left: 3rem;
+}
+
+.skills-modal-description {
+  grid-column: 1 / -1;
+}
+
 .skills-admin-actions {
   display: flex;
   justify-content: flex-end;
@@ -127,6 +132,13 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.4rem;
+  align-items: stretch;
+}
+
+.habilidades-grid > .neon-card,
+.habilidades-grid > .habilidad-card {
+  margin-top: 0;
+  align-self: stretch;
 }
 
 .habilidad-card {
@@ -134,6 +146,7 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
+  height: 100%;
   padding: 1.4rem;
   text-align: left;
   background: linear-gradient(180deg, rgba(20, 0, 34, 0.96), rgba(9, 14, 36, 0.94));
@@ -269,6 +282,8 @@
   display: flex;
   align-items: center;
   gap: 1.2rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .icon-action {

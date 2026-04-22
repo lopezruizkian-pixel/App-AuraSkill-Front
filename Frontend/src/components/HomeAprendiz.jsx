@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, BookOpen, User, Smile, Radio, Users } from "lucide-react";
 import { fetchActiveRooms, joinRoom, fetchRoom } from "../services/roomService";
 import { getDashboardSocket } from "../services/socketConfig";
-import { RefreshCw } from "lucide-react";
 import GlobalHeader from "../components/GlobalHeader";
 
 function HomeAprendiz() {
@@ -17,22 +16,21 @@ function HomeAprendiz() {
 
   useEffect(() => {
     loadRooms();
-    
-    // Conectar a WebSockets para actualizaciones en tiempo real
+
     const socket = getDashboardSocket();
-    
+
     const handleUpdate = () => {
-      console.log('Salas actualizadas, recargando...');
+      console.log("Salas actualizadas, recargando...");
       loadRooms();
     };
-    
-    socket.on('roomsUpdated', handleUpdate);
+
+    socket.on("roomsUpdated", handleUpdate);
 
     const historialGuardado = JSON.parse(localStorage.getItem("historialSalas")) || [];
     setSalasVisitadas(historialGuardado);
 
     return () => {
-      socket.off('roomsUpdated', handleUpdate);
+      socket.off("roomsUpdated", handleUpdate);
     };
   }, []);
 
@@ -41,11 +39,14 @@ function HomeAprendiz() {
       setFiltered(rooms);
     } else {
       const q = search.toLowerCase();
-      setFiltered(rooms.filter((r) =>
-        r.nombre?.toLowerCase().includes(q) ||
-        r.habilidad?.toLowerCase().includes(q) ||
-        r.mentor_nombre?.toLowerCase().includes(q)
-      ));
+      setFiltered(
+        rooms.filter(
+          (r) =>
+            r.nombre?.toLowerCase().includes(q) ||
+            r.habilidad?.toLowerCase().includes(q) ||
+            r.mentor_nombre?.toLowerCase().includes(q)
+        )
+      );
     }
   }, [search, rooms]);
 
@@ -65,48 +66,44 @@ function HomeAprendiz() {
     console.log(`[DEBUG] handleJoin iniciado para sala ID:`, room.id);
     setJoining(room.id);
     try {
-      // Verificar estado actual con el backend para evitar bloqueos por estado obsoleto
       console.log(`[DEBUG] Obteniendo detalles de la sala...`);
       const roomDetails = await fetchRoom(room.id);
       console.log(`[DEBUG] Detalles obtenidos:`, roomDetails);
 
       if (!roomDetails.sessionInfo?.isActive) {
         console.log(`[DEBUG] Bloqueado: sessionInfo.isActive es falso o indefinido.`);
-        alert("El mentor aún no ha ingresado a esta sala.");
+        alert("El mentor aun no ha ingresado a esta sala.");
         setJoining(null);
         return;
       }
 
       console.log(`[DEBUG] sessionInfo.isActive es TRUE. Intentando unirse (joinRoom)...`);
-      // Intentar unirse, si ya está en la sala simplemente entrar
       try {
         await joinRoom(room.id);
         console.log(`[DEBUG] joinRoom exitoso para sala ID:`, room.id);
       } catch (err) {
         console.log(`[DEBUG] Error atrapado en joinRoom:`, err.message);
-        // Si el error es que ya está en la sala, ignorarlo y entrar
-        if (!err.message?.includes("Ya estás en esta sala")) {
-          console.error(`[DEBUG] Error crítico en joinRoom:`, err);
+        if (!err.message?.includes("Ya estas en esta sala")) {
+          console.error(`[DEBUG] Error critico en joinRoom:`, err);
           throw err;
         } else {
-          console.log(`[DEBUG] El usuario ya estaba en la sala, continuando a navegación.`);
+          console.log(`[DEBUG] El usuario ya estaba en la sala, continuando a navegacion.`);
         }
       }
-      
+
       console.log(`[DEBUG] Guardando historial y navegando a /sala/${room.id}`);
-      // Guardamos la sala activa en el historial de visitadas
       const infoSala = {
         id: room.id,
         nombre: room.nombre,
         habilidad: room.habilidad,
-        mentor: room.mentor_nombre || "Sin mentor"
+        mentor: room.mentor_nombre || "Sin mentor",
       };
-      
+
       const visitadas = JSON.parse(localStorage.getItem("historialSalas")) || [];
       if (!visitadas.some((s) => s.id === room.id)) {
         localStorage.setItem("historialSalas", JSON.stringify([infoSala, ...visitadas]));
       }
-      
+
       navigate(`/sala/${room.id}`);
     } catch (err) {
       console.error("[DEBUG] Error general en handleJoin:", err);
@@ -120,8 +117,11 @@ function HomeAprendiz() {
   return (
     <section className="salas-activas-section">
       <GlobalHeader />
-      
-      <div className="search-container-neon" style={{ display: "flex", justifyContent: "space-between", alignItems: "stretch", marginBottom: "1.5rem" }}>
+
+      <div
+        className="search-container-neon"
+        style={{ display: "flex", justifyContent: "space-between", alignItems: "stretch", marginBottom: "1.5rem" }}
+      >
         <Search className="search-icon" size={20} />
         <input
           type="text"
@@ -141,38 +141,52 @@ function HomeAprendiz() {
         <div className="empty-state-centered">
           <Users size={100} className="empty-icon-neon" />
           <h3 className="empty-state-title">No hay salas disponibles</h3>
-          <p className="empty-state-text">Vuelve más tarde o explora nuevas habilidades para encontrar mentores activos.</p>
+          <p className="empty-state-text">Vuelve mas tarde o explora nuevas habilidades para encontrar mentores activos.</p>
         </div>
       ) : (
         filtered.map((room) => (
-          <div key={room.id} className="neon-card mentor-list-card" style={{ marginBottom: "1rem" }}>
-            <div className="mentor-item">
-              <div className="mentor-info">
-                <p><strong>Sala:</strong> {room.nombre}</p>
-                <p>
-                  <strong>Mentor:</strong> {room.mentor_nombre || "Sin mentor"}
-                  <span style={{ 
-                    display: 'inline-block', 
-                    width: '10px', 
-                    height: '10px', 
-                    borderRadius: '50%', 
-                    backgroundColor: room.sessionInfo?.isActive ? '#00ff00' : '#ff0000',
-                    marginLeft: '8px'
-                  }} title={room.sessionInfo?.isActive ? "Mentor activo" : "Mentor inactivo"}></span>
-                </p>
-                <p><strong>Habilidad:</strong> {room.habilidad}</p>
-                <p><strong>Mood:</strong> {room.mood || "—"}</p>
+          <article key={room.id} className="neon-card mentor-list-card dashboard-room-card dashboard-room-card-student">
+            <div className="dashboard-room-card-top">
+              <div className="dashboard-room-icon">
+                <BookOpen size={30} strokeWidth={1.7} />
               </div>
+              <div className="dashboard-room-badges">
+                <span className={`dashboard-room-badge ${room.sessionInfo?.isActive ? "live" : "offline"}`}>
+                  <Radio size={12} />
+                  {room.sessionInfo?.isActive ? "Mentor activo" : "Mentor inactivo"}
+                </span>
+              </div>
+            </div>
+
+            <div className="dashboard-room-content">
+              <h3 className="dashboard-room-title">{room.nombre}</h3>
+              <div className="dashboard-room-meta">
+                <p>
+                  <User size={15} />
+                  <span>{room.mentor_nombre || "Sin mentor"}</span>
+                </p>
+                <p>
+                  <BookOpen size={15} />
+                  <span>{room.habilidad || "Habilidad no definida"}</span>
+                </p>
+                <p>
+                  <Smile size={15} />
+                  <span>{room.mood || "Sin mood definido"}</span>
+                </p>
+              </div>
+            </div>
+
+            <div className="dashboard-room-actions">
               <button
-                className="primary-btn-s"
+                className="primary-btn-s dashboard-room-btn"
                 onClick={() => handleJoin(room)}
                 disabled={joining === room.id || !room.sessionInfo?.isActive}
-                title={!room.sessionInfo?.isActive ? "El mentor no está activo" : ""}
+                title={!room.sessionInfo?.isActive ? "El mentor no esta activo" : ""}
               >
                 {joining === room.id ? "Entrando..." : "Entrar a sala"}
               </button>
             </div>
-          </div>
+          </article>
         ))
       )}
     </section>

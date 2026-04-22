@@ -33,6 +33,19 @@
   width: 100%;
 }
 
+.dashboard-page .mentores-grid,
+.dashboard-page .habilidades-grid {
+  align-items: stretch;
+}
+
+.dashboard-page .mentores-grid > .neon-card,
+.dashboard-page .mentores-grid > .mentor-list-card,
+.dashboard-page .habilidades-grid > .neon-card,
+.dashboard-page .habilidades-grid > .habilidad-card {
+  margin-top: 0;
+  height: 100%;
+}
+
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -215,6 +228,130 @@
   width: fit-content;
 }
 
+.dashboard-room-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 100%;
+  padding: 1.4rem;
+  text-align: left;
+  background: linear-gradient(180deg, rgba(20, 0, 34, 0.96), rgba(9, 14, 36, 0.94));
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 22px;
+  transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.dashboard-room-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0, 255, 255, 0.48);
+  box-shadow: 0 18px 36px rgba(0, 255, 255, 0.14);
+}
+
+.dashboard-room-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.9rem;
+}
+
+.dashboard-room-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: rgba(0, 255, 255, 0.08);
+  color: #00ffff;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.28));
+  flex-shrink: 0;
+}
+
+.dashboard-room-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55rem;
+}
+
+.dashboard-room-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: rgba(255, 0, 255, 0.1);
+  border: 1px solid rgba(255, 0, 255, 0.22);
+  color: #ffc8ff;
+}
+
+.dashboard-room-badge.subtle {
+  background: rgba(0, 255, 136, 0.1);
+  border-color: rgba(0, 255, 136, 0.22);
+  color: #a4ffd8;
+}
+
+.dashboard-room-badge.live {
+  background: rgba(0, 255, 136, 0.1);
+  border-color: rgba(0, 255, 136, 0.22);
+  color: #a4ffd8;
+}
+
+.dashboard-room-badge.offline {
+  background: rgba(255, 0, 102, 0.1);
+  border-color: rgba(255, 0, 102, 0.22);
+  color: #ffbdd1;
+}
+
+.dashboard-room-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.dashboard-room-title {
+  margin: 0;
+  color: #00ffff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.18);
+}
+
+.dashboard-room-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.dashboard-room-meta p {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.5;
+}
+
+.dashboard-room-meta svg {
+  color: #88f7ff;
+  flex-shrink: 0;
+}
+
+.dashboard-room-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.dashboard-room-btn {
+  flex: 1 1 180px;
+}
+
 @media (max-width: 1024px) {
   .home-content {
     --content-gutter: 24px;
@@ -266,7 +403,8 @@
     align-items: stretch;
   }
 
-  .mentor-item .primary-btn-s {
+  .mentor-item .primary-btn-s,
+  .dashboard-room-btn {
     width: min(100%, 190px);
     min-width: 0;
     align-self: flex-end;
@@ -316,5 +454,11 @@
     width: min(100%, 168px);
     padding: 0.78rem 1rem;
     font-size: 0.88rem;
+  }
+
+  .dashboard-room-icon {
+    width: 62px;
+    height: 62px;
+    border-radius: 16px;
   }
 }
