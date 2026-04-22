@@ -2,6 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
 import Notificaciones from "./Notificaciones";
+import "../Styles/GlobalHeader.css";
 
 const titles = {
   "/home": "Dashboard",
@@ -9,34 +10,31 @@ const titles = {
   "/mentores": "Mentores Disponibles",
   "/historial": "Historial de Sesiones",
   "/salas-activas": "Salas en Vivo",
-  "/configuracion": "Configuración",
-  "/perfil": "Mi Perfil"
+  "/configuracion": "Configuracion",
+  "/perfil": "Mi Perfil",
 };
 
 function GlobalHeader() {
   const location = useLocation();
   const navigate = useNavigate();
-  
-  // Lógica para títulos dinámicos
+
   const getTitle = () => {
     if (location.pathname === "/salas-activas") {
       const params = new URLSearchParams(location.search);
       const habilidad = params.get("habilidad");
-      return habilidad ? `Salas de ${habilidad}` : "Live Rooms";
+      return habilidad ? `Salas de ${habilidad}` : "Salas en Vivo";
     }
     return titles[location.pathname] || "AuraSkill";
   };
 
-  const title = getTitle();
-
   return (
     <header className="global-header">
-      <h1 className="page-title">{title}</h1>
+      <h1 className="page-title">{getTitle()}</h1>
       <div className="header-actions-right">
         <Notificaciones />
-        <div 
-          className="icon-action user-icon" 
-          onClick={() => navigate("/perfil")} 
+        <div
+          className="header-icon-button user-icon"
+          onClick={() => navigate("/perfil")}
           style={{ cursor: "pointer" }}
         >
           <User size={24} />

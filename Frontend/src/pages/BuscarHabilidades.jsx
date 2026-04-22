@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Bell, BookOpen, Code, Gamepad2, Languages, Megaphone, Music, Palette, Search, Sparkles, User, Wrench } from "lucide-react";
+import { BookOpen, Code, Gamepad2, Languages, Megaphone, Music, Palette, Search, Sparkles, Wrench } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import HabilidadCard from "../components/HabilidadCard";
-import Notificaciones from "../components/Notificaciones";
+import GlobalHeader from "../components/GlobalHeader";
 import { createSkill, deleteSkill, fetchSkills } from "../services/skillService";
 import "../Styles/Home.css";
 import "../Styles/BuscarHabilidades.css";
@@ -17,7 +16,6 @@ const defaultForm = { nombre: "", descripcion: "", categoria: "", nivel: "basico
 
 function BuscarHabilidades() {
   const [rol] = useState(localStorage.getItem("userRole") || "alumno");
-  const navigate = useNavigate();
   const isMentor = rol === "mentor";
   const [searchTerm, setSearchTerm] = useState("");
   const [skills, setSkills] = useState([]);
@@ -82,18 +80,16 @@ function BuscarHabilidades() {
       <div className="home-main-layout">
         <Sidebar rol={rol} />
         <main className="home-content">
+          <GlobalHeader />
+
           <div className="dashboard-header full-header">
             <div className="search-container-neon search-extended">
               <Search className="search-icon" size={20} />
               <input type="text" placeholder="Buscar habilidad por nombre, categoria o descripcion..."
                 className="search-input-neon" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} />
             </div>
-            <div className="header-actions-right">
+            <div className="dashboard-actions-right">
               <div className="mood-indicator">{summaryText}</div>
-              <Notificaciones />
-              <div className="icon-action user-icon" onClick={() => navigate("/perfil")} style={{ cursor: "pointer" }}>
-                <User size={24} />
-              </div>
             </div>
           </div>
 

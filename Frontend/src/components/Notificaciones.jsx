@@ -51,53 +51,43 @@ function Notificaciones() {
   };
 
   return (
-    <div ref={ref} style={{ position: "relative" }}>
-      <div className="icon-action bell-icon" onClick={handleOpen} style={{ cursor: "pointer" }}>
+    <div ref={ref} className="notifications-root">
+      <div className="header-icon-button bell-icon" onClick={handleOpen}>
         <Bell size={24} />
         {unread > 0 && <span className="notification-dot">{unread}</span>}
       </div>
 
       {open && (
-        <div style={{
-          position: "absolute", top: "3rem", right: 0, width: "320px",
-          background: "#0d0d1a", border: "1px solid #00ffff", borderRadius: "12px",
-          boxShadow: "0 0 20px rgba(0,255,255,0.2)", zIndex: 999, overflow: "hidden",
-        }}>
-          <div style={{ padding: "1rem 1.25rem", borderBottom: "1px solid #1a1a2e", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h4 style={{ color: "#00ffff", margin: 0 }}>Notificaciones</h4>
-            <span style={{ color: "#aaa", fontSize: "0.8rem" }}>{notifs.length} activas</span>
+        <div className="notifications-panel">
+          <div className="notifications-panel-header">
+            <h4>Notificaciones</h4>
+            <span>{notifs.length} activas</span>
           </div>
 
-          <div style={{ maxHeight: "360px", overflowY: "auto" }}>
+          <div className="notifications-panel-body">
             {notifs.length === 0 ? (
-              <div style={{ padding: "2rem", textAlign: "center", color: "#aaa" }}>
-                No hay notificaciones
-              </div>
+              <div className="notifications-empty">No hay notificaciones</div>
             ) : (
               notifs.map((n) => (
-                <div key={n.id} style={{
-                  padding: "0.85rem 1.25rem", borderBottom: "1px solid #1a1a2e",
-                  display: "flex", gap: "0.75rem", alignItems: "flex-start",
-                  background: "#0d0d1a", transition: "background 0.2s",
-                }}>
-                  <div style={{ marginTop: "2px", color: "#00ffff" }}>
+                <div key={n.id} className="notifications-item">
+                  <div className="notifications-item-icon">
                     {n.tipo === "sala" ? <Video size={18} /> : <BookOpen size={18} />}
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ color: "#fff", margin: 0, fontSize: "0.9rem", fontWeight: 600 }}>{n.titulo}</p>
-                    <p style={{ color: "#aaa", margin: "2px 0 0", fontSize: "0.8rem" }}>{n.descripcion}</p>
+                  <div className="notifications-item-copy">
+                    <p className="notifications-item-title">{n.titulo}</p>
+                    <p className="notifications-item-description">{n.descripcion}</p>
                   </div>
-                  <X size={16} style={{ color: "#aaa", cursor: "pointer", flexShrink: 0 }}
-                    onClick={() => handleDismiss(n.id)} />
+                  <button className="notifications-dismiss" onClick={() => handleDismiss(n.id)} aria-label="Descartar notificacion">
+                    <X size={16} />
+                  </button>
                 </div>
               ))
             )}
           </div>
 
           {notifs.length > 0 && (
-            <div style={{ padding: "0.75rem 1.25rem", borderTop: "1px solid #1a1a2e", textAlign: "center" }}>
-              <button onClick={() => setNotifs([])}
-                style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", fontSize: "0.85rem" }}>
+            <div className="notifications-panel-footer">
+              <button className="notifications-clear" onClick={() => setNotifs([])}>
                 Limpiar todas
               </button>
             </div>

@@ -47,7 +47,7 @@ function HomeMentor() {
 
 
   return (
-    <section className="dashboard-section">
+    <section className="dashboard-page">
       <GlobalHeader />
       
       {/* Estado eliminado por redundancia */}
