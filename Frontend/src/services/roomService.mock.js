@@ -26,7 +26,11 @@ export const fetchRoom = async (roomId) => {
  * Obtener todas las salas activas
  */
 export const fetchActiveRooms = async () => {
-  return mockGetActiveRooms();
+  const rooms = await mockGetActiveRooms();
+  return rooms.map(room => ({
+    ...room,
+    sessionInfo: { isActive: true } // Mock mentor always active
+  }));
 };
 
 /**

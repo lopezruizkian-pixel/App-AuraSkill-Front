@@ -1,6 +1,7 @@
 import { useEffect, useContext, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
 import { RoomContext } from '../context/RoomContext';
+import { getSocketUrl } from '../services/socketConfig';
 
 const normalizeTimestamp = (value) => {
   if (!value) {
@@ -179,7 +180,7 @@ export const useWebSocket = (roomId, userId, userName, userAvatar, userRole) => 
     setConnectionStatus('conectando');
 
     try {
-      const socketURL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
+      const socketURL = getSocketUrl();
 
       const socket = io(socketURL, {
         reconnection: true,

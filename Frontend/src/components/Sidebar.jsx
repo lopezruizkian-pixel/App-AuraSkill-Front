@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom"; 
-import { LayoutDashboard, Search, Users, History, LogOut, Settings, PlusSquare, Video } from "lucide-react";
+import { LayoutDashboard, Search, Users, History, LogOut, Settings, SquarePlus, Video } from "lucide-react";
 import "../Styles/Sidebar.css";
 
 function Sidebar({ rol }) {
@@ -43,7 +43,7 @@ function Sidebar({ rol }) {
               className={`nav-item ${isActive('/crear-sala') ? 'active' : ''}`}
               onClick={() => navigate("/crear-sala")}
             >
-              <PlusSquare size={18} className="nav-icon" />
+              <SquarePlus size={18} className="nav-icon" />
               Crear sala
             </button>
             

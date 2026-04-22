@@ -4,96 +4,38 @@ const {
   obtenerRoomPorId,
   unirseARoom,
   eliminarRoom,
+  obtenerHistorialUsuario,
 } = require("./room.service")
-const { getRoomSessionState, getUserSessionHistory } = require("../../config/socket")
+const { getRoomSessionState, broadcastRoomsUpdated } = require("../../config/socket")
 
 const getRooms = async (req, res) => {
   try {
     const rooms = await obtenerRooms()
-    res.json(rooms)
+    const roomsWithSession = rooms.map(room => {
+      const sessionInfo = getRoomSessionState(String(room.id))
+      return { ...room, sessionInfo }
+    })
+    res.json(roomsWithSession)
   } catch (error) {
-    console.log('[Room Controller] Error obteniendo salas, usando datos mock:', error.message)
-    res.json([
-      {
-        id: 'sala-demo-1',
-        nombre: 'Sala Demo 1',
-        habilidad: 'React',
-        mentor: 'Mentor Demo',
-        estado: 'activo',
-      },
-    ])
-  }
-}
-
-const normalizeRoomResponse = (room, roomId) => {
-  const sessionInfo = getRoomSessionState(roomId)
-
-  if (!room) {
-    return {
-      id: roomId,
-      nombre: `Sala: ${roomId}`,
-      habilidad: 'Mentoria en vivo',
-      mentor: 'Mentor Anonimo',
-      descripcion: 'Sesion de mentoria en tiempo real',
-      estado: 'activo',
-      participantes: 1,
-      createdAt: new Date().toISOString(),
-      sessionInfo,
-    }
-  }
-
-  const roomData = room.toObject ? room.toObject() : room
-
-  return {
-    ...roomData,
-    sessionInfo,
+    res.status(500).json({ error: error.message })
   }
 }
 
 const getRoomById = async (req, res) => {
   try {
     const room = await obtenerRoomPorId(req.params.id)
-
-    if (!room) {
-      return res.json(normalizeRoomResponse(null, req.params.id))
-    }
-
-    res.json(normalizeRoomResponse(room, req.params.id))
+    if (!room) return res.status(404).json({ error: 'Sala no encontrada' })
+    const sessionInfo = getRoomSessionState(req.params.id)
+    res.json({ ...room, sessionInfo })
   } catch (error) {
-    console.log('[Room Controller] Error, usando datos mock:', error.message)
-    res.json(normalizeRoomResponse(null, req.params.id))
+    res.status(500).json({ error: error.message })
   }
 }
 
 const getRoomHistory = async (req, res) => {
   try {
-    const history = await Promise.all(getUserSessionHistory(req.user.id).map(async (session) => {
-      let room = null
-
-      try {
-        room = await obtenerRoomPorId(session.roomId)
-      } catch (error) {
-        room = null
-      }
-
-      return {
-        id: session.id,
-        roomId: session.roomId,
-        fecha: session.startedAt,
-        startedAt: session.startedAt,
-        endedAt: session.endedAt,
-        habilidad: session.habilidad || room?.habilidad || 'Habilidad',
-        mood: session.mood || room?.mood || 'Sin mood',
-        mentor: session.mentorName || room?.mentor?.nombre || 'Mentor Anonimo',
-        mentorId: session.mentorId,
-        duracionSegundos: session.durationSeconds || 0,
-        duracion: session.durationSeconds || 0,
-        nombreSala: session.roomName || room?.nombre || `Sala ${session.roomId}`,
-        participantCount: session.participantCount || 0,
-      }
-    }))
-
-    res.json(history)
+    const historial = await obtenerHistorialUsuario(req.user.id)
+    res.json(historial)
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
@@ -102,13 +44,15 @@ const getRoomHistory = async (req, res) => {
 const createRoom = async (req, res) => {
   try {
     const payload = {
-      ...req.body,
-      mentor: req.user.id,
+      nombre: req.body.nombre,
       descripcion: req.body.descripcion?.trim() || "",
-      capacidad_maxima: req.body.capacidad_maxima ?? req.body.limiteEstudiantes,
+      mentor_id: req.user.id,
+      habilidad: req.body.habilidad,
+      capacidad_maxima: req.body.capacidad_maxima ?? req.body.limiteEstudiantes ?? 10,
+      mood: req.body.mood || "",
     }
-
     const room = await crearRoom(payload)
+    broadcastRoomsUpdated()
     res.json({ message: "Sala creada", room })
   } catch (error) {
     res.status(400).json({ error: error.message })
@@ -127,17 +71,11 @@ const joinRoom = async (req, res) => {
 const deleteRoom = async (req, res) => {
   try {
     await eliminarRoom(req.params.id)
+    broadcastRoomsUpdated()
     res.json({ message: "Sala eliminada" })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
 }
 
-module.exports = {
-  getRooms,
-  getRoomById,
-  getRoomHistory,
-  createRoom,
-  joinRoom,
-  deleteRoom,
-}
+module.exports = { getRooms, getRoomById, getRoomHistory, createRoom, joinRoom, deleteRoom }
