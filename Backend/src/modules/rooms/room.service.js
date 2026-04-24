@@ -60,7 +60,7 @@ const unirseARoom = async (roomId, userId) => {
 };
 
 const eliminarRoom = async (id) => {
-  await pool.query('DELETE FROM rooms WHERE id = $1', [id]);
+  await pool.query("UPDATE rooms SET estado = 'inactiva' WHERE id = $1", [id]);
 };
 
 const obtenerHistorialUsuario = async (userId) => {
