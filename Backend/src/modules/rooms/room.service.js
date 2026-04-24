@@ -16,7 +16,8 @@ const obtenerRooms = async () => {
      FROM rooms r
      JOIN users u ON r.mentor_id = u.id
      LEFT JOIN skills s ON r.skill_id = s.id
-     WHERE r.estado = 'activa'`
+     WHERE r.estado = 'activa'
+     ORDER BY r.id DESC`
   );
   return result.rows;
 };
