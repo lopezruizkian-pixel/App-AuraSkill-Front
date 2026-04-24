@@ -82,9 +82,21 @@ const unassignSkill = async (req, res) => {
   }
 };
 
+// Obtener categorías únicas del catálogo
+const getCategories = async (req, res) => {
+  try {
+    const { obtenerCategorias } = require("./skill.service");
+    const categories = await obtenerCategorias();
+    res.json(categories);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   getSkills,
   getSkillById,
   assignSkill,
   unassignSkill,
+  getCategories
 };

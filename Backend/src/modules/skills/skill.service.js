@@ -51,11 +51,18 @@ const buscarSkillsEnCatalogo = async (query) => {
   return result.rows;
 };
 
+// Obtener todas las categorías únicas disponibles
+const obtenerCategorias = async () => {
+  const result = await pool.query('SELECT DISTINCT categoria FROM skills WHERE categoria IS NOT NULL AND categoria != \'\' ORDER BY categoria ASC');
+  return result.rows.map(row => row.categoria);
+};
+
 module.exports = { 
   obtenerCatalogoSkills, 
   obtenerSkillPorId, 
   asignarSkillAMentor, 
   desasignarSkillDeMentor, 
   obtenerSkillsPorMentor,
-  buscarSkillsEnCatalogo
+  buscarSkillsEnCatalogo,
+  obtenerCategorias
 };
