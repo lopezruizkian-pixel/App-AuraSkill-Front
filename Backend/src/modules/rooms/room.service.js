@@ -1,20 +1,21 @@
 const { pool } = require('../../config/db');
 
 const crearRoom = async (data) => {
-  const { nombre, descripcion, mentor_id, habilidad, capacidad_maxima } = data;
+  const { nombre, descripcion, mentor_id, habilidad_id, capacidad_maxima } = data;
   const result = await pool.query(
-    `INSERT INTO rooms (nombre, descripcion, mentor_id, habilidad, capacidad_maxima)
+    `INSERT INTO rooms (nombre, descripcion, mentor_id, habilidad_id, capacidad_maxima)
      VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-    [nombre, descripcion || '', mentor_id, habilidad, capacidad_maxima || 10]
+    [nombre, descripcion || '', mentor_id, habilidad_id, capacidad_maxima || 10]
   );
   return result.rows[0];
 };
 
 const obtenerRooms = async () => {
   const result = await pool.query(
-    `SELECT r.*, u.nombre AS mentor_nombre, u.usuario AS mentor_usuario
+    `SELECT r.*, s.nombre AS habilidad, u.nombre AS mentor_nombre, u.usuario AS mentor_usuario
      FROM rooms r
      JOIN users u ON r.mentor_id = u.id
+     LEFT JOIN skills s ON r.habilidad_id = s.id
      WHERE r.estado = 'activa'`
   );
   return result.rows;
@@ -22,9 +23,10 @@ const obtenerRooms = async () => {
 
 const obtenerRoomPorId = async (id) => {
   const room = await pool.query(
-    `SELECT r.*, u.nombre AS mentor_nombre, u.usuario AS mentor_usuario
+    `SELECT r.*, s.nombre AS habilidad, u.nombre AS mentor_nombre, u.usuario AS mentor_usuario
      FROM rooms r
      JOIN users u ON r.mentor_id = u.id
+     LEFT JOIN skills s ON r.habilidad_id = s.id
      WHERE r.id = $1`,
     [id]
   );

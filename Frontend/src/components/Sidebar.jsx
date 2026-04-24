@@ -83,13 +83,6 @@ function Sidebar({ rol }) {
 
           {rol === "mentor" ? (
             <>
-              <button
-                className={`nav-item ${isActive("/buscar-habilidades") ? "active" : ""}`}
-                onClick={() => handleNavigate("/buscar-habilidades")}
-              >
-                <Search size={18} className="nav-icon" />
-                Habilidades
-              </button>
 
               <button
                 className={`nav-item ${isActive("/salas-activas") ? "active" : ""}`}
@@ -101,13 +94,6 @@ function Sidebar({ rol }) {
             </>
           ) : (
             <>
-              <button
-                className={`nav-item ${isActive("/buscar-habilidades") ? "active" : ""}`}
-                onClick={() => handleNavigate("/buscar-habilidades")}
-              >
-                <Search size={18} className="nav-icon" />
-                Buscar Habilidades
-              </button>
 
               <button
                 className={`nav-item ${isActive("/mentores") ? "active" : ""}`}
