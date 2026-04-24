@@ -3,8 +3,8 @@ const { pool } = require('../../config/db');
 const crearRoom = async (data) => {
   const { nombre, descripcion, mentor_id, skill_id, capacidad_maxima } = data;
   const result = await pool.query(
-    `INSERT INTO rooms (nombre, descripcion, mentor_id, skill_id, capacidad_maxima)
-     VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+    `INSERT INTO rooms (nombre, descripcion, mentor_id, skill_id, capacidad_maxima, estado)
+     VALUES ($1, $2, $3, $4, $5, 'activa') RETURNING *`,
     [nombre, descripcion || '', mentor_id, skill_id, capacidad_maxima || 10]
   );
   return result.rows[0];
