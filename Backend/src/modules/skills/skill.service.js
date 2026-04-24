@@ -1,46 +1,61 @@
 const { pool } = require('../../config/db');
 
-const crearSkill = async (data) => {
-  const { nombre, descripcion, categoria, nivel, mentor_id } = data;
-  const result = await pool.query(
-    `INSERT INTO skills (nombre, descripcion, categoria, nivel, mentor_id)
-     VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-    [nombre, descripcion, categoria, nivel || 'basico', mentor_id]
-  );
-  return result.rows[0];
-};
-
-const obtenerSkills = async (mentor_id) => {
-  if (mentor_id) {
-    const result = await pool.query('SELECT * FROM skills WHERE mentor_id = $1 ORDER BY created_at DESC', [mentor_id]);
+// Obtener todas las habilidades del catálogo global (opcionalmente filtrado por categoría)
+const obtenerCatalogoSkills = async (categoria) => {
+  if (categoria) {
+    const result = await pool.query('SELECT * FROM skills WHERE categoria = $1 ORDER BY nombre ASC', [categoria]);
     return result.rows;
   }
-  const result = await pool.query('SELECT * FROM skills ORDER BY created_at DESC');
+  const result = await pool.query('SELECT * FROM skills ORDER BY nombre ASC');
   return result.rows;
 };
 
+// Obtener una habilidad específica por ID
 const obtenerSkillPorId = async (id) => {
   const result = await pool.query('SELECT * FROM skills WHERE id = $1', [id]);
   return result.rows[0] || null;
 };
 
-const buscarSkills = async (query, mentor_id) => {
-  if (mentor_id) {
-    const result = await pool.query(
-      `SELECT * FROM skills WHERE (nombre ILIKE $1 OR categoria ILIKE $1) AND mentor_id = $2`,
-      [`%${query}%`, mentor_id]
-    );
-    return result.rows;
-  }
+// Asignar una habilidad a un mentor
+const asignarSkillAMentor = async (userId, skillId) => {
   const result = await pool.query(
-    `SELECT * FROM skills WHERE nombre ILIKE $1 OR categoria ILIKE $1`,
+    'INSERT INTO mentor_skills (user_id, skill_id) VALUES ($1, $2) ON CONFLICT DO NOTHING RETURNING *',
+    [userId, skillId]
+  );
+  return result.rows[0];
+};
+
+// Desasignar una habilidad de un mentor
+const desasignarSkillDeMentor = async (userId, skillId) => {
+  await pool.query('DELETE FROM mentor_skills WHERE user_id = $1 AND skill_id = $2', [userId, skillId]);
+};
+
+// Obtener las habilidades asignadas a un mentor específico
+const obtenerSkillsPorMentor = async (mentorId) => {
+  const result = await pool.query(
+    `SELECT s.* FROM skills s
+     JOIN mentor_skills ms ON s.id = ms.skill_id
+     WHERE ms.user_id = $1
+     ORDER BY s.nombre ASC`,
+    [mentorId]
+  );
+  return result.rows;
+};
+
+// Buscar habilidades en el catálogo global
+const buscarSkillsEnCatalogo = async (query) => {
+  const result = await pool.query(
+    `SELECT * FROM skills WHERE nombre ILIKE $1 OR categoria ILIKE $1 ORDER BY nombre ASC`,
     [`%${query}%`]
   );
   return result.rows;
 };
 
-const eliminarSkill = async (id) => {
-  await pool.query('DELETE FROM skills WHERE id = $1', [id]);
+module.exports = { 
+  obtenerCatalogoSkills, 
+  obtenerSkillPorId, 
+  asignarSkillAMentor, 
+  desasignarSkillDeMentor, 
+  obtenerSkillsPorMentor,
+  buscarSkillsEnCatalogo
 };
-
-module.exports = { crearSkill, obtenerSkills, obtenerSkillPorId, buscarSkills, eliminarSkill };

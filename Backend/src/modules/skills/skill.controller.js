@@ -1,29 +1,37 @@
 const {
-  crearSkill,
-  obtenerSkills,
+  obtenerCatalogoSkills,
   obtenerSkillPorId,
-  buscarSkills,
-  eliminarSkill,
+  asignarSkillAMentor,
+  desasignarSkillDeMentor,
+  obtenerSkillsPorMentor,
+  buscarSkillsEnCatalogo
 } = require("./skill.service");
 
 const ensureMentor = (req) => {
   if (req.user?.rol !== "mentor") {
-    const error = new Error("Solo los mentores pueden administrar habilidades");
+    const error = new Error("Solo los mentores pueden administrar sus habilidades");
     error.status = 403;
     throw error;
   }
 };
 
+// Obtener habilidades: puede ser el catálogo completo o las de un mentor específico
 const getSkills = async (req, res) => {
   try {
-    const { q, own } = req.query;
-    // Si el usuario es mentor, forzamos privacidad: solo ve las suyas
-    // Si es aprendiz, puede ver todas (para buscar mentores)
-    const mentor_id = (req.user?.rol === 'mentor' || own === 'true') && req.user 
-      ? req.user.id 
-      : null;
-
-    const skills = q ? await buscarSkills(q, mentor_id) : await obtenerSkills(mentor_id);
+    const { q, mentorId, categoria } = req.query;
+    
+    let skills;
+    if (mentorId) {
+      // Si pasan un mentorId, devolvemos solo las de ese mentor
+      skills = await obtenerSkillsPorMentor(mentorId);
+    } else if (q) {
+      // Búsqueda en el catálogo global
+      skills = await buscarSkillsEnCatalogo(q);
+    } else {
+      // Catálogo global completo (con o sin filtro de categoría)
+      skills = await obtenerCatalogoSkills(categoria);
+    }
+    
     res.json(skills);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -33,48 +41,42 @@ const getSkills = async (req, res) => {
 const getSkillById = async (req, res) => {
   try {
     const skill = await obtenerSkillPorId(req.params.id);
-
     if (!skill) {
       return res.status(404).json({ error: "Habilidad no encontrada" });
     }
-
     res.json(skill);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-const createSkill = async (req, res) => {
+// El mentor elige una habilidad del catálogo
+const assignSkill = async (req, res) => {
   try {
     ensureMentor(req);
-    
-    const mentor_id = req.user.id;
-    if (!mentor_id) {
-      return res.status(401).json({ error: "No se pudo identificar al mentor. Reintenta el login." });
+    const { skillId } = req.body;
+    const userId = req.user.id;
+
+    if (!skillId) {
+      return res.status(400).json({ error: "Debe proporcionar el ID de la habilidad" });
     }
 
-    const skillData = { 
-      ...req.body, 
-      mentor_id: mentor_id 
-    };
-    
-    const skill = await crearSkill(skillData);
-    res.status(201).json({ message: "Habilidad creada", skill });
+    const assigned = await asignarSkillAMentor(userId, skillId);
+    res.status(201).json({ message: "Habilidad asignada con éxito", assigned });
   } catch (error) {
-    res.status(error.status || 400).json({ error: error.message });
+    res.status(error.status || 500).json({ error: error.message });
   }
 };
 
-const deleteSkill = async (req, res) => {
+// El mentor se quita una habilidad de su perfil
+const unassignSkill = async (req, res) => {
   try {
     ensureMentor(req);
-    const deletedSkill = await eliminarSkill(req.params.id);
+    const { skillId } = req.params;
+    const userId = req.user.id;
 
-    if (!deletedSkill) {
-      return res.status(404).json({ error: "Habilidad no encontrada" });
-    }
-
-    res.json({ message: "Habilidad eliminada" });
+    await desasignarSkillDeMentor(userId, skillId);
+    res.json({ message: "Habilidad desasignada de tu perfil" });
   } catch (error) {
     res.status(error.status || 500).json({ error: error.message });
   }
@@ -83,6 +85,6 @@ const deleteSkill = async (req, res) => {
 module.exports = {
   getSkills,
   getSkillById,
-  createSkill,
-  deleteSkill,
+  assignSkill,
+  unassignSkill,
 };
