@@ -47,7 +47,7 @@ const createRoom = async (req, res) => {
       nombre: req.body.nombre,
       descripcion: req.body.descripcion?.trim() || "",
       mentor_id: req.user.id,
-      habilidad_id: req.body.habilidad_id,
+      skill_id: req.body.skill_id,
       capacidad_maxima: req.body.capacidad_maxima ?? req.body.limiteEstudiantes ?? 10,
       mood: req.body.mood || "",
     }
