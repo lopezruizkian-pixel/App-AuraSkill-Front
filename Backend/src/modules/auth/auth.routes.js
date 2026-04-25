@@ -1,11 +1,12 @@
 const express = require("express")
-const { register, login, getProfile, changePassword, deleteAccount, updateProfile } = require("./auth.controller")
+const { register, login, logout, getProfile, changePassword, deleteAccount, updateProfile } = require("./auth.controller")
 const { verifyToken } = require("../../middlewares/auth.middleware")
 
 const router = express.Router()
 
 router.post("/register", register)
 router.post("/login", login)
+router.post("/logout", logout)
 router.get("/profile", verifyToken, getProfile)
 router.put("/change-password", verifyToken, changePassword)
 router.put("/update-profile", verifyToken, updateProfile)

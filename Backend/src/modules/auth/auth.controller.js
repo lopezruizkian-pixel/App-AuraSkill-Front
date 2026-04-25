@@ -14,10 +14,29 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const result = await loginUser(req.body)
-    res.json(result)
+    const { token, user } = result
+
+    // Configuración de la cookie
+    res.cookie("token", token, {
+      httpOnly: true, // No accesible por JS (Protege contra XSS)
+      secure: process.env.NODE_ENV === "production", // Solo HTTPS en producción
+      sameSite: "none", // Necesario para CORS entre diferentes dominios
+      maxAge: 24 * 60 * 60 * 1000 // 24 horas
+    })
+
+    res.json({ message: "Login exitoso", user })
   } catch (error) {
     res.status(400).json({ error: error.message })
   }
+}
+
+const logout = async (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none"
+  })
+  res.json({ message: "Sesión cerrada correctamente" })
 }
 
 const getProfile = async (req, res) => {
@@ -88,4 +107,4 @@ const updateProfile = async (req, res) => {
   }
 }
 
-module.exports = { register, login, getProfile, changePassword, deleteAccount, updateProfile }
+module.exports = { register, login, logout, getProfile, changePassword, deleteAccount, updateProfile }

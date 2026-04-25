@@ -2,16 +2,14 @@ const jwt = require("jsonwebtoken")
 const { SECRET } = require("../utils/jwt")
 
 const verifyToken = (req, res, next) => {
+  // Intentar obtener el token de las cookies o del header
+  const token = req.cookies.token || (req.headers.authorization && req.headers.authorization.split(" ")[1]);
 
-  const authHeader = req.headers.authorization
-
-  if (!authHeader) {
+  if (!token) {
     return res.status(401).json({
-      error: "Token requerido"
+      error: "Token requerido (No se encontró sesión activa)"
     })
   }
-
-  const token = authHeader.split(" ")[1]
 
   try {
 
