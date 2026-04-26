@@ -6,9 +6,10 @@ const {
   eliminarRoom,
   obtenerHistorialUsuario,
 } = require("./room.service")
-const { getRoomSessionState, broadcastRoomsUpdated } = require("../../config/socket")
+const { getRoomSessionState, broadcastRoomsUpdated, finalizeMentorSession, activeRooms } = require("../../config/socket")
 
 const getRooms = async (req, res) => {
+// ... (rest of the file remains same, adding finishRoom at the end)
   try {
     const rooms = await obtenerRooms()
     const roomsWithSession = rooms.map(room => {
@@ -78,4 +79,24 @@ const deleteRoom = async (req, res) => {
   }
 }
 
-module.exports = { getRooms, getRoomById, getRoomHistory, createRoom, joinRoom, deleteRoom }
+const finishRoom = async (req, res) => {
+  try {
+    const roomId = String(req.params.id);
+    
+    // 1. Marcar como inactiva en la base de datos (Persistencia definitiva)
+    await eliminarRoom(roomId);
+    
+    // 2. Finalizar la sesión en el estado de Sockets (Memoria + Evento roomClosed)
+    const room = activeRooms.get(roomId);
+    if (room) {
+      await finalizeMentorSession(room, 'finalizado_por_mentor');
+    }
+    
+    broadcastRoomsUpdated();
+    res.json({ message: "Sala finalizada y archivada correctamente" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { getRooms, getRoomById, getRoomHistory, createRoom, joinRoom, deleteRoom, finishRoom }

@@ -120,9 +120,10 @@ const startMentorSession = (room, user) => {
   return room.currentSession;
 };
 
-const finalizeMentorSession = async (room, reason = 'disconnect') => {
+const finalizeMentorSession = async (room, reason = 'manual') => {
   if (!room?.currentSession?.isActive) return null;
 
+  const roomId = room.roomId;
   const endedAtMs = Date.now();
   const durationSeconds = Math.max(
     0,
@@ -137,8 +138,22 @@ const finalizeMentorSession = async (room, reason = 'disconnect') => {
     endReason: reason,
   };
 
+  // Persistir en DB
   await persistSession(room.currentSession);
+  
+  // Mover a completado
   room.lastCompletedSession = buildSessionPayload(room.currentSession);
+  
+  // Notificar a todos que la sala se cerró (NUEVO EVENTO)
+  if (ioInstance) {
+    ioInstance.to(roomId).emit('roomClosed', { 
+      roomId, 
+      reason,
+      sessionSummary: room.lastCompletedSession 
+    });
+    console.log(`[Socket] Sala ${roomId} cerrada oficialmente. Evento roomClosed emitido.`);
+  }
+
   broadcastRoomsUpdated();
   return room.lastCompletedSession;
 };
@@ -209,10 +224,7 @@ const initializeSocket = (server) => {
         const room = activeRooms.get(String(roomId));
         if (room) {
           room.participants = room.participants.filter((p) => p.userId !== user.userId);
-          if (user.userRole?.toLowerCase() === 'mentor' && room.currentSession?.mentorId === user.userId) {
-            await finalizeMentorSession(room, 'leaveRoom');
-            io.to(roomId).emit('roomSessionUpdated', getRoomSessionState(roomId));
-          }
+          // Ya no cerramos la sala automáticamente aquí
           io.to(roomId).emit('userLeft', socket.id);
           io.to(roomId).emit('participantsList', room.participants);
         }
@@ -271,10 +283,7 @@ const initializeSocket = (server) => {
         const room = activeRooms.get(String(user.roomId));
         if (room) {
           room.participants = room.participants.filter((p) => p.userId !== user.userId);
-          if (user.userRole?.toLowerCase() === 'mentor' && room.currentSession?.mentorId === user.userId) {
-            await finalizeMentorSession(room, 'disconnect');
-            io.to(user.roomId).emit('roomSessionUpdated', getRoomSessionState(user.roomId));
-          }
+          // Ya no cerramos la sala automáticamente aquí
           io.to(user.roomId).emit('userLeft', socket.id);
           io.to(user.roomId).emit('participantsList', room.participants);
         }
@@ -292,6 +301,7 @@ const initializeSocket = (server) => {
 module.exports = {
   initializeSocket,
   getRoomSessionState,
+  finalizeMentorSession,
   activeRooms,
   connectedUsers,
   broadcastRoomsUpdated,
